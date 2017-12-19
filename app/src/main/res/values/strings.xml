@@ -3,5 +3,6 @@
 
     <string name="facebook_application_id" translatable="false">1992025451036511</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1992025451036511</string>
+    <string name="newQuestionNotify">Notification for every</string>
 
 </resources>
