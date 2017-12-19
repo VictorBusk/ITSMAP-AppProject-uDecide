@@ -203,3 +203,4 @@ fabric.properties
 
 /build
 /google-services.json
+/keystore.properties

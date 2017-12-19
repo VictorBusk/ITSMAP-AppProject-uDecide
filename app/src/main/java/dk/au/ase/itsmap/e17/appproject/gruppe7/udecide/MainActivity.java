@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
     // https://developers.facebook.com/docs/android/graph
     public void fetchFriendslistFromFB() {
-        final List<Friend> friends = new ArrayList<>();
+        final List<String> friendsIds = new ArrayList<>();
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me/taggable_friends",
@@ -131,31 +131,22 @@ public class MainActivity extends AppCompatActivity {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                            Log.i(TAG, "fetchFriendslistFromFB:response " + response);
+                        Log.i(TAG, "fetchFriendslistFromFB:response " + response);
                         try {
-                            JSONArray rawName = response.getJSONObject().getJSONArray("data");
-                            Log.i(TAG, "fetchFriendslistFromFB:data " + rawName);
-
-                            for (int i=0; i < rawName.length(); i++) {
-                                JSONObject obj = rawName.getJSONObject(i);
-                                Friend friend = new Friend();
-                                friend.setId(obj.get("id").toString());
-                                friend.setName(obj.get("name").toString());
-                                friend.setPicture(obj.getJSONObject("picture").getJSONObject("data").getJSONObject("url").toString());
-                                Log.i(TAG, friend.getName());
-                                friends.add(friend);
+                            JSONObject jsonObject = response.getJSONObject();
+                            JSONArray jsonArrayData = jsonObject.getJSONArray("data");
+                            if (jsonArrayData != null && jsonArrayData.length() > 0) {
+                                for (int i = 0; i < jsonArrayData.length(); i++) {
+                                    JSONObject jsonObjectFriend = jsonArrayData.optJSONObject(i);
+                                    friendsIds.add(jsonObjectFriend.getString("name"));
+                                    Log.i(TAG, "fetchFriendslistFromFB:response:data:name " + jsonObjectFriend.getString("name"));
+                                }
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
         ).executeAsync();
-
-        for (Friend obj : friends) {
-            Log.i(TAG, obj.getName());
-        }
     }
 }
