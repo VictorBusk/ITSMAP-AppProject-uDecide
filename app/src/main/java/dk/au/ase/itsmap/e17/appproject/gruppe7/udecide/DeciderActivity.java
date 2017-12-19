@@ -2,18 +2,19 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.Models.Polls;
 
 public class DeciderActivity extends AppCompatActivity {
 
@@ -23,6 +24,7 @@ public class DeciderActivity extends AppCompatActivity {
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore mFirestore;
     int num;
+    String questionText;
     String someText = "Which one..?";
     private String mPollsKey;
     public static final String POLLS_KEY = "polls_key";
@@ -33,25 +35,6 @@ public class DeciderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_decider);
 
-        // Initialize Firestore
-        mFirestore = FirebaseFirestore.getInstance();
-
-        // Get post key from intent
-        mPollsKey = getIntent().getStringExtra(POLLS_KEY);
-        if (mPollsKey == null) {
-            throw new IllegalArgumentException("Must pass POLLS_KEY");
-        }
-
-        // Inspired by: https://firebase.google.com/docs/database/android/start/ and https://www.youtube.com/watch?v=kDZYIhNkQoM
-        // Attach a listener to read the data at our posts reference
-
-        pollsDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Polls polls = documentSnapshot.toObject(Polls.class);
-            }
-        });
-
         final Intent data = getIntent();
         final String userName = data.getStringExtra(CONST.USERNAME);
 
@@ -59,9 +42,7 @@ public class DeciderActivity extends AppCompatActivity {
         personNameTV = findViewById(R.id.personTV);
         personNameTV.setText(personNameText);
 
-        String questionText = data.getStringExtra(CONST.QUESTION_TEXT);
         questionTextTV = findViewById(R.id.questionTV);
-        questionTextTV.setText(questionText);
 
         lastQuestionResult = findViewById(R.id.progressBar);
         lastQuestionResult.setProgress(0);
@@ -91,6 +72,35 @@ public class DeciderActivity extends AppCompatActivity {
 
         updateQuestionText();
         num = 50;
+
+        // Initialize Firestore
+        mFirestore = FirebaseFirestore.getInstance();
+
+        // Get polls key from intent
+        mPollsKey = getIntent().getStringExtra(POLLS_KEY);
+        if (mPollsKey == null) {
+            throw new IllegalArgumentException("Must pass POLLS_KEY");
+        }
+
+        // Inspired by: https://firebase.google.com/docs/database/android/start/ and https://www.youtube.com/watch?v=kDZYIhNkQoM
+        // Attach a listener to read the data at our posts reference
+        pollsDocRef.get().addOnCompleteListener(new OnCompleteListener< DocumentSnapshot >() {
+            @Override
+            public void onComplete(@NonNull Task< DocumentSnapshot > task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot doc = task.getResult();
+                    questionText = doc.get("question").toString();
+                    questionTextTV.setText(questionText);
+                }
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
+
+
     }
 
     private void imagerClickEvent(View v, String userName) {
@@ -111,6 +121,4 @@ public class DeciderActivity extends AppCompatActivity {
     private void loadUserDetails() {
 
     }
-
-
 }
