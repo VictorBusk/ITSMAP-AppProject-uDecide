@@ -20,20 +20,20 @@ public class NewPollActivity extends AppCompatActivity {
     public ImageView ivFirstPic, ivSecondPic;
     public Button btnSaveDec;
 
-    public String notifiy = "0", questionText;
+    public String notify = "0", questionText;
     public Bitmap photo1, photo2;
     public boolean freindsOrPublic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_poll);
-        InitCompoenents();
+        InitComponents();
 
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                notifiy = String.valueOf(progress);
+                notify = String.valueOf(progress);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -44,7 +44,7 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvDecitionNotify.setText(notifiy);
+        tvDecitionNotify.setText(notify);
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -66,7 +66,7 @@ public class NewPollActivity extends AppCompatActivity {
                     }
                 }
         });
-        saveQuestion();
+        savePoll();
         }
 
     @Override
@@ -81,7 +81,7 @@ public class NewPollActivity extends AppCompatActivity {
         }
     }
 
-    private void InitCompoenents() {
+    private void InitComponents() {
         tvQuestion = (TextView) findViewById(R.id.TVQuestion);
         tvPublicOrFreinds = (TextView) findViewById(R.id.TVForP);
         tvDecitionNotify = (TextView) findViewById(R.id.TVNotificationDec);
@@ -91,7 +91,7 @@ public class NewPollActivity extends AppCompatActivity {
         btnSaveDec = (Button) findViewById(R.id.BTNSaveDec);
     }
 
-    public void saveQuestion(){
+    public void savePoll(){
 
     }
 }
