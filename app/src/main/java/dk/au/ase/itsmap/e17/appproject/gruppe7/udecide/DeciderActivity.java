@@ -2,19 +2,16 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 
 public class DeciderActivity extends AppCompatActivity {
 
@@ -22,13 +19,10 @@ public class DeciderActivity extends AppCompatActivity {
     private ImageView personImg, questionFirstImg, questionSecondImg;
     private TextView personNameTV, questionTextTV;
     private ProgressBar lastQuestionResult;
-    private FirebaseFirestore mFirestore;
+    private FirebaseFirestore db;
     int num;
-    String questionText;
     String someText = "Which one..?";
-    private String mPollsKey;
-    public static final String POLLS_KEY = "polls_key";
-
+    FirebaseHelper fbService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +31,39 @@ public class DeciderActivity extends AppCompatActivity {
 
         final Intent data = getIntent();
         final String userName = data.getStringExtra(CONST.USERNAME);
+        intitializeUIElements(data);
 
+        questionFirstImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imagerClickEvent(v, userName);
+                updateProgressBar();
+                updateQuestionText();
+            }
+        });
+
+        questionSecondImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imagerClickEvent(v, userName);
+                updateProgressBar();
+                updateQuestionText();
+            }
+        });
+
+        updateQuestionText();
+        num = 50;
+
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+
+        final String currentPolls = "test1";
+
+        pollsDocRef = db.collection("poll").document(currentPolls);
+        //fbService.getPollData(pollsDocRef);
+    }
+
+    private void intitializeUIElements(Intent data) {
         String personNameText = data.getStringExtra(CONST.PERSON_NAME);
         personNameTV = findViewById(R.id.personTV);
         personNameTV.setText(personNameText);
@@ -52,55 +78,6 @@ public class DeciderActivity extends AppCompatActivity {
         questionSecondImg = findViewById(R.id.secondQuestionImg);
 
         personImg = findViewById(R.id.personImg);
-        questionFirstImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imagerClickEvent(v,userName);
-                updateProgressBar();
-                updateQuestionText();
-            }
-        });
-
-        questionSecondImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imagerClickEvent(v,userName);
-                updateProgressBar();
-                updateQuestionText();
-            }
-        });
-
-        updateQuestionText();
-        num = 50;
-
-        // Initialize Firestore
-        mFirestore = FirebaseFirestore.getInstance();
-
-        // Get polls key from intent
-        mPollsKey = getIntent().getStringExtra(POLLS_KEY);
-        if (mPollsKey == null) {
-            throw new IllegalArgumentException("Must pass POLLS_KEY");
-        }
-
-        // Inspired by: https://firebase.google.com/docs/database/android/start/ and https://www.youtube.com/watch?v=kDZYIhNkQoM
-        // Attach a listener to read the data at our posts reference
-        pollsDocRef.get().addOnCompleteListener(new OnCompleteListener< DocumentSnapshot >() {
-            @Override
-            public void onComplete(@NonNull Task< DocumentSnapshot > task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult();
-                    questionText = doc.get("question").toString();
-                    questionTextTV.setText(questionText);
-                }
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
-
-
     }
 
     private void imagerClickEvent(View v, String userName) {
