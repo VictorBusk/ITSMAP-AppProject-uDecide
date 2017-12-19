@@ -5,7 +5,7 @@
     android:id="@+id/SBAmountDec"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.NewQuestionActivity">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.NewPollActivity">
 
     <ImageView
         android:id="@+id/IWDecitionOne"
