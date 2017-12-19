@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-public class NewQuestionActivity extends AppCompatActivity {
+public class NewPollActivity extends AppCompatActivity {
 
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
@@ -26,7 +26,7 @@ public class NewQuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_question);
+        setContentView(R.layout.activity_new_poll);
         InitCompoenents();
 
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
