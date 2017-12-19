@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                displayName.setText("Vent venligst imens Silas henter kridt...");
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
