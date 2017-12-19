@@ -1,35 +1,38 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.LoggingBehavior;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+// https://developers.facebook.com/docs/android/graph
+// https://firebase.google.com/docs/firestore/manage-data/add-data?authuser=0
 
 public class FacebookHelper {
 
     private static final String TAG = "FacebookHelper";
 
 
-    // https://developers.facebook.com/docs/android/graph
-    public static void getUserData() {
-        FacebookSdk.addLoggingBehavior(LoggingBehavior.REQUESTS);
-
-
-
+    public static void getUserData(final FirebaseUser user) {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final Map<String, Object> dbUser = new HashMap<>();
 
         GraphRequest meRequest = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -39,10 +42,17 @@ public class FacebookHelper {
                         Log.i(TAG, "meRequest:JSONObject" + object);
                         Log.i(TAG, "meRequest:GraphResponse" + response);
                         // TODO JS Application code for user
+                        try {
+                            dbUser.put("facebookId", object.getString("id"));
+                            dbUser.put("facebookName", object.getString("name"));
+                            dbUser.put("facebookPicture", object.getJSONObject("picture").getJSONObject("data").getString("url"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
         Bundle meParameters = new Bundle();
-        meParameters.putString("fields", "id,name,link");
+        meParameters.putString("fields", "id,name,picture.type(large)");
         meRequest.setParameters(meParameters);
 
         GraphRequest myFriendsRequest = GraphRequest.newMyFriendsRequest(
@@ -53,6 +63,16 @@ public class FacebookHelper {
                         Log.i(TAG, "newMyFriendsRequest:JSONArray" + objects);
                         Log.i(TAG, "newMyFriendsRequest:GraphResponse" + response);
                         // TODO JS Application code for users friends
+                        List<String> facebookFriendsIds = new ArrayList<>();
+                        for (int i = 0; i < objects.length(); i++) {
+                            try {
+                                facebookFriendsIds.add(objects.getJSONObject(i).getString("id"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            dbUser.put("facebookFriends", facebookFriendsIds);
+                        }
+
                     }
                 });
 
@@ -62,38 +82,23 @@ public class FacebookHelper {
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
                 // TODO JS Application code for when the batch finishes
+                db.collection("users").document(user.getUid())
+                        .set(dbUser)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
             }
         });
         batch.executeAsync();
 
-    }
-
-    // https://developers.facebook.com/docs/android/graph
-    public static void fetchFriendslistFromFB() {
-        final List<String> friendsIds = new ArrayList<>();
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/taggable_friends",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        Log.i(TAG, "fetchFriendslistFromFB:response " + response);
-                        try {
-                            JSONObject jsonObject = response.getJSONObject();
-                            JSONArray jsonArrayData = jsonObject.getJSONArray("data");
-                            if (jsonArrayData != null && jsonArrayData.length() > 0) {
-                                for (int i = 0; i < jsonArrayData.length(); i++) {
-                                    JSONObject jsonObjectFriend = jsonArrayData.optJSONObject(i);
-                                    friendsIds.add(jsonObjectFriend.getString("name"));
-                                    Log.i(TAG, "fetchFriendslistFromFB:response:data:name " + jsonObjectFriend.getString("name"));
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        ).executeAsync();
     }
 }
