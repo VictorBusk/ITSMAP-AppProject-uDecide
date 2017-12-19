@@ -22,9 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USERS_COLLECTION;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_NAME;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_PICTURE;
+
 // https://developers.facebook.com/docs/android/graph
 // https://firebase.google.com/docs/firestore/manage-data/add-data?authuser=0
-
 public class FacebookHelper {
 
     private static final String TAG = "FacebookHelper";
@@ -43,9 +47,9 @@ public class FacebookHelper {
                         Log.i(TAG, "meRequest:GraphResponse" + response);
                         // TODO JS Application code for user
                         try {
-                            dbUser.put("facebookId", object.getString("id"));
-                            dbUser.put("facebookName", object.getString("name"));
-                            dbUser.put("facebookPicture", object.getJSONObject("picture").getJSONObject("data").getString("url"));
+                            dbUser.put(FACEBOOK_ID, object.getString("id"));
+                            dbUser.put(FACEBOOK_NAME, object.getString("name"));
+                            dbUser.put(FACEBOOK_PICTURE, object.getJSONObject("picture").getJSONObject("data").getString("url"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -82,7 +86,7 @@ public class FacebookHelper {
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
                 // TODO JS Application code for when the batch finishes
-                db.collection("users").document(user.getUid())
+                db.collection(DB_USERS_COLLECTION).document(user.getUid())
                         .set(dbUser)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override

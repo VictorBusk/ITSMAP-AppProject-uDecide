@@ -29,16 +29,21 @@ import com.squareup.picasso.Picasso;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FacebookHelper;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USERS_COLLECTION;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_NAME;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_PICTURE;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private static final String TAG = "MainActivity";
 
+    // TODO JS Rename
     private ImageView profilePicture;
     private TextView displayName;
 
-    // TODO refactor
+    // TODO JS refactor
     private String[] permissions = new String[] {"read_custom_friendlists", "public_profile", "user_friends", "email"};
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        // TODO JS
         // updateUI(currentUser);
     }
 
@@ -119,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            // TODO JS
                             // updateUI(null);
                         }
 
@@ -129,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(user.getUid());
+        DocumentReference docRef = db.collection(DB_USERS_COLLECTION).document(user.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -137,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document != null) {
                         Log.d(TAG, "DocumentSnapshot data: " + task.getResult().getData());
-                        updateProfilePicture(document.getString("facebookPicture"));
-                        displayName.setText(document.getString("facebookName"));
+                        updateProfilePicture(document.getString(FACEBOOK_PICTURE));
+                        displayName.setText(document.getString(FACEBOOK_NAME));
                     } else {
                         Log.d(TAG, "No such document");
                     }
