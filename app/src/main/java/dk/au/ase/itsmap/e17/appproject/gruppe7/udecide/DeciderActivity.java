@@ -9,40 +9,54 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.Models.Polls;
 
 public class DeciderActivity extends AppCompatActivity {
 
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("someCollection");
+    private DocumentReference pollsDocRef;
     private ImageView personImg, questionFirstImg, questionSecondImg;
     private TextView personNameTV, questionTextTV;
     private ProgressBar lastQuestionResult;
+    private FirebaseFirestore mFirestore;
     int num;
     String someText = "Which one..?";
+    private String mPollsKey;
+    public static final String POLLS_KEY = "polls_key";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_decider);
 
+        // Initialize Firestore
+        mFirestore = FirebaseFirestore.getInstance();
+
+        // Get post key from intent
+        mPollsKey = getIntent().getStringExtra(POLLS_KEY);
+        if (mPollsKey == null) {
+            throw new IllegalArgumentException("Must pass POLLS_KEY");
+        }
+
         // Inspired by: https://firebase.google.com/docs/database/android/start/ and https://www.youtube.com/watch?v=kDZYIhNkQoM
         // Attach a listener to read the data at our posts reference
 
-        mDocRef.set(Polls.class).addOnSuccessListener(new OnSuccessListener<Void>() {
+        pollsDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("add:success", "Document has been saved!");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("add:fail", "Document has not been saved!");
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Polls polls = documentSnapshot.toObject(Polls.class);
             }
         });
 
@@ -85,6 +99,45 @@ public class DeciderActivity extends AppCompatActivity {
 
         updateQuestionText();
         num = 50;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Add value event listener to the post
+        // [START post_value_event_listener]
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                Post post = dataSnapshot.getValue(Post.class);
+                // [START_EXCLUDE]
+                mAuthorView.setText(post.author);
+                mTitleView.setText(post.title);
+                mBodyView.setText(post.body);
+                // [END_EXCLUDE]
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                // [START_EXCLUDE]
+                Toast.makeText(PostDetailActivity.this, "Failed to load post.",
+                        Toast.LENGTH_SHORT).show();
+                // [END_EXCLUDE]
+            }
+        };
+        mPostReference.addValueEventListener(postListener);
+        // [END post_value_event_listener]
+
+        // Keep copy of post listener so we can remove it when app stops
+        mPostListener = postListener;
+
+        // Listen for comments
+        mAdapter = new CommentAdapter(this, mCommentsReference);
+        mCommentsRecycler.setAdapter(mAdapter);
     }
 
     private void imagerClickEvent(View v, String userName) {
