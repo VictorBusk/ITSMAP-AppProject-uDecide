@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.MainActivity">
 
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/button_facebook_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 </android.support.constraint.ConstraintLayout>
