@@ -11,9 +11,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,12 +21,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FacebookHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     // TODO refactor
+    private String[] permissions = new String[] {"read_custom_friendlists", "public_profile", "user_friends", "email"};
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
-
-
+    boolean loggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,17 +42,20 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        //https://firebase.google.com/docs/auth/android/facebook-login?authuser=2
-        mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.button_facebook_login);
-        loginButton.setReadPermissions("email", "public_profile", "user_friends");
+        loggedIn  = AccessToken.getCurrentAccessToken() == null;
+        if (loggedIn) {
+            // TODO JS
+        }
 
+        // https://firebase.google.com/docs/auth/android/facebook-login?authuser=0
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginButton loginButton = (LoginButton)findViewById(R.id.button_facebook_login);
+        loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
-                fetchFriendslistFromFB();
             }
 
             @Override
@@ -82,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+        // updateUI(currentUser);
     }
 
     @Override
@@ -93,8 +89,7 @@ public class MainActivity extends AppCompatActivity {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    // https://firebase.google.com/docs/auth/android/facebook-login?authuser=2
-    private void handleFacebookAccessToken(final AccessToken token) {
+    private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -106,13 +101,13 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
+                            // updateUI(user);
+                            FacebookHelper.getUserData();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            // updateUI(null);
                         }
 
                         // ...
@@ -120,33 +115,4 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
-    // https://developers.facebook.com/docs/android/graph
-    public void fetchFriendslistFromFB() {
-        final List<String> friendsIds = new ArrayList<>();
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/taggable_friends",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        Log.i(TAG, "fetchFriendslistFromFB:response " + response);
-                        try {
-                            JSONObject jsonObject = response.getJSONObject();
-                            JSONArray jsonArrayData = jsonObject.getJSONArray("data");
-                            if (jsonArrayData != null && jsonArrayData.length() > 0) {
-                                for (int i = 0; i < jsonArrayData.length(); i++) {
-                                    JSONObject jsonObjectFriend = jsonArrayData.optJSONObject(i);
-                                    friendsIds.add(jsonObjectFriend.getString("name"));
-                                    Log.i(TAG, "fetchFriendslistFromFB:response:data:name " + jsonObjectFriend.getString("name"));
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        ).executeAsync();
-    }
 }
