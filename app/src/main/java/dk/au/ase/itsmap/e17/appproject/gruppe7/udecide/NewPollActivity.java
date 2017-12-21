@@ -51,13 +51,13 @@ public class NewPollActivity extends AppCompatActivity {
         InitComponents();
 
         db = FirebaseFirestore.getInstance();
-
+        tvDecitionNotify.setText(getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber));
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                 notifyNumber = progress;
-                tvDecitionNotify.setText( " " + String.valueOf(notifyNumber));
+                tvDecitionNotify.setText(getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -68,7 +68,6 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvPublicOrFreinds.setText(R.string.newPollNotify);
         rbFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
