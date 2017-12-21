@@ -33,7 +33,6 @@ public class FacebookHelper {
 
     private static final String TAG = "FacebookHelper";
 
-
     public static void getUserData(final FirebaseUser user) {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Map<String, Object> dbUser = new HashMap<>();
@@ -103,6 +102,5 @@ public class FacebookHelper {
             }
         });
         batch.executeAsync();
-
     }
 }
