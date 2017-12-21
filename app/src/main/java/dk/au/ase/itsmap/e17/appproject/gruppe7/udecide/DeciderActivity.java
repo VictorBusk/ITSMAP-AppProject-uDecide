@@ -88,11 +88,11 @@ public class DeciderActivity extends AppCompatActivity {
         questionText = currentPoll.getQuestion();
         questionTextTV.setText(questionText);
 
-        image1 = currentPoll.getImage1();
-        firstImg.setImageBitmap(image1);
+        //image1 = currentPoll.getImage1Id();
+        //firstImg.setImageBitmap(image1);
 
-        image2 = currentPoll.getImage2();
-        secondImg.setImageBitmap(image2);
+        //image2 = currentPoll.getImage2Id();
+        //secondImg.setImageBitmap(image2);
 
         lastQuestionResult.setProgress(num);
     }
