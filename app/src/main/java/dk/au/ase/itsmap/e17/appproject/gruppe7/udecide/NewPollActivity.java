@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -15,14 +17,15 @@ public class NewPollActivity extends AppCompatActivity {
 
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
-    public TextView tvQuestion, tvPublicOrFreinds, tvDecitionNotify;
-    public SeekBar sbNotify;
-    public ImageView ivFirstPic, ivSecondPic;
-    public Button btnSaveDec;
-
-    public String notify = "0", questionText;
-    public Bitmap photo1, photo2;
-    public boolean freindsOrPublic;
+    private TextView tvPublicOrFreinds, tvDecitionNotify;
+    private SeekBar sbNotify;
+    private ImageView ivFirstPic, ivSecondPic;
+    private Button btnSaveDec, btnCancel;
+    private int notifyCount = 0;
+    private Bitmap photo1, photo2;
+    private RadioButton rbPublic, rbFriends;
+    private EditText etQuestion;
+    private boolean freindsOrPublic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +36,8 @@ public class NewPollActivity extends AppCompatActivity {
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                notify = String.valueOf(progress);
+                notifyCount = progress;
+                tvDecitionNotify.setText( " " + String.valueOf(notifyCount));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -44,7 +48,20 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvDecitionNotify.setText(notify);
+        tvPublicOrFreinds.setText(R.string.newPollNotify);
+        rbFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                freindsOrPublic = true;
+            }
+        });
+        rbPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                freindsOrPublic = false;
+            }
+        });
+
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -66,7 +83,19 @@ public class NewPollActivity extends AppCompatActivity {
                     }
                 }
         });
-        savePoll();
+
+        btnSaveDec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //save data to firebase.
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         }
 
     @Override
@@ -82,16 +111,15 @@ public class NewPollActivity extends AppCompatActivity {
     }
 
     private void InitComponents() {
-        tvQuestion = (TextView) findViewById(R.id.TVQuestion);
-        tvPublicOrFreinds = (TextView) findViewById(R.id.TVForP);
-        tvDecitionNotify = (TextView) findViewById(R.id.TVNotificationDec);
-        sbNotify = (SeekBar) findViewById(R.id.SBNotify);
-        ivFirstPic = (ImageView) findViewById(R.id.IWDecitionOne);
-        ivSecondPic = (ImageView) findViewById(R.id.IWDecition2);
-        btnSaveDec = (Button) findViewById(R.id.BTNSaveDec);
-    }
-
-    public void savePoll(){
-
+        etQuestion = findViewById(R.id.etQuestion);
+        tvPublicOrFreinds = findViewById(R.id.TVForP);
+        tvDecitionNotify = findViewById(R.id.TVNotificationDec);
+        sbNotify = findViewById(R.id.SBNotify);
+        ivFirstPic = findViewById(R.id.IWDecitionOne);
+        ivSecondPic = findViewById(R.id.IWDecition2);
+        btnSaveDec = findViewById(R.id.BTNSaveDec);
+        btnCancel = findViewById(R.id.BTNCancel);
+        rbFriends = findViewById(R.id.RBFreinds);
+        rbPublic = findViewById(R.id.RBPublic);
     }
 }
