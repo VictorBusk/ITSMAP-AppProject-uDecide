@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,22 +14,21 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 //dette kode er inspirerert fra vores weather app der blev afleverert i handin 2.
-/*
+
 public class questionAdaptor extends BaseAdapter{
 
-    private final Context context;
-    private Poll pollModel;
-    private ArrayList<Poll> Question;
-    public questionAdaptor(context context, ArrayList<Poll> pollItemModels){
+    private Context context;
+    private String question;
+    private int progressStatus;
+
+    public questionAdaptor(Context context, String Question, int voteProgress){
     this.context = context;
-    this.
+    this.question = Question;
+    this.progressStatus = voteProgress;
     }
 
     @Override
     public int getCount() {
-        if (Question != null) {
-            return Question.size();
-        } else
             return 0;
     }
 
@@ -39,13 +39,13 @@ public class questionAdaptor extends BaseAdapter{
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             customView = Inflator.inflate(R.layout.question_list_item, null);
 
-            pollModel = Question.get(position);
-            String tempQuestion = pollModel.getQuestion();
-            if(pollModel != null){
+            if(question != null){
                 TextView txtQuestion = customView.findViewById(R.id.tvQuestion);
-                txtQuestion.setText(tempQuestion);
+                txtQuestion.setText(question);
+                ProgressBar progressBar = customView.findViewById(R.id.QLWprogressBar);
+                progressBar.setProgress(progressStatus);
             }
-
+            return customView;
         }
         return null;
     }
@@ -57,9 +57,9 @@ public class questionAdaptor extends BaseAdapter{
 
     @Override
     public Object getItem(int i) {
-        if(Question != null) {
-            return Question.get(i);
-        }
+        return null;
     }
+
+    public void clreadData() {}
 }
-*/
+

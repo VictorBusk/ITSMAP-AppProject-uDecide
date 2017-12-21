@@ -71,12 +71,12 @@
         android:layout_width="0dp"
         android:layout_height="47dp"
         android:layout_marginBottom="8dp"
-        android:visibility="visible"
         android:background="#ffff0000"
+        android:theme="@style/AppTheme"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/myTextProgress"

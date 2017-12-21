@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/QLWprogressBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="328dp"
         android:layout_height="23dp"
