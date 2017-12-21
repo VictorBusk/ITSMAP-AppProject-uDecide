@@ -107,7 +107,7 @@ public class NewPollActivity extends AppCompatActivity {
         btnSaveDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //save data to firebase.
+                savePollToFirebase();
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +116,7 @@ public class NewPollActivity extends AppCompatActivity {
                 finish();
             }
         });
-        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -146,12 +146,12 @@ public class NewPollActivity extends AppCompatActivity {
     public void savePollToFirebase(){
         CollectionReference polls = db.collection("polls");
 
-        String fbUserId = "123";
-        String image1id = uploadImage(photo1);
-        String image2id = uploadImage(photo1);
+        String userID = "123";
+        String image1ID = uploadImage(photo1);
+        String image2ID = uploadImage(photo1);
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
-                publicOrFriends, image1id, image2id, fbUserId);
+                publicOrFriends, image1ID, image2ID, userID);
 
         polls.add(poll);
     }

@@ -7,23 +7,23 @@ import android.graphics.Bitmap;
 
 public class Poll {
     private String question;
-    private int notificationNumber;
+    private int notifyNumber;
     private boolean showForPublic;
     private boolean isArchived;
-    private String image1Id;
-    private String image2Id;
+    private String image1ID;
+    private String image2ID;
     private int image1Votes;
     private int image2Votes;
-    private String fbUserId;
+    private String userID;
 
-    public Poll(String question, int notificationNumber, boolean showForPublic,
-                 String image1id, String image2Id, String fbUserId) {
+    public Poll(String question, int notifyNumber, boolean showForPublic,
+                 String image1, String image2, String fbUserId) {
         this.question = question;
-        this.notificationNumber = notificationNumber;
+        this.notifyNumber = notifyNumber;
         this.showForPublic = showForPublic;
-        this.image1Id = image1Id;
-        this.image2Id = image2Id;
-        this.fbUserId = fbUserId;
+        this.image1ID = image1;
+        this.image2ID = image2;
+        this.userID = fbUserId;
         this.image1Votes = 0;
         this.image2Votes = 0;
         this.isArchived = false;
@@ -33,20 +33,20 @@ public class Poll {
         return question;
     }
 
-    public int getNotificationNumber() {
-        return notificationNumber;
+    public int getNotifyNumber() {
+        return notifyNumber;
     }
 
-    public boolean showForPublic() {
+    public boolean getShowForPublic() {
         return showForPublic;
     }
 
-    public String getImage1Id() {
-        return image1Id;
+    public String getImage1ID() {
+        return image1ID;
     }
 
-    public String getImage2() {
-        return image2Id;
+    public String getImage2ID() {
+        return image2ID;
     }
 
     public int getImage1Votes() {
@@ -57,11 +57,11 @@ public class Poll {
         return image2Votes;
     }
 
-    public String getFBUserId() {
-        return fbUserId;
+    public String getUserID() {
+        return userID;
     }
 
-    public boolean isArchived() {
+    public boolean getIsArchived() {
         return isArchived;
     }
 }
