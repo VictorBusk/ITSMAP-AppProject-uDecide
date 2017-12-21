@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,12 +27,22 @@ public class FirebaseHelper extends AppCompatActivity {
     // and https://firebase.google.com/docs/firestore/query-data/get-data
     // Attach a listener to read the data at our posts reference
     public Poll getPollData(DocumentReference pollsDocRef) {
-        pollsDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        pollsDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                poll = documentSnapshot.toObject(Poll.class);
-            }
-        });
+                if (documentSnapshot != null)
+                {
+                    Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
+                    poll = documentSnapshot.toObject(Poll.class);
+                }
+            }})
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(String.valueOf(this), "Unable to extract poll from Firebase", e);
+                    }
+                });
         return poll;
     }
 
