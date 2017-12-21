@@ -7,5 +7,11 @@
     <string name="facebook_app_id">1992025451036511</string>
     <string name="fb_login_protocol_scheme">fb1992025451036511</string>
     <string name="GenericImageError">Unable to find image</string>
+    <string name="newPollCancel">Cancel</string>
+    <string name="newPollSave">Save</string>
+    <string name="newPollPublic">Public</string>
+    <string name="newPollFriends">Friends</string>
+    <string name="newPollQuestion">What to decide?</string>
+    <string name="newPollPublicOrFreind">Show for</string>
 
 </resources>

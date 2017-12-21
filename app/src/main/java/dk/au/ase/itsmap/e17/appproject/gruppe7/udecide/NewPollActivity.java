@@ -30,34 +30,35 @@ import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
+
 public class NewPollActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
-    private TextView tvPublicOrFreinds, tvDecitionNotify;
-    private SeekBar sbNotify;
+    private TextView tvPublicOrFriends, tvDecisionNotify;
     private ImageView ivFirstPic, ivSecondPic;
-    private Button btnSaveDec, btnCancel;
-    private int notifyNumber = 0;
-    private Bitmap photo1, photo2;
     private RadioButton rbPublic, rbFriends;
-    private EditText etQuestion;
+    private Button btnSaveDec, btnCancel;
     private boolean publicOrFriends;
+    private Bitmap photo1, photo2;
+    private int notifyNumber = 0;
+    private EditText etQuestion;
+    private SeekBar sbNotify;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_poll);
         InitComponents();
 
-        db = FirebaseFirestore.getInstance();
-
+        tvDecisionNotify.setText(getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber));
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                 notifyNumber = progress;
-                tvDecitionNotify.setText( " " + String.valueOf(notifyNumber));
+                tvDecisionNotify.setText(getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -68,13 +69,13 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvPublicOrFreinds.setText(R.string.newPollNotify);
         rbFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 publicOrFriends = true;
             }
         });
+
         rbPublic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,24 +85,23 @@ public class NewPollActivity extends AppCompatActivity {
 
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (inCamera.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(inCamera, REQUEST_CAM1);
-                    }
+            @Override
+            public void onClick(View view) {
+                Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (inCamera.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(inCamera, REQUEST_CAM1);
                 }
-
+            }
         });
 
         ivSecondPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (inCamera.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(inCamera, REQUEST_CAM2);
-                    }
+            @Override
+            public void onClick(View view) {
+                Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (inCamera.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(inCamera, REQUEST_CAM2);
                 }
+            }
         });
 
         btnSaveDec.setOnClickListener(new View.OnClickListener() {
@@ -110,12 +110,26 @@ public class NewPollActivity extends AppCompatActivity {
                 savePollToFirebase();
             }
         });
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+    }
+
+    private void InitComponents() {
+        etQuestion = findViewById(R.id.etQuestion);
+        tvPublicOrFriends = findViewById(R.id.TVForP);
+        tvDecisionNotify = findViewById(R.id.TVNotificationDec);
+        sbNotify = findViewById(R.id.SBNotify);
+        ivFirstPic = findViewById(R.id.IWDecitionOne);
+        ivSecondPic = findViewById(R.id.IWDecition2);
+        btnSaveDec = findViewById(R.id.BTNSaveDec);
+        btnCancel = findViewById(R.id.BTNCancel);
+        rbFriends = findViewById(R.id.RBFreinds);
+        rbPublic = findViewById(R.id.RBPublic);
     }
 
     @Override
@@ -130,20 +144,8 @@ public class NewPollActivity extends AppCompatActivity {
         }
     }
 
-    private void InitComponents() {
-        etQuestion = findViewById(R.id.etQuestion);
-        tvPublicOrFreinds = findViewById(R.id.TVForP);
-        tvDecitionNotify = findViewById(R.id.TVNotificationDec);
-        sbNotify = findViewById(R.id.SBNotify);
-        ivFirstPic = findViewById(R.id.IWDecitionOne);
-        ivSecondPic = findViewById(R.id.IWDecition2);
-        btnSaveDec = findViewById(R.id.BTNSaveDec);
-        btnCancel = findViewById(R.id.BTNCancel);
-        rbFriends = findViewById(R.id.RBFreinds);
-        rbPublic = findViewById(R.id.RBPublic);
-    }
-
     public void savePollToFirebase(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference polls = db.collection("polls");
 
         String userID = "123";
@@ -163,18 +165,20 @@ public class NewPollActivity extends AppCompatActivity {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference imagesRef = storageRef.child("images/" + imageId);
+        StorageReference imagesRef = storageRef.child(STORAGE_IMAGES_PATH + imageId);
 
         byte[] data = convertBitmap(bitmap);
 
         UploadTask uploadTask = imagesRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {}
+            public void onFailure(@NonNull Exception exception) {
+            }
 
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {}
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            }
         });
 
         return imageId;
