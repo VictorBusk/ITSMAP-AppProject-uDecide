@@ -4,12 +4,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
@@ -25,7 +29,7 @@ public class DeciderActivity extends AppCompatActivity {
     int num;
     String questionText, imageId1, imageId2;
     Poll currentPoll;
-    FirebaseHelper firebaseHelper;
+    FirebaseHelper firebaseHelper = new FirebaseHelper();
     Bitmap image1, image2;
 
     @Override
@@ -54,10 +58,13 @@ public class DeciderActivity extends AppCompatActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        final String currentPolls = "test1";
+        final String currentPolls = "ZFxMhPLpNYfgcQUVHjcL";
+        CollectionReference pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
+//        CollectionReference userCollection = db.collection(CONST.DB_USERS_COLLECTION);
 
-        pollsDocRef = db.collection("poll").document(currentPolls);
+        pollsDocRef = db.collection(CONST.DB_POLLS_COLLECTION).document(currentPolls);
         currentPoll = firebaseHelper.getPollData(pollsDocRef);
+        updateUI();
     }
 
     private void intitializeUIElements(Intent data) {

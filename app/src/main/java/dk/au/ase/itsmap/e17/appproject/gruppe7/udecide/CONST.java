@@ -12,6 +12,7 @@ public class CONST {
     public static final String FIRST_QUESTION_IMAGE = "first_image";
     public static final String SECOND_QUESTION_IMAGE = "second_image";
     public static final String UPDATE_EVENT = "update-event";
+    public static final String DB_POLLS_COLLECTION = "polls";
 
     public static final String DB_USERS_COLLECTION = "users";
 
