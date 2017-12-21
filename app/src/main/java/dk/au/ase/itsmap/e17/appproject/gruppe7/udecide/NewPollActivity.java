@@ -40,7 +40,6 @@ public class NewPollActivity extends AppCompatActivity {
     private ImageView ivFirstPic, ivSecondPic;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec, btnCancel;
-    private boolean uploadSucceeded = false;
     private boolean publicOrFriends;
     private Bitmap photo1, photo2;
     private int notifyNumber = 0;
@@ -154,11 +153,6 @@ public class NewPollActivity extends AppCompatActivity {
         String image1ID = uploadImage(photo1);
         String image2ID = uploadImage(photo1);
 
-        if(!uploadSucceeded){
-            // Inform user
-            return;
-        }
-
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
                 publicOrFriends, image1ID, image2ID, userID);
 
@@ -180,13 +174,11 @@ public class NewPollActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                uploadSucceeded = false;
             }
 
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                uploadSucceeded = true;
             }
         });
 
