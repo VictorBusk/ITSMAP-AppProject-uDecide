@@ -28,4 +28,36 @@ public class Poll {
         this.userId = userId;
         this.archived = false;
     }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public int getNotificationNumber() {
+        return notificationNumber;
+    }
+
+    public boolean showForPublic() {
+        return showForPublic;
+    }
+
+    public Bitmap getImage1() {
+        return image1;
+    }
+
+    public Bitmap getImage2() {
+        return image2;
+    }
+
+    public int getImage1Votes() {
+        return image1Votes;
+    }
+
+    public int getImage2Votes() {
+        return image2Votes;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
 }
