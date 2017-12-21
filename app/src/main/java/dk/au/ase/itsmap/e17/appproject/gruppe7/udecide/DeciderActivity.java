@@ -23,6 +23,8 @@ import com.google.firebase.storage.StorageReference;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
+
 public class DeciderActivity extends AppCompatActivity {
 
     private DocumentReference pollsDocRef;
@@ -121,7 +123,7 @@ public class DeciderActivity extends AppCompatActivity {
     }
 
     public void getImage(String imageId, final ImageView imageView) {
-        storageRef.child("images/" + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        storageRef.child(STORAGE_IMAGES_PATH + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 bmp = BitmapFactory.decodeByteArray(bytes,0,bytes.length);

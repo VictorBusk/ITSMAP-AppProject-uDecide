@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,14 +63,11 @@ public class NewPollActivity extends AppCompatActivity {
                 tvDecisionNotify.setText(getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber));
             }
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
 
-            }
-            });
         rbFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,7 +106,14 @@ public class NewPollActivity extends AppCompatActivity {
         btnSaveDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(photo1 == null || photo2 == null) {
+                    Toast.makeText(getApplicationContext(),
+                            "You need to select two images.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 savePollToFirebase();
+                finish();
             }
         });
 
@@ -144,13 +150,14 @@ public class NewPollActivity extends AppCompatActivity {
         }
     }
 
-    public void savePollToFirebase(){
+    public void savePollToFirebase()
+    {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference polls = db.collection("polls");
 
         String userID = "123";
         String image1ID = uploadImage(photo1);
-        String image2ID = uploadImage(photo1);
+        String image2ID = uploadImage(photo2);
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
                 publicOrFriends, image1ID, image2ID, userID);
@@ -161,11 +168,11 @@ public class NewPollActivity extends AppCompatActivity {
     public String uploadImage(Bitmap bitmap)
     {
         UUID uuid = UUID.randomUUID();
-        final String imageId = uuid.toString();
+        final String imageID = uuid.toString();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference imagesRef = storageRef.child(STORAGE_IMAGES_PATH + imageId);
+        StorageReference imagesRef = storageRef.child(STORAGE_IMAGES_PATH + imageID);
 
         byte[] data = convertBitmap(bitmap);
 
@@ -173,15 +180,11 @@ public class NewPollActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-            }
-
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.w(String.valueOf(this), "Unable to upload image to Firebase", exception);
             }
         });
 
-        return imageId;
+        return imageID;
     }
 
     private byte[] convertBitmap(Bitmap bitmap)
