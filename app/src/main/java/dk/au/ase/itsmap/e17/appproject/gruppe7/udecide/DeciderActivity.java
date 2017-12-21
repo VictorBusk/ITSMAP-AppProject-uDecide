@@ -2,6 +2,7 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -19,7 +20,7 @@ public class DeciderActivity extends AppCompatActivity {
 
     private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
-    private TextView personNameTV, questionTextTV;
+    private TextView personNameTV, questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
     int num;
@@ -65,11 +66,16 @@ public class DeciderActivity extends AppCompatActivity {
         personNameTV = findViewById(R.id.personTV);
         personNameTV.setText(personNameText);
 
+        myProgressTextTv = findViewById(R.id.myTextProgress);
         questionTextTV = findViewById(R.id.questionTV);
 
         lastQuestionResult = findViewById(R.id.progressBar);
-        lastQuestionResult.setProgress(0);
         lastQuestionResult.setMax(100);
+        lastQuestionResult.setProgress(50);
+
+        //to set text
+        myProgressTextTv.setText("50");
+
 
         firstImg = findViewById(R.id.firstQuestionImg);
         secondImg = findViewById(R.id.secondQuestionImg);
