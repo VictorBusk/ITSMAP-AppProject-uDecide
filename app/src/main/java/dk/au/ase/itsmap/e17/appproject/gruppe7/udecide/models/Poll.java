@@ -10,22 +10,22 @@ public class Poll {
     private int notificationNumber;
     private boolean showForPublic;
     private boolean archived;
-    private Bitmap image1;
-    private Bitmap image2;
+    private String image1id;
+    private String image2id;
     private int image1Votes;
     private int image2Votes;
-    private int userId;
+    private String fbUserId;
 
     public Poll(String question, int notificationNumber, boolean showForPublic,
-                 Bitmap image1, Bitmap image2, int image1Votes, int image2Votes, int userId) {
+                 String image1id, String image2id, String fbUserId) {
         this.question = question;
         this.notificationNumber = notificationNumber;
         this.showForPublic = showForPublic;
-        this.image1 = image1;
-        this.image2 = image2;
-        this.image1Votes = image1Votes;
-        this.image2Votes = image2Votes;
-        this.userId = userId;
+        this.image1id = image1id;
+        this.image2id = image2id;
+        this.fbUserId = fbUserId;
+        this.image1Votes = 0;
+        this.image2Votes = 0;
         this.archived = false;
     }
 }
