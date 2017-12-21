@@ -7,46 +7,46 @@ import android.graphics.Bitmap;
 
 public class Poll {
     private String question;
-    private int notificationNumber;
+    private int notifyNumber;
     private boolean showForPublic;
-    private boolean archived;
-    private Bitmap image1;
-    private Bitmap image2;
+    private boolean isArchived;
+    private String image1ID;
+    private String image2ID;
     private int image1Votes;
     private int image2Votes;
-    private int userId;
+    private String userID;
 
-    public Poll(String question, int notificationNumber, boolean showForPublic,
-                 Bitmap image1, Bitmap image2, int image1Votes, int image2Votes, int userId) {
+    public Poll(String question, int notifyNumber, boolean showForPublic,
+                 String image1, String image2, String fbUserId) {
         this.question = question;
-        this.notificationNumber = notificationNumber;
+        this.notifyNumber = notifyNumber;
         this.showForPublic = showForPublic;
-        this.image1 = image1;
-        this.image2 = image2;
-        this.image1Votes = image1Votes;
-        this.image2Votes = image2Votes;
-        this.userId = userId;
-        this.archived = false;
+        this.image1ID = image1;
+        this.image2ID = image2;
+        this.userID = fbUserId;
+        this.image1Votes = 0;
+        this.image2Votes = 0;
+        this.isArchived = false;
     }
 
     public String getQuestion() {
         return question;
     }
 
-    public int getNotificationNumber() {
-        return notificationNumber;
+    public int getNotifyNumber() {
+        return notifyNumber;
     }
 
-    public boolean showForPublic() {
+    public boolean getShowForPublic() {
         return showForPublic;
     }
 
-    public Bitmap getImage1() {
-        return image1;
+    public String getImage1ID() {
+        return image1ID;
     }
 
-    public Bitmap getImage2() {
-        return image2;
+    public String getImage2ID() {
+        return image2ID;
     }
 
     public int getImage1Votes() {
@@ -57,7 +57,11 @@ public class Poll {
         return image2Votes;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserID() {
+        return userID;
+    }
+
+    public boolean getIsArchived() {
+        return isArchived;
     }
 }

@@ -2,38 +2,62 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.util.UUID;
+
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
+
 public class NewPollActivity extends AppCompatActivity {
 
+    private FirebaseFirestore db;
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
-    public TextView tvQuestion, tvPublicOrFreinds, tvDecitionNotify;
-    public SeekBar sbNotify;
-    public ImageView ivFirstPic, ivSecondPic;
-    public Button btnSaveDec;
-
-    public String notify = "0", questionText;
-    public Bitmap photo1, photo2;
-    public boolean freindsOrPublic;
+    private TextView tvPublicOrFreinds, tvDecitionNotify;
+    private SeekBar sbNotify;
+    private ImageView ivFirstPic, ivSecondPic;
+    private Button btnSaveDec, btnCancel;
+    private int notifyNumber = 0;
+    private Bitmap photo1, photo2;
+    private RadioButton rbPublic, rbFriends;
+    private EditText etQuestion;
+    private boolean publicOrFriends;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_poll);
         InitComponents();
 
+        db = FirebaseFirestore.getInstance();
+
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                notify = String.valueOf(progress);
+                notifyNumber = progress;
+                tvDecitionNotify.setText( " " + String.valueOf(notifyNumber));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -44,7 +68,20 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvDecitionNotify.setText(notify);
+        tvPublicOrFreinds.setText(R.string.newPollNotify);
+        rbFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publicOrFriends = true;
+            }
+        });
+        rbPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publicOrFriends = false;
+            }
+        });
+
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -66,8 +103,20 @@ public class NewPollActivity extends AppCompatActivity {
                     }
                 }
         });
-        savePoll();
-        }
+
+        btnSaveDec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                savePollToFirebase();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -82,16 +131,61 @@ public class NewPollActivity extends AppCompatActivity {
     }
 
     private void InitComponents() {
-        tvQuestion = (TextView) findViewById(R.id.TVQuestion);
-        tvPublicOrFreinds = (TextView) findViewById(R.id.TVForP);
-        tvDecitionNotify = (TextView) findViewById(R.id.TVNotificationDec);
-        sbNotify = (SeekBar) findViewById(R.id.SBNotify);
-        ivFirstPic = (ImageView) findViewById(R.id.IWDecitionOne);
-        ivSecondPic = (ImageView) findViewById(R.id.IWDecition2);
-        btnSaveDec = (Button) findViewById(R.id.BTNSaveDec);
+        etQuestion = findViewById(R.id.etQuestion);
+        tvPublicOrFreinds = findViewById(R.id.TVForP);
+        tvDecitionNotify = findViewById(R.id.TVNotificationDec);
+        sbNotify = findViewById(R.id.SBNotify);
+        ivFirstPic = findViewById(R.id.IWDecitionOne);
+        ivSecondPic = findViewById(R.id.IWDecition2);
+        btnSaveDec = findViewById(R.id.BTNSaveDec);
+        btnCancel = findViewById(R.id.BTNCancel);
+        rbFriends = findViewById(R.id.RBFreinds);
+        rbPublic = findViewById(R.id.RBPublic);
     }
 
-    public void savePoll(){
+    public void savePollToFirebase(){
+        CollectionReference polls = db.collection("polls");
 
+        String userID = "123";
+        String image1ID = uploadImage(photo1);
+        String image2ID = uploadImage(photo1);
+
+        Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
+                publicOrFriends, image1ID, image2ID, userID);
+
+        polls.add(poll);
+    }
+
+    public String uploadImage(Bitmap bitmap)
+    {
+        UUID uuid = UUID.randomUUID();
+        final String imageId = uuid.toString();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imagesRef = storageRef.child("images/" + imageId);
+
+        byte[] data = convertBitmap(bitmap);
+
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {}
+
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {}
+        });
+
+        return imageId;
+    }
+
+    private byte[] convertBitmap(Bitmap bitmap)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        return data;
     }
 }
