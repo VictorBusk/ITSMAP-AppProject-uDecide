@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -30,17 +32,18 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 public class NewPollActivity extends AppCompatActivity {
 
+    private FirebaseFirestore db;
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
-    public TextView tvQuestion, tvPublicOrFriends, tvDecisionNotify;
-    public SeekBar sbNotify;
-    public ImageView ivFirstPic, ivSecondPic;
-    public Button btnSaveDec;
-    private FirebaseFirestore db;
-
-    public int notifyNumber = 0;
-    public Bitmap photo1, photo2;
-    public boolean publicOrFriends;
+    private TextView tvPublicOrFreinds, tvDecitionNotify;
+    private SeekBar sbNotify;
+    private ImageView ivFirstPic, ivSecondPic;
+    private Button btnSaveDec, btnCancel;
+    private int notifyNumber = 0;
+    private Bitmap photo1, photo2;
+    private RadioButton rbPublic, rbFriends;
+    private EditText etQuestion;
+    private boolean publicOrFriends;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,7 @@ public class NewPollActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                 notifyNumber = progress;
+                tvDecitionNotify.setText( " " + String.valueOf(notifyNumber));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -64,7 +68,20 @@ public class NewPollActivity extends AppCompatActivity {
 
             }
             });
-        tvDecisionNotify.setText(notifyNumber);
+        tvPublicOrFreinds.setText(R.string.newPollNotify);
+        rbFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publicOrFriends = true;
+            }
+        });
+        rbPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publicOrFriends = false;
+            }
+        });
+
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,7 +103,19 @@ public class NewPollActivity extends AppCompatActivity {
                     }
                 }
         });
-        savePollToFirebase();
+
+        btnSaveDec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //save data to firebase.
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         }
 
     @Override
@@ -102,13 +131,16 @@ public class NewPollActivity extends AppCompatActivity {
     }
 
     private void InitComponents() {
-        tvQuestion = (TextView) findViewById(R.id.TVQuestion);
-        tvPublicOrFriends = (TextView) findViewById(R.id.TVForP);
-        tvDecisionNotify = (TextView) findViewById(R.id.TVNotificationDec);
-        sbNotify = (SeekBar) findViewById(R.id.SBNotify);
-        ivFirstPic = (ImageView) findViewById(R.id.IWDecitionOne);
-        ivSecondPic = (ImageView) findViewById(R.id.IWDecition2);
-        btnSaveDec = (Button) findViewById(R.id.BTNSaveDec);
+        etQuestion = findViewById(R.id.etQuestion);
+        tvPublicOrFreinds = findViewById(R.id.TVForP);
+        tvDecitionNotify = findViewById(R.id.TVNotificationDec);
+        sbNotify = findViewById(R.id.SBNotify);
+        ivFirstPic = findViewById(R.id.IWDecitionOne);
+        ivSecondPic = findViewById(R.id.IWDecition2);
+        btnSaveDec = findViewById(R.id.BTNSaveDec);
+        btnCancel = findViewById(R.id.BTNCancel);
+        rbFriends = findViewById(R.id.RBFreinds);
+        rbPublic = findViewById(R.id.RBPublic);
     }
 
     public void savePollToFirebase(){
@@ -118,7 +150,7 @@ public class NewPollActivity extends AppCompatActivity {
         String image1id = uploadImage(photo1);
         String image2id = uploadImage(photo1);
 
-        Poll poll = new Poll(tvQuestion.getText().toString(), notifyNumber,
+        Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
                 publicOrFriends, image1id, image2id, fbUserId);
 
         polls.add(poll);

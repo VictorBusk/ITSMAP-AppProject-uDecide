@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,17 +13,20 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 public class DeciderActivity extends AppCompatActivity {
 
     private DocumentReference pollsDocRef;
-    private ImageView personImg, questionFirstImg, questionSecondImg;
+    private ImageView firstImg, secondImg;
     private TextView personNameTV, questionTextTV;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
     int num;
-    String someText = "Which one..?";
+    String questionText;
+    Poll currentPoll;
     FirebaseHelper fbService;
+    Bitmap image1, image2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,25 +37,20 @@ public class DeciderActivity extends AppCompatActivity {
         final String userName = data.getStringExtra(CONST.USERNAME);
         intitializeUIElements(data);
 
-        questionFirstImg.setOnClickListener(new View.OnClickListener() {
+        firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imagerClickEvent(v, userName);
-                updateProgressBar();
-                updateQuestionText();
+                updateUi();
             }
         });
 
-        questionSecondImg.setOnClickListener(new View.OnClickListener() {
+        secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imagerClickEvent(v, userName);
-                updateProgressBar();
-                updateQuestionText();
+                updateUi();
             }
         });
 
-        updateQuestionText();
         num = 50;
 
         // Initialize Firestore
@@ -60,7 +59,7 @@ public class DeciderActivity extends AppCompatActivity {
         final String currentPolls = "test1";
 
         pollsDocRef = db.collection("poll").document(currentPolls);
-        //fbService.getPollData(pollsDocRef);
+        currentPoll = fbService.getPollData(pollsDocRef);
     }
 
     private void intitializeUIElements(Intent data) {
@@ -74,10 +73,8 @@ public class DeciderActivity extends AppCompatActivity {
         lastQuestionResult.setProgress(0);
         lastQuestionResult.setMax(100);
 
-        questionFirstImg = findViewById(R.id.firstQuestionImg);
-        questionSecondImg = findViewById(R.id.secondQuestionImg);
-
-        personImg = findViewById(R.id.personImg);
+        firstImg = findViewById(R.id.firstQuestionImg);
+        secondImg = findViewById(R.id.secondQuestionImg);
     }
 
     private void imagerClickEvent(View v, String userName) {
@@ -87,15 +84,16 @@ public class DeciderActivity extends AppCompatActivity {
 //        startActivityForResult(imageClickIntent, CONST.REQUEST_NEXT_IMAGE);
     }
 
-    private void updateProgressBar() {
+    private void updateUi() {
+        questionText = currentPoll.getQuestion();
+        questionTextTV.setText(questionText);
+
+        image1 = currentPoll.getImage1();
+        firstImg.setImageBitmap(image1);
+
+        image2 = currentPoll.getImage2();
+        secondImg.setImageBitmap(image2);
+
         lastQuestionResult.setProgress(num);
-    }
-
-    private void updateQuestionText() {
-        questionTextTV.setText(someText);
-    }
-
-    private void loadUserDetails() {
-
     }
 }
