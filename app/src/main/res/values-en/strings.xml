@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">uDecide</string>
     <string name="newQuestionNotify">Notification for every</string>
+    <string name="GenericImageError">Unable to find image</string>
 </resources>

@@ -23,31 +23,29 @@ public class DeciderActivity extends AppCompatActivity {
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
     int num;
-    String questionText;
+    String questionText, imageId1, imageId2;
     Poll currentPoll;
-    FirebaseHelper fbService;
+    FirebaseHelper firebaseHelper;
     Bitmap image1, image2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_decider);
-
         final Intent data = getIntent();
-        final String userName = data.getStringExtra(CONST.USERNAME);
         intitializeUIElements(data);
 
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUi();
+                updateUI();
             }
         });
 
         secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUi();
+                updateUI();
             }
         });
 
@@ -59,7 +57,7 @@ public class DeciderActivity extends AppCompatActivity {
         final String currentPolls = "test1";
 
         pollsDocRef = db.collection("poll").document(currentPolls);
-        currentPoll = fbService.getPollData(pollsDocRef);
+        currentPoll = firebaseHelper.getPollData(pollsDocRef);
     }
 
     private void intitializeUIElements(Intent data) {
@@ -77,22 +75,15 @@ public class DeciderActivity extends AppCompatActivity {
         secondImg = findViewById(R.id.secondQuestionImg);
     }
 
-    private void imagerClickEvent(View v, String userName) {
-        Intent imageClickIntent = new Intent();
-        imageClickIntent.putExtra(CONST.USERNAME, userName);
-        imageClickIntent.putExtra(CONST.VOTE, v.getId());
-//        startActivityForResult(imageClickIntent, CONST.REQUEST_NEXT_IMAGE);
-    }
-
-    private void updateUi() {
+    private void updateUI() {
         questionText = currentPoll.getQuestion();
         questionTextTV.setText(questionText);
 
-        //image1 = currentPoll.getImage1Id();
-        //firstImg.setImageBitmap(image1);
+        image1 = firebaseHelper.getImage(imageId1);
+        firstImg.setImageBitmap(image1);
 
-        //image2 = currentPoll.getImage2Id();
-        //secondImg.setImageBitmap(image2);
+        image2 = firebaseHelper.getImage(imageId2);
+        secondImg.setImageBitmap(image2);
 
         lastQuestionResult.setProgress(num);
     }
