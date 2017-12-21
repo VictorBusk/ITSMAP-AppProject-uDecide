@@ -1,6 +1,5 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,10 +27,11 @@ public class DeciderActivity extends AppCompatActivity {
 
     private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
-    private TextView personNameTV, questionTextTV, myProgressTextTv;
+    private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
-    int num;
+    double formerImage1Votes, formerImage2Votes;
+    Poll currentPoll;
     String questionText, imageId1, imageId2;
     Bitmap bmp;
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -40,12 +41,12 @@ public class DeciderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_decider);
-        final Intent data = getIntent();
-        intitializeUIElements(data);
+        intitializeUIElements();
 
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
                 getPollData();
             }
         });
@@ -53,11 +54,10 @@ public class DeciderActivity extends AppCompatActivity {
         secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
                 getPollData();
             }
         });
-
-        num = 50;
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
@@ -68,34 +68,32 @@ public class DeciderActivity extends AppCompatActivity {
         getPollData();
     }
 
-    private void intitializeUIElements(Intent data) {
-        String personNameText = data.getStringExtra(CONST.PERSON_NAME);
-        personNameTV = findViewById(R.id.personTV);
-        personNameTV.setText(personNameText);
-
+    private void intitializeUIElements() {
         myProgressTextTv = findViewById(R.id.myTextProgress);
         questionTextTV = findViewById(R.id.questionTV);
 
         lastQuestionResult = findViewById(R.id.progressBar);
         lastQuestionResult.setMax(100);
-        lastQuestionResult.setProgress(50);
-
-        //to set text
-        myProgressTextTv.setText("50");
-
+        lastQuestionResult.setProgress(0);
 
         firstImg = findViewById(R.id.firstQuestionImg);
         secondImg = findViewById(R.id.secondQuestionImg);
     }
 
-    private void updateUI(Poll currentPoll) {
+    private void updateProgessBar() {
+        formerImage1Votes = currentPoll.getImage1Votes();
+        formerImage2Votes = currentPoll.getImage2Votes();
+
+        double votePercentage = (formerImage1Votes/(formerImage1Votes + formerImage2Votes))*100;
+        lastQuestionResult.setProgress((int) votePercentage);
+
+        //to set text
+        myProgressTextTv.setText((int) formerImage1Votes + "/" + (int) formerImage2Votes);
+    }
+
+    private void updateQuestionText(Poll currentPoll) {
         questionText = currentPoll.getQuestion();
         questionTextTV.setText(questionText);
-
-        imageId1 = currentPoll.getImage1ID();
-        imageId2 = currentPoll.getImage2ID();
-
-        lastQuestionResult.setProgress(num);
     }
 
     public void getPollData() {
@@ -105,8 +103,10 @@ public class DeciderActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot != null) {
                             Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
-                            Poll poll = documentSnapshot.toObject(Poll.class);
-                            updateUI(poll);
+                            currentPoll = documentSnapshot.toObject(Poll.class);
+                            updateQuestionText(currentPoll);
+                            imageId1 = currentPoll.getImage1ID();
+                            imageId2 = currentPoll.getImage2ID();
                             getImage(imageId1, firstImg);
                             getImage(imageId2, secondImg);
                         }
@@ -133,5 +133,21 @@ public class DeciderActivity extends AppCompatActivity {
                 System.out.println(getResources().getString(R.string.GenericImageError) + exception.toString());
             }
         });
+    }
+
+    //Todo: Consider race condition
+    //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
+    private void incrementImageVotes(String imageVoteName) {
+        int newVotes = 0;
+        if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) { newVotes = currentPoll.getImage1Votes()+1; }
+        else if (imageVoteName == CONST.IMAGE_2_VOTE_KEY) { newVotes = currentPoll.getImage2Votes()+1; }
+        pollsDocRef.update(imageVoteName, newVotes)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        updateProgessBar();
+                        Toast.makeText(DeciderActivity.this, "Updated succesfully", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
