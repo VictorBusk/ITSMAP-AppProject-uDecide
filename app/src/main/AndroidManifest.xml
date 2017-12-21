@@ -27,10 +27,10 @@
         <activity android:name=".SignInActivity" />
         <activity android:name=".SignOutActivity" />
 
-        <service
+<!--        <service
             android:name=".BackgroundService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"></service>-->
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
