@@ -47,15 +47,19 @@ public class FirebaseHelper extends AppCompatActivity {
     }
 
     public Bitmap getImage(String imageId) {
-        storageRef.child("images/" + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        storageRef.child("images/random.jpeg").getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 bmp = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+
+                System.out.println("Success1234");
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                System.out.println(getResources().getString(R.string.GenericImageError) + exception.toString());
+//                System.out.println(getResources().getString(R.string.GenericImageError) + exception.toString());
+                System.out.println("Fejl1234");
             }
         });
         return bmp;

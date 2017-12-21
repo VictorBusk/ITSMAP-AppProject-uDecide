@@ -2,19 +2,25 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
@@ -28,9 +34,9 @@ public class DeciderActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     int num;
     String questionText, imageId1, imageId2;
-    Poll currentPoll;
-    FirebaseHelper firebaseHelper = new FirebaseHelper();
-    Bitmap image1, image2;
+    Bitmap bmp;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +48,14 @@ public class DeciderActivity extends AppCompatActivity {
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUI();
+                getPollData();
             }
         });
 
         secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUI();
+                getPollData();
             }
         });
 
@@ -58,13 +64,10 @@ public class DeciderActivity extends AppCompatActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        final String currentPolls = "ZFxMhPLpNYfgcQUVHjcL";
+        final String currentPolls = "ZFxMhPLpNYfgcQUVHjcL"; //Jeppe jeg skal have poll fra user id filtering! :D
         CollectionReference pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
-//        CollectionReference userCollection = db.collection(CONST.DB_USERS_COLLECTION);
-
-        pollsDocRef = db.collection(CONST.DB_POLLS_COLLECTION).document(currentPolls);
-        currentPoll = firebaseHelper.getPollData(pollsDocRef);
-        updateUI();
+        pollsDocRef = pollsCollection.document(currentPolls);
+        getPollData();
     }
 
     private void intitializeUIElements(Intent data) {
@@ -82,16 +85,50 @@ public class DeciderActivity extends AppCompatActivity {
         secondImg = findViewById(R.id.secondQuestionImg);
     }
 
-    private void updateUI() {
+    private void updateUI(Poll currentPoll) {
         questionText = currentPoll.getQuestion();
         questionTextTV.setText(questionText);
 
-        image1 = firebaseHelper.getImage(imageId1);
-        firstImg.setImageBitmap(image1);
-
-        image2 = firebaseHelper.getImage(imageId2);
-        secondImg.setImageBitmap(image2);
+        imageId1 = currentPoll.getImage1ID();
+        imageId2 = currentPoll.getImage2ID();
 
         lastQuestionResult.setProgress(num);
+    }
+
+    public void getPollData() {
+        pollsDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot != null) {
+                            Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
+                            Poll poll = documentSnapshot.toObject(Poll.class);
+                            updateUI(poll);
+                            getImage(imageId1, firstImg);
+                            getImage(imageId2, secondImg);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(String.valueOf(this), "Unable to extract poll from Firebase", e);
+                    }
+                });
+    }
+
+    public void getImage(String imageId, final ImageView imageView) {
+        storageRef.child("images/" + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                bmp = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                imageView.setImageBitmap(bmp);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                System.out.println(getResources().getString(R.string.GenericImageError) + exception.toString());
+            }
+        });
     }
 }
