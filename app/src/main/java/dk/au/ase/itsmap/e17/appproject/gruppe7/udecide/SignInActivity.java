@@ -77,7 +77,7 @@ public class SignInActivity extends AppCompatActivity {
         if (user != null) {
             Log.i(TAG, "onStart:user:true");
             Toast.makeText(SignInActivity.this, "Welcomen back " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(SignInActivity.this, SignOutActivity.class));
+            startActivity(new Intent(SignInActivity.this, MainActivity.class));
         } else {
             Log.i(TAG, "onStart:user:false");
             Toast.makeText(SignInActivity.this, "You need to login", Toast.LENGTH_SHORT).show();
@@ -121,6 +121,8 @@ public class SignInActivity extends AppCompatActivity {
                                     Log.i(TAG, "signInWithCredential:success:profile:photoUrl " + profile.getPhotoUrl());
                                 }
                             }
+
+                            startActivity(new Intent(SignInActivity.this, MainActivity.class));
 
                         } else {
                             // If sign in fails, display a message to the user.

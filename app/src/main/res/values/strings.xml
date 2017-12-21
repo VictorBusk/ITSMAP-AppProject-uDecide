@@ -4,8 +4,8 @@
     <string name="facebook_application_id" translatable="false">1992025451036511</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1992025451036511</string>
     <string name="newPollNotify">Notification for every</string>
-    <string name="facebook_app_id">1992025451036511</string>
-    <string name="fb_login_protocol_scheme">fb1992025451036511</string>
+    <string name="facebook_app_id" translatable="false">1992025451036511</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1992025451036511</string>
     <string name="GenericImageError">Unable to find image</string>
     <string name="newPollCancel">Cancel</string>
     <string name="newPollSave">Save</string>
@@ -13,5 +13,18 @@
     <string name="newPollFriends">Friends</string>
     <string name="newPollQuestion">What to decide?</string>
     <string name="newPollPublicOrFreind">Show for</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="menu_myQuestions">My questions</string>
+    <string name="menu_newQuestion">New question</string>
+    <string name="menu_logout">Log out</string>
+    <string name="menu_decide">Decide</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

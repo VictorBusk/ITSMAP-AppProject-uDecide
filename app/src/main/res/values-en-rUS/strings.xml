@@ -9,5 +9,4 @@
     <string name="newPollPublic">Public</string>
     <string name="newPollFriends">Friends</string>
     <string name="newPollQuestion">What to decide?</string>
-    <string name="newPollPublicOrFreind">Show for</string>
 </resources>
