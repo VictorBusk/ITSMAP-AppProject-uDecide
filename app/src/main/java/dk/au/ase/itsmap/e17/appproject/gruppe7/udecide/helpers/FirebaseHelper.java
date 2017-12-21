@@ -16,6 +16,8 @@ import com.google.firebase.storage.StorageReference;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
+
 public class FirebaseHelper extends AppCompatActivity {
 
     Poll poll;
@@ -47,7 +49,7 @@ public class FirebaseHelper extends AppCompatActivity {
     }
 
     public Bitmap getImage(String imageId) {
-        storageRef.child("images/random.jpeg").getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        storageRef.child(STORAGE_IMAGES_PATH + "random.jpeg").getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 bmp = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
