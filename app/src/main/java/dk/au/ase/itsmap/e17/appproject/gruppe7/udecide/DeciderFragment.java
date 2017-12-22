@@ -72,9 +72,10 @@ public class DeciderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_decider, container, false);
-        intitializeUIElements();
 
+        intitializeUIElements();
         preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        saveLastPollTimestamp((long) 0);
 
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +164,7 @@ public class DeciderFragment extends Fragment {
         if (lastTimestamp != 0) {
             publicPolls = pollsCollection.whereGreaterThan(DB_DATE, lastDate).orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
         } else {
-            publicPolls = pollsCollection.orderBy(DB_DATE, Query.Direction.DESCENDING).limit(1);
+            publicPolls = pollsCollection.orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
         }
         final Set<String> stringSet = preferences.getStringSet(FACEBOOK_FRIENDS_IDS, null);
         for (String facebookFriendId : stringSet) {
