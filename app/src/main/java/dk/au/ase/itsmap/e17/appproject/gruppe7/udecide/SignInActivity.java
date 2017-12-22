@@ -76,11 +76,9 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             Log.i(TAG, "onStart:user:true");
-            Toast.makeText(SignInActivity.this, "Welcomen back " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(SignInActivity.this, MainActivity.class));
         } else {
             Log.i(TAG, "onStart:user:false");
-            Toast.makeText(SignInActivity.this, "You need to login", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,27 +101,7 @@ public class SignInActivity extends AppCompatActivity {
                             Log.i(TAG, "signInWithCredential:success");
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
-                            Toast.makeText(SignInActivity.this, "Authentication complete.", Toast.LENGTH_SHORT).show();
-
-                            if (user != null) {
-                                Log.i(TAG, "signInWithCredential:success:uid " + user.getUid());
-                                Log.i(TAG, "signInWithCredential:success:pid " + user.getProviderId());
-                                Log.i(TAG, "signInWithCredential:success:displayName " + user.getDisplayName());
-                                Log.i(TAG, "signInWithCredential:success:email " + user.getEmail());
-                                Log.i(TAG, "signInWithCredential:success:phone " + user.getPhoneNumber());
-                                Log.i(TAG, "signInWithCredential:success:photoUrl " + user.getPhotoUrl());
-                                for (UserInfo profile : user.getProviderData()) {
-                                    Log.i(TAG, "signInWithCredential:success:profile:uid " + profile.getUid());
-                                    Log.i(TAG, "signInWithCredential:success:profile:pid " + profile.getProviderId());
-                                    Log.i(TAG, "signInWithCredential:success:profile:displayName " + profile.getDisplayName());
-                                    Log.i(TAG, "signInWithCredential:success:profile:email " + profile.getEmail());
-                                    Log.i(TAG, "signInWithCredential:success:profile:phone " + profile.getPhoneNumber());
-                                    Log.i(TAG, "signInWithCredential:success:profile:photoUrl " + profile.getPhotoUrl());
-                                }
-                            }
-
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
-
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());

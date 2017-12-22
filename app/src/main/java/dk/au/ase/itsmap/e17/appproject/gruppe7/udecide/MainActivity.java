@@ -29,7 +29,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -61,10 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            Toast.makeText(MainActivity.this, "Welcomen back " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-            updateUserData(user);
+            updateUserData();
         } else {
-            Toast.makeText(MainActivity.this, "You need to login", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
     }
@@ -89,13 +86,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            Toast.makeText(MainActivity.this, "Welcomen back " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-            updateUserData(user);
+            updateUserData();
             BlankFragment fragment = new BlankFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
         } else {
-            Toast.makeText(MainActivity.this, "You need to login", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
     }
@@ -154,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentClass = NewQuestionFragment.class;
                 break;
             case R.id.nav_logout:
-                fragmentClass = DeciderFragment.class;
+                fragmentClass = BlankFragment.class;
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
                 startActivity(new Intent(MainActivity.this, SignInActivity.class));
@@ -184,9 +179,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void updateUserData(final FirebaseUser user) {
+    private void updateUserData() {
 
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
 
