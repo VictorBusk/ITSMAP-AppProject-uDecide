@@ -22,6 +22,5 @@ public class CONST {
     public static final String DB_USER_ID = "userID";
 
     public static final String FACEBOOK_ID = "facebookId";
-    public static final String FACEBOOK_NAME = "facebookName";
-    public static final String FACEBOOK_PICTURE = "facebookPicture";
+    public static final String FACEBOOK_FRIENDS_IDS = "facebookFriendsIds";
 }
