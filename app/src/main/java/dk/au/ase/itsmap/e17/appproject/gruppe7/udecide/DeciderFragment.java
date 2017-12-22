@@ -47,6 +47,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAG
 public class DeciderFragment extends Fragment {
 
     public static final String TAG = "Deciderfragment: ";
+    private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
@@ -58,7 +59,6 @@ public class DeciderFragment extends Fragment {
     CollectionReference pollsCollection;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
-    DocumentReference pollsDocRef;
     View view;
     public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
 
@@ -80,6 +80,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
+                getUnfilteredPollData();
             }
         });
 
@@ -87,6 +88,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
+                getUnfilteredPollData();
             }
         });
 
@@ -125,6 +127,30 @@ public class DeciderFragment extends Fragment {
     private void updateQuestionText(Poll currentPoll) {
         questionText = currentPoll.getQuestion();
         questionTextTV.setText(questionText);
+    }
+
+    public void getPollData() {
+        pollsDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot != null) {
+                            Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
+                            currentPoll = documentSnapshot.toObject(Poll.class);
+                            updateQuestionText(currentPoll);
+                            imageId1 = currentPoll.getImage1ID();
+                            imageId2 = currentPoll.getImage2ID();
+                            getImage(imageId1, firstImg);
+                            getImage(imageId2, secondImg);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(String.valueOf(this), "Unable to extract poll from Firebase", e);
+                    }
+                });
     }
 
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
