@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = new BlankFragment();
+        BlankFragment fragment = new BlankFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
     }
@@ -109,7 +109,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            FirebaseAuth.getInstance().signOut();
+            LoginManager.getInstance().logOut();
+            startActivity(new Intent(MainActivity.this, SignInActivity.class));
             return true;
         }
 
