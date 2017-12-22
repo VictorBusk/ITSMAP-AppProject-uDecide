@@ -19,12 +19,6 @@ import com.squareup.picasso.Picasso;
  */
 public class BlankFragment extends Fragment {
 
-
-    private View view;
-    private TextView tvHeadline, tvSubheadline;
-    private ImageView ivPhoto;
-    private final Fragment frag = this;
-
     public BlankFragment() {
         // Required empty public constructor
     }
@@ -34,20 +28,7 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view =  inflater.inflate(R.layout.fragment_blank, container, false);
-
-        ivPhoto = (ImageView) view.findViewById(R.id.iv_blankFragment);
-        tvHeadline = (TextView) view.findViewById(R.id.tv_blankFragment);
-        tvSubheadline = (TextView) view.findViewById(R.id.tv_blankFragment2);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        tvHeadline.setText(user.getDisplayName());
-        tvSubheadline.setText(user.getProviderData().get(1).getUid());
-
-        Picasso.with(getContext()).load(user.getPhotoUrl()).into(ivPhoto);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_blank, container, false);
     }
 
 }

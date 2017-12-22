@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,8 +27,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,21 +36,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.AppUser;
-
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USERS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_NAME;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_PHOTO_URL;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
-    private final AppUser appUser = new AppUser();
     private NavigationView navigationView;
 
     @Override
@@ -193,8 +186,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateUserData(final FirebaseUser user) {
 
-        appUser.setFirebaseId(user.getUid());
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
 
         GraphRequest meRequest = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -203,14 +197,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.i(TAG, "meRequest:JSONObject" + object);
                         Log.i(TAG, "meRequest:GraphResponse" + response);
-                        // TODO JS Application code for user
                         try {
-                            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString(FACEBOOK_ID, object.getString("id"));
-                            appUser.setFacebookId(object.getString("id"));
-                            appUser.setDisplayName(object.getString("name"));
-                            appUser.setPhotoUrl(object.getJSONObject("picture").getJSONObject("data").getString("url"));
+                            editor.putString(FACEBOOK_ID, object.getString("id")).apply();
+                            editor.putString(FACEBOOK_NAME, object.getString("name")).apply();
+                            editor.putString(FACEBOOK_PHOTO_URL, object.getJSONObject("picture").getJSONObject("data").getString("url")).apply();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -227,21 +217,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onCompleted(JSONArray objects, GraphResponse response) {
                         Log.i(TAG, "newMyFriendsRequest:JSONArray" + objects);
                         Log.i(TAG, "newMyFriendsRequest:GraphResponse" + response);
-                        // TODO JS Application code for users friends
-                        List<String> facebookFriendsIds = new ArrayList<>();
                         Set<String> set = new HashSet<String>();
-                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
                         for (int i = 0; i < objects.length(); i++) {
                             try {
                                 set.add(objects.getJSONObject(i).getString("id"));
-                                facebookFriendsIds.add(objects.getJSONObject(i).getString("id"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            editor.putStringSet(FACEBOOK_FRIENDS_IDS, set);
-                            appUser.setFacebookFriendsIds(facebookFriendsIds);
                         }
+                        editor.putStringSet(FACEBOOK_FRIENDS_IDS, set).apply();
                     }
                 });
 
@@ -250,34 +234,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
-                // TODO JS Application code for when the batch finishes
-                db.collection(DB_USERS_COLLECTION).document(user.getUid())
-                        .set(appUser)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot successfully written!");
-                                updateNavHeader(appUser);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error writing document", e);
-                            }
-                        });
+                updateNavHeader();
             }
         });
         batch.executeAsync();
     }
 
-    private void updateNavHeader(AppUser appUser) {
+    private void updateNavHeader() {
         ImageView ivProfilePhotoNav = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.iv_navHeader);
         TextView tvTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
 
-        Picasso.with(MainActivity.this).load(appUser.getPhotoUrl()).fit().into(ivProfilePhotoNav);
-        tvTitleNav.setText(appUser.getDisplayName());
-        tvSubTitleNav.setText(appUser.getFacebookId());
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
+        tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
+        tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
     }
 }
