@@ -4,7 +4,6 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,7 +53,7 @@ public class DeciderFragment extends Fragment {
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
-    double formerImage1Votes, formerImage2Votes;
+    double image1Votes, image2Votes;
     Poll currentPoll;
     String questionText, imageId1, imageId2;
     Bitmap bmp;
@@ -115,14 +116,14 @@ public class DeciderFragment extends Fragment {
     }
 
     private void updateProgessBar() {
-        formerImage1Votes = currentPoll.getImage1Votes();
-        formerImage2Votes = currentPoll.getImage2Votes();
+        image1Votes = currentPoll.getImage1Votes();
+        image2Votes = currentPoll.getImage2Votes();
 
-        double votePercentage = (formerImage1Votes / (formerImage1Votes + formerImage2Votes)) * 100;
+        double votePercentage = (image1Votes / (image1Votes + image2Votes)) * 100;
         lastQuestionResult.setProgress((int) votePercentage);
 
         //to set text
-        myProgressTextTv.setText((int) formerImage1Votes + "/" + (int) formerImage2Votes);
+        myProgressTextTv.setText((int) image1Votes + "/" + (int) image2Votes);
     }
 
     private void updateQuestionText(Poll currentPoll) {
@@ -157,9 +158,7 @@ public class DeciderFragment extends Fragment {
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
         Long lastTimestamp = preferences.getLong(LAST_POLL_TIMESTAMP, 0);
-        Log.i(TAG, "LastTimestamp: " + lastTimestamp);
         Date lastDate = new Date(lastTimestamp);
-        Log.i(TAG, "LastDate: " + lastDate);
         Query publicPolls;
         if (lastTimestamp != 0) {
             publicPolls = pollsCollection.whereGreaterThan(DB_DATE, lastDate).orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
@@ -186,6 +185,7 @@ public class DeciderFragment extends Fragment {
                                     getImage(imageId2, secondImg);
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     pollsDocRef = document.getReference();
+                                    updateProgessBar();
                                 } else {
                                     getUnfilteredPollData();
                                 }
@@ -197,19 +197,9 @@ public class DeciderFragment extends Fragment {
                 });
     }
 
+    // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
-        storageRef.child(STORAGE_IMAGES_PATH + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imageView.setImageBitmap(bmp);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                System.out.println(getResources().getString(R.string.GenericImageError) + exception.toString());
-            }
-        });
+        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).into(imageView);
     }
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
@@ -224,7 +214,6 @@ public class DeciderFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        updateProgessBar();
                     }
                 });
     }
@@ -233,6 +222,5 @@ public class DeciderFragment extends Fragment {
     protected void saveLastPollTimestamp(Long timestamp) { //Saved city name and refresh all data
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
-        Log.i(TAG, "SetTimestamp: " + timestamp);
     }
 }
