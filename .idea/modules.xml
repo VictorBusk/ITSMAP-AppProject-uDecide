@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ITSMAP-AppProject-uDecide.iml" filepath="$PROJECT_DIR$/ITSMAP-AppProject-uDecide.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/uDecide.iml" filepath="$PROJECT_DIR$/uDecide.iml" />
     </modules>
   </component>
 </project>

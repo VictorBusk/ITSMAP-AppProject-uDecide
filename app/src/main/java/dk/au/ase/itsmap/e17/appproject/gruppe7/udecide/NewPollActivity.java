@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static android.app.PendingIntent.getActivity;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 public class NewPollActivity extends AppCompatActivity {
