@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -39,6 +40,7 @@ import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 
@@ -75,6 +77,8 @@ public class DeciderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_decider, container, false);
         intitializeUIElements();
 
+        preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,14 +99,8 @@ public class DeciderFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
+        getUnfilteredPollData();
 
-        if(!preferences.getString(CONST.TIME, "").isEmpty()) { //Checking for data. If there is any then refresh, otherwise just skip.
-            try {
-//                getUnfilteredPollData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         return view;
     }
 
@@ -161,11 +159,10 @@ public class DeciderFragment extends Fragment {
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
         Long lastDate = preferences.getLong(CONST.TIME, 0);
-        Set<String> facebookFriendsIds = preferences.getStringSet(CONST.FACEBOOK_FRIENDS_IDS, null);
-        final List<String> friendList = new ArrayList<String>(facebookFriendsIds);
         Query publicPolls = pollsCollection.whereLessThan(CONST.DB_TIMESTAMP, lastDate).limit(1);
-        for(String facebookFriends : friendList) {
-            publicPolls.whereEqualTo(CONST.DB_USER_ID, facebookFriends);
+        final Set<String> stringSet = preferences.getStringSet(FACEBOOK_FRIENDS_IDS, null);
+        for (String facebookFriendId : stringSet) {
+            publicPolls.whereEqualTo(CONST.DB_USER_ID, facebookFriendId);
         }
         publicPolls.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -179,16 +176,15 @@ public class DeciderFragment extends Fragment {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                currentPoll = document.toObject(Poll.class);
-                                updateQuestionText(currentPoll);
-                                imageId1 = currentPoll.getImage1ID();
-                                imageId2 = currentPoll.getImage2ID();
-                                getImage(imageId1, firstImg);
-                                getImage(imageId2, secondImg);
-                                if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && friendList.contains(currentPoll.getUserID()))) {
-
+                                if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && stringSet.contains(currentPoll.getUserID()))) {
+                                    currentPoll = document.toObject(Poll.class);
+                                    updateQuestionText(currentPoll);
+                                    imageId1 = currentPoll.getImage1ID();
+                                    imageId2 = currentPoll.getImage2ID();
+                                    getImage(imageId1, firstImg);
+                                    getImage(imageId2, secondImg);
                                 } else {
-
+                                    getUnfilteredPollData();
                                 }
                             }
                         } else {

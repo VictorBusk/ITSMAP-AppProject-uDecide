@@ -35,7 +35,6 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 public class MyQuestionsFragment extends Fragment {
     //questionAdaptor CustomAdaptor;
     private QuestionAdaptor questionAdaptor;
-    private int rownr;
     private ListView lwQuestions;
     private View view;
 
@@ -52,7 +51,7 @@ public class MyQuestionsFragment extends Fragment {
         ArrayList<Poll> polls = getMyPolls(userID);
 
         questionAdaptor = new QuestionAdaptor(getContext(), polls);
-        lwQuestions = (ListView)view.findViewById(R.id.LVMyQuestions);
+        lwQuestions = view.findViewById(R.id.LVMyQuestions);
         lwQuestions.setAdapter(questionAdaptor);
 
         //LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(msgReceiver, new IntentFilter(CONST.UPDATE_EVENT));
