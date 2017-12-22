@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentClass = DeciderFragment.class;
                 break;
             case R.id.nav_myQuestions:
-                fragmentClass = MyQuestionsFragment.class;
+                fragmentClass = MyQuestionsFragment2.class;
                 break;
             case R.id.nav_newQuestion:
                 fragmentClass = NewQuestionFragment.class;

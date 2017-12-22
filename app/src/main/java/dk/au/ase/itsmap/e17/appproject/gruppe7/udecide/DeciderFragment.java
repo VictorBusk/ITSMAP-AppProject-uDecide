@@ -183,7 +183,6 @@ public class DeciderFragment extends Fragment {
                                     imageId2 = currentPoll.getImage2ID();
                                     getImage(imageId1, firstImg);
                                     getImage(imageId2, secondImg);
-                                    saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     pollsDocRef = document.getReference();
                                     updateProgessBar();
                                 } else {
@@ -214,6 +213,7 @@ public class DeciderFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        saveLastPollTimestamp(currentPoll.getDate().getTime());
                     }
                 });
     }
