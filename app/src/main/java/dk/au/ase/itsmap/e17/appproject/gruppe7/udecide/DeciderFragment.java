@@ -2,7 +2,6 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,17 +23,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
@@ -64,6 +58,7 @@ public class DeciderFragment extends Fragment {
     CollectionReference pollsCollection;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
+    DocumentReference pollsDocRef;
     View view;
     public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
 
@@ -85,7 +80,6 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
-                getPollData();
             }
         });
 
@@ -93,7 +87,6 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
-                getPollData();
             }
         });
 
@@ -165,6 +158,7 @@ public class DeciderFragment extends Fragment {
                                     getImage(imageId1, firstImg);
                                     getImage(imageId2, secondImg);
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
+                                    pollsDocRef = document.getReference();
                                 } else {
                                     getUnfilteredPollData();
                                 }
