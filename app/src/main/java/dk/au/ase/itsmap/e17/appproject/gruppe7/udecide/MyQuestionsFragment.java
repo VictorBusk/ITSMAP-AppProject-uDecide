@@ -35,22 +35,28 @@ public class MyQuestionsFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_questions, container, false);
         intiComponents();
-        // this.getContext skal måske være noget andet.
         LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(msgReceiver, new IntentFilter(CONST.UPDATE_EVENT));
+        testfunction(getContext());
         return view;
     }
     private BroadcastReceiver msgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String QuestionText = intent.getStringExtra(CONST.QUESTION_TEXT);
-            //skal måske omdøbe CONTST.VOTE.
             int VoteProgress = intent.getIntExtra(CONST.VOTE,0);
-            CustomAdaptor = new questionAdaptor(context, QuestionText, VoteProgress );
-            lwQuestions.setAdapter(CustomAdaptor);
+            //CustomAdaptor = new questionAdaptor(context, QuestionText, VoteProgress );
+            //CustomAdaptor.notifyDataSetChanged();
+            //lwQuestions.setAdapter(CustomAdaptor);
         }
     };
     private void intiComponents() {
-        lwQuestions = view.findViewById(R.id.LWMyQuestions);
+        lwQuestions = view.findViewById(R.id.LVMyQuestions);
+    }
+    private void testfunction(Context context)
+    {
+        CustomAdaptor = new questionAdaptor(getActivity(), "test", 20 );
+        CustomAdaptor.notifyDataSetChanged();
+        lwQuestions.setAdapter(CustomAdaptor);
     }
 
 }

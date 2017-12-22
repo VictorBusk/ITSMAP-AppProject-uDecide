@@ -14,11 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="36dp"
         android:adjustViewBounds="true"
         android:cropToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SBNotify"
         app:srcCompat="@drawable/common_full_open_on_phone" />
@@ -34,16 +33,17 @@
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toTopOf="@+id/BTNSaveDec"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/IWDecitionOne"
+        app:layout_constraintVertical_bias="0.456"
         app:srcCompat="@drawable/common_full_open_on_phone" />
 
     <Button
         android:id="@+id/BTNSaveDec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="148dp"
         android:text="@string/newPollSave"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -65,9 +65,10 @@
         android:layout_height="20dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="40dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
@@ -81,14 +82,14 @@
         app:layout_constraintBottom_toTopOf="@+id/TVNotificationDec"
         app:layout_constraintStart_toStartOf="@+id/etQuestion"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion"
-        app:layout_constraintVertical_bias="0.612" />
+        app:layout_constraintVertical_bias="0.328" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="80dp"
         android:layout_height="42dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginTop="20dp"
         android:checkedButton="@+id/RBFreinds"
         app:layout_constraintStart_toEndOf="@+id/TVForP"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion">
@@ -117,24 +118,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="@string/newPollQuestion"
         android:inputType="textPersonName"
-        android:text="@string/newPollQuestion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/BTNCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="@android:string/no"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/BTNSaveDec"
-        app:layout_constraintHorizontal_bias="0.043"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

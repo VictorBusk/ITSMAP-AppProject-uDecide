@@ -6,8 +6,8 @@
 
     <!-- TODO: Update blank fragment layout -->
     <ListView
-        android:id="@+id/LWMyQuestions"
+        android:id="@+id/LVMyQuestions"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

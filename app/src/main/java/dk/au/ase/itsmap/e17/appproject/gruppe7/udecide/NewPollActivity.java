@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -156,7 +157,7 @@ public class NewPollActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference polls = db.collection("polls");
 
-        String userID = "123";
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
         String image1ID = uploadImage(photo1);
         String image2ID = uploadImage(photo2);
 

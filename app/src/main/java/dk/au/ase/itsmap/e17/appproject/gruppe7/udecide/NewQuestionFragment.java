@@ -20,7 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,17 +36,13 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class NewQuestionFragment extends Fragment {
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
     private TextView tvPublicOrFriends, tvDecisionNotify;
     private ImageView ivFirstPic, ivSecondPic;
     private RadioButton rbPublic, rbFriends;
-    private Button btnSaveDec, btnCancel;
+    private Button btnSaveDec;
     private boolean publicOrFriends;
     private Bitmap photo1, photo2;
     private int notifyNumber = 0;
@@ -53,10 +52,19 @@ public class NewQuestionFragment extends Fragment {
     private String NotifyString;
     private final Fragment frag = this;
 
-    public NewQuestionFragment() {
-        // Required empty public constructor
-    }
+    public NewQuestionFragment() {}
 
+    private void InitComponents() {
+        etQuestion = view.findViewById(R.id.etQuestion);
+        tvPublicOrFriends = view.findViewById(R.id.TVForP);
+        tvDecisionNotify = view.findViewById(R.id.TVNotificationDec);
+        sbNotify = view.findViewById(R.id.SBNotify);
+        ivFirstPic = view.findViewById(R.id.IWDecitionOne);
+        ivSecondPic = view.findViewById(R.id.IWDecition2);
+        btnSaveDec = view.findViewById(R.id.BTNSaveDec);
+        rbFriends = view.findViewById(R.id.RBFreinds);
+        rbPublic = view.findViewById(R.id.RBPublic);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,9 +127,17 @@ public class NewQuestionFragment extends Fragment {
         btnSaveDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(photo1 == null || photo2 == null) {
+
+                String question = etQuestion.getText().toString();
+                if(question.trim().equals(""))
+                {
                     Toast.makeText(getContext().getApplicationContext(),
-                            "You need to select two images.", Toast.LENGTH_LONG).show();
+                            "You need to enter a question", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                else if(photo1 == null || photo2 == null) {
+                    Toast.makeText(getContext().getApplicationContext(),
+                            "You need to provide two images", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -129,64 +145,69 @@ public class NewQuestionFragment extends Fragment {
             }
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-            }
-        });
         return view;
     }
 
-    private void InitComponents() {
-        etQuestion = view.findViewById(R.id.etQuestion);
-        tvPublicOrFriends = view.findViewById(R.id.TVForP);
-        tvDecisionNotify = view.findViewById(R.id.TVNotificationDec);
-        sbNotify = view.findViewById(R.id.SBNotify);
-        ivFirstPic = view.findViewById(R.id.IWDecitionOne);
-        ivSecondPic = view.findViewById(R.id.IWDecition2);
-        btnSaveDec = view.findViewById(R.id.BTNSaveDec);
-        btnCancel = view.findViewById(R.id.BTNCancel);
-        rbFriends = view.findViewById(R.id.RBFreinds);
-        rbPublic = view.findViewById(R.id.RBPublic);
-
-    }
     //https://stackoverflow.com/questions/6147884/onactivityresult-is-not-being-called-in-fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == REQUEST_CAM1){
-                if (resultCode == getActivity().RESULT_OK ) {
-                    photo1 = (Bitmap) data.getExtras().get("data");
-                    ivFirstPic.setImageBitmap(photo1);
-                }
+        if (requestCode == REQUEST_CAM1) {
+            if (resultCode == getActivity().RESULT_OK ) {
+                photo1 = (Bitmap) data.getExtras().get("data");
+                ivFirstPic.setImageBitmap(photo1);
             }
-            if (requestCode == REQUEST_CAM2) {
-                if (resultCode == getActivity().RESULT_OK){
-                    photo2 = (Bitmap) data.getExtras().get("data");
-                    ivSecondPic.setImageBitmap(photo2);
-                }
+        }
+        if (requestCode == REQUEST_CAM2) {
+            if (resultCode == getActivity().RESULT_OK){
+                photo2 = (Bitmap) data.getExtras().get("data");
+                ivSecondPic.setImageBitmap(photo2);
             }
+        }
     }
-
 
     public void savePollToFirebase()
     {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference polls = db.collection("polls");
 
-        String userID = "123";
-        String image1ID = uploadImage(photo1);
-        String image2ID = uploadImage(photo2);
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
+        String image1ID = uploadImageToFirebase(photo1);
+        String image2ID = uploadImageToFirebase(photo2);
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
                 publicOrFriends, image1ID, image2ID, userID);
 
-        polls.add(poll);
+        polls.add(poll)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(getContext().getApplicationContext(),
+                                "Your poll is created", Toast.LENGTH_LONG).show();
+
+                        etQuestion.setText("");
+                        ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
+                        ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
+                        photo1 = null;
+                        photo2 = null;
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext().getApplicationContext(),
+                                "Something went wrong", Toast.LENGTH_LONG).show();
+                        Log.w(String.valueOf(this), "Error adding document", e);
+                    }
+                });
+
+
+        Toast.makeText(getContext().getApplicationContext(),
+                "Your poll is created", Toast.LENGTH_LONG).show();
     }
 
-    public String uploadImage(Bitmap bitmap)
+    public String uploadImageToFirebase(Bitmap bitmap)
     {
         UUID uuid = UUID.randomUUID();
         final String imageID = uuid.toString();
