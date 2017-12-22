@@ -18,6 +18,8 @@ public class CONST {
 
     public static final String DB_USERS_COLLECTION = "users";
     public static final String STORAGE_IMAGES_PATH = "images/";
+    public static final String DB_SHOW_FOR_PUBLIC = "showForPublic";
+    public static final String DB_USER_ID = "userID";
 
     public static final String FACEBOOK_ID = "facebookId";
     public static final String FACEBOOK_NAME = "facebookName";

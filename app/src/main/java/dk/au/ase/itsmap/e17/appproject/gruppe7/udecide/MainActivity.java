@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        BlankFragment fragment = new BlankFragment();
+        DeciderFragment fragment = new DeciderFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
     }
@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                             appUser.setFacebookFriendsIds(facebookFriendsIds);
                         }
-
                     }
                 });
 
