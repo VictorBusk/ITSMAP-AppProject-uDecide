@@ -40,7 +40,10 @@ import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_DATE;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.LAST_POLL_TIMESTAMP;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 
@@ -158,11 +161,19 @@ public class DeciderFragment extends Fragment {
 
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
-        Long lastDate = preferences.getLong(CONST.TIME, 0);
-        Query publicPolls = pollsCollection.whereLessThan(CONST.DB_TIMESTAMP, lastDate).limit(1);
+        Long lastTimestamp = preferences.getLong(LAST_POLL_TIMESTAMP, 0);
+        Log.i(TAG, "LastTimestamp: " + lastTimestamp);
+        Date lastDate = new Date(lastTimestamp);
+        Log.i(TAG, "LastDate: " + lastDate);
+        Query publicPolls;
+        if (lastTimestamp != 0) {
+            publicPolls = pollsCollection.whereGreaterThan(DB_DATE, lastDate).orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
+        } else {
+            publicPolls = pollsCollection.orderBy(DB_DATE, Query.Direction.DESCENDING).limit(1);
+        }
         final Set<String> stringSet = preferences.getStringSet(FACEBOOK_FRIENDS_IDS, null);
         for (String facebookFriendId : stringSet) {
-            publicPolls.whereEqualTo(CONST.DB_USER_ID, facebookFriendId);
+            publicPolls.whereEqualTo(DB_USER_ID, facebookFriendId);
         }
         publicPolls.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -171,18 +182,14 @@ public class DeciderFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
-                                try {
-                                    saveLastPollTimestamp();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                currentPoll = document.toObject(Poll.class);
                                 if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && stringSet.contains(currentPoll.getUserID()))) {
-                                    currentPoll = document.toObject(Poll.class);
                                     updateQuestionText(currentPoll);
                                     imageId1 = currentPoll.getImage1ID();
                                     imageId2 = currentPoll.getImage2ID();
                                     getImage(imageId1, firstImg);
                                     getImage(imageId2, secondImg);
+                                    saveLastPollTimestamp(currentPoll.getDate().getTime());
                                 } else {
                                     getUnfilteredPollData();
                                 }
@@ -227,11 +234,9 @@ public class DeciderFragment extends Fragment {
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
-    protected void saveLastPollTimestamp() throws Exception { //Saved city name and refresh all data
-        Long date = currentPoll.getDate().getTime();
-        Long newSharedPreferences = date; //Expand sharedpreference list
+    protected void saveLastPollTimestamp(Long timestamp) { //Saved city name and refresh all data
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(CONST.TIME, newSharedPreferences);
-        editor.apply();
+        editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
+        Log.i(TAG, "SetTimestamp: " + timestamp);
     }
 }
