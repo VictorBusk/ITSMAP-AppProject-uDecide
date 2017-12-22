@@ -14,13 +14,13 @@ import android.view.animation.AlphaAnimation;
 import android.support.design.widget.FloatingActionButton;
 import android.widget.ListView;
 
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adaptor.questionAdaptor;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adaptor.QuestionAdaptor;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import java.util.ArrayList;
 
 
 public class myQuestions extends AppCompatActivity {
-    questionAdaptor CustomAdaptor;
+    QuestionAdaptor questionAdaptor;
     private int rownr;
     private ListView lwQuestions;
 
@@ -38,8 +38,8 @@ public class myQuestions extends AppCompatActivity {
             String QuestionText = intent.getStringExtra(CONST.QUESTION_TEXT);
             //skal måske omdøbe CONTST.VOTE.
             int VoteProgress = intent.getIntExtra(CONST.VOTE,0);
-            CustomAdaptor = new questionAdaptor(context, QuestionText, VoteProgress );
-            lwQuestions.setAdapter(CustomAdaptor);
+            //CustomAdaptor = new questionAdaptor(context, QuestionText, VoteProgress );
+            //lwQuestions.setAdapter(CustomAdaptor,);
         }
     };
 

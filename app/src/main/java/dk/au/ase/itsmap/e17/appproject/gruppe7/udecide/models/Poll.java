@@ -1,6 +1,8 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
-public class Poll {
+import java.io.Serializable;
+
+public class Poll implements Serializable {
 
     private String question;
     private int notifyNumber;
