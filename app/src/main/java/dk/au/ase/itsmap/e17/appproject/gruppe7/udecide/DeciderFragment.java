@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -21,11 +23,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.sql.Time;
+import java.util.Date;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
@@ -51,6 +57,8 @@ public class DeciderFragment extends Fragment {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     View view;
+    public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
+
 
     public DeciderFragment() {
         // Required empty public constructor
@@ -97,7 +105,7 @@ public class DeciderFragment extends Fragment {
 
         lastQuestionResult = view.findViewById(R.id.progressBar);
         lastQuestionResult.setMax(100);
-        lastQuestionResult.setProgress(50);
+        lastQuestionResult.setProgress(0);
 
         firstImg = view.findViewById(R.id.firstQuestionImg);
         secondImg = view.findViewById(R.id.secondQuestionImg);
@@ -223,5 +231,14 @@ public class DeciderFragment extends Fragment {
                         updateProgessBar();
                     }
                 });
+    }
+
+    //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
+    protected void getLastPoll() throws Exception { //Saved city name and refresh all data
+        String date = currentPoll.getTimeStamp();
+        String newSharedPreferences = preferences.getString(CONST.TIME, "") + txtCity.getText().toString() + "!"; //Expand sharedpreference list
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(CONST.TIME, newSharedPreferences);
+        editor.apply();
     }
 }

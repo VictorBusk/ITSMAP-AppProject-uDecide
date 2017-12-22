@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
@@ -29,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Time;
 import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
@@ -155,14 +157,16 @@ public class NewPollActivity extends AppCompatActivity {
     public void savePollToFirebase()
     {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference polls = db.collection("polls");
+        CollectionReference polls = db.collection(CONST.DB_POLLS_COLLECTION);
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
         String image1ID = uploadImage(photo1);
         String image2ID = uploadImage(photo2);
+        FieldValue timeStamp = FieldValue.serverTimestamp();
+
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
-                publicOrFriends, image1ID, image2ID, userID);
+                publicOrFriends, image1ID, image2ID, userID, timeStamp);
 
         polls.add(poll);
     }

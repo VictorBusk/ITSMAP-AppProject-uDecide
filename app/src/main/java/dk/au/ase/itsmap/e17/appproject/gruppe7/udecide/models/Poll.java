@@ -1,5 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
+import com.google.firebase.firestore.FieldValue;
+
 public class Poll {
 
     private String question;
@@ -11,11 +13,12 @@ public class Poll {
     private int image1Votes;
     private int image2Votes;
     private String userID;
+    private FieldValue timeStamp;
 
     public Poll() {}
 
     public Poll(String question, int notifyNumber, boolean showForPublic,
-                String image1ID, String image2ID, String fbUserId)
+                String image1ID, String image2ID, String fbUserId, FieldValue timeStamp)
     {
         this.question = question;
         this.notifyNumber = notifyNumber;
@@ -26,6 +29,15 @@ public class Poll {
         this.image1Votes = 0;
         this.image2Votes = 0;
         this.archived = false;
+        this.timeStamp = timeStamp;
+    }
+
+    public FieldValue getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(FieldValue timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getQuestion() {
