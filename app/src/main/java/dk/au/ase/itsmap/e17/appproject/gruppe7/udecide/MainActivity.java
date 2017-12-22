@@ -1,6 +1,9 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -45,11 +48,20 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USERS_COL
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
+    private final AppUser appUser = new AppUser();
     private NavigationView navigationView;
 
     @Override
     protected void onStart() {
         super.onStart();
+
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            Toast.makeText(MainActivity.this, "You NEED a active internet connection to use this app!", Toast.LENGTH_SHORT).show();
+
+        }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -169,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateUserData(final FirebaseUser user) {
-        final AppUser appUser = new AppUser();
+
         appUser.setFirebaseId(user.getUid());
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
