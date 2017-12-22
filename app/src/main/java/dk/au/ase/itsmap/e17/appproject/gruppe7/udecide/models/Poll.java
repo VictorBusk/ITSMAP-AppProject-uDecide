@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
 public class Poll {
+
     private String question;
     private int notifyNumber;
     private boolean showForPublic;
@@ -11,11 +12,11 @@ public class Poll {
     private int image2Votes;
     private String userID;
 
-    public Poll() {
-    }
+    public Poll() {}
 
     public Poll(String question, int notifyNumber, boolean showForPublic,
-                String image1ID, String image2ID, String fbUserId) {
+                String image1ID, String image2ID, String fbUserId)
+    {
         this.question = question;
         this.notifyNumber = notifyNumber;
         this.showForPublic = showForPublic;
@@ -35,9 +36,7 @@ public class Poll {
         this.question = question;
     }
 
-    public int getNotifyNumber() {
-        return notifyNumber;
-    }
+    public int getNotifyNumber() { return notifyNumber; }
 
     public void setNotifyNumber(int notifyNumber) {
         this.notifyNumber = notifyNumber;
