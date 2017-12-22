@@ -50,6 +50,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAG
 public class DeciderFragment extends Fragment {
 
     public static final String TAG = "Deciderfragment: ";
+    private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
@@ -82,7 +83,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
-                getPollData();
+                getUnfilteredPollData();
             }
         });
 
@@ -90,7 +91,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
-                getPollData();
+                getUnfilteredPollData();
             }
         });
 
@@ -131,6 +132,30 @@ public class DeciderFragment extends Fragment {
         questionTextTV.setText(questionText);
     }
 
+    public void getPollData() {
+        pollsDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot != null) {
+                            Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
+                            currentPoll = documentSnapshot.toObject(Poll.class);
+                            updateQuestionText(currentPoll);
+                            imageId1 = currentPoll.getImage1ID();
+                            imageId2 = currentPoll.getImage2ID();
+                            getImage(imageId1, firstImg);
+                            getImage(imageId2, secondImg);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(String.valueOf(this), "Unable to extract poll from Firebase", e);
+                    }
+                });
+    }
+
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
         Long lastDate = preferences.getLong(CONST.TIME, 0);
@@ -152,8 +177,10 @@ public class DeciderFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                                 if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && stringSet.contains(currentPoll.getUserID()))) {
-                                    currentPoll = document.toObject(Poll.class);
-                                    updateQuestionText(currentPoll);
+                                    currentPoll = document.toObject(Poll.class); //Get document do class object
+                                    updateQuestionText(currentPoll); // Get question text
+
+                                    //Updating images
                                     imageId1 = currentPoll.getImage1ID();
                                     imageId2 = currentPoll.getImage2ID();
                                     getImage(imageId1, firstImg);
