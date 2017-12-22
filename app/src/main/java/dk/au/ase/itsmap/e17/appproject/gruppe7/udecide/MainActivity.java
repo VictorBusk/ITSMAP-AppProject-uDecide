@@ -1,6 +1,10 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -36,20 +40,31 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.AppUser;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USERS_COLLECTION;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MainActivity";
+    private final AppUser appUser = new AppUser();
     private NavigationView navigationView;
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            Toast.makeText(MainActivity.this, "You NEED a active internet connection to use this app!", Toast.LENGTH_SHORT).show();
+        }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -79,9 +94,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        BlankFragment fragment = new BlankFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Toast.makeText(MainActivity.this, "Welcomen back " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            updateUserData(user);
+            BlankFragment fragment = new BlankFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
+        } else {
+            Toast.makeText(MainActivity.this, "You need to login", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, SignInActivity.class));
+        }
     }
 
     @Override
@@ -169,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateUserData(final FirebaseUser user) {
-        final AppUser appUser = new AppUser();
+
         appUser.setFirebaseId(user.getUid());
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -182,6 +205,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.i(TAG, "meRequest:GraphResponse" + response);
                         // TODO JS Application code for user
                         try {
+                            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString(FACEBOOK_ID, object.getString("id"));
                             appUser.setFacebookId(object.getString("id"));
                             appUser.setDisplayName(object.getString("name"));
                             appUser.setPhotoUrl(object.getJSONObject("picture").getJSONObject("data").getString("url"));
@@ -203,15 +229,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.i(TAG, "newMyFriendsRequest:GraphResponse" + response);
                         // TODO JS Application code for users friends
                         List<String> facebookFriendsIds = new ArrayList<>();
+                        Set<String> set = new HashSet<String>();
+                        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
                         for (int i = 0; i < objects.length(); i++) {
                             try {
+                                set.add(objects.getJSONObject(i).getString("id"));
                                 facebookFriendsIds.add(objects.getJSONObject(i).getString("id"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            editor.putStringSet(FACEBOOK_FRIENDS_IDS, set);
                             appUser.setFacebookFriendsIds(facebookFriendsIds);
                         }
-
                     }
                 });
 
