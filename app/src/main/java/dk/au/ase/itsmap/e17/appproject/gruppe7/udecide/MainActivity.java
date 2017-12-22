@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            updateUserData();
             BlankFragment fragment = new BlankFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
@@ -244,5 +243,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
+
+        Log.i(TAG, "FacebookId: " + sharedPref.getString(FACEBOOK_ID, null));
+        Log.i(TAG, "FacebookName: " + sharedPref.getString(FACEBOOK_NAME, null));
+        Log.i(TAG, "FacebookPhotoUrl: " + sharedPref.getString(FACEBOOK_PHOTO_URL, null));
+        Set<String> stringSet = sharedPref.getStringSet(FACEBOOK_FRIENDS_IDS, null);
+        for (String facebookFriendId : stringSet) {
+            Log.i(TAG, "FacebookFriendId: "+ facebookFriendId);
+        }
     }
 }
