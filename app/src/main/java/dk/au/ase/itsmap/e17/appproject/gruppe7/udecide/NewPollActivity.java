@@ -162,7 +162,7 @@ public class NewPollActivity extends AppCompatActivity {
         String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
         String image1ID = uploadImage(photo1);
         String image2ID = uploadImage(photo2);
-        FieldValue timeStamp = FieldValue.serverTimestamp();
+        String timeStamp = String.valueOf(FieldValue.serverTimestamp());
 
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,

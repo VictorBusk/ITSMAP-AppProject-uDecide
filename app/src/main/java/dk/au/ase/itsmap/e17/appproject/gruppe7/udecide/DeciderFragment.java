@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +32,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
@@ -90,12 +94,15 @@ public class DeciderFragment extends Fragment {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-//        final String currentPolls = "ZFxMhPLpNYfgcQUVHjcL"; //Jeppe jeg skal have poll fra user id filtering! :D
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
-//        pollsDocRef = pollsCollection.document(currentPolls).;
-        pollsDocRef = pollsCollection.document();
-        getUnfilteredPollData();
 
+        if(!preferences.getString(CONST.TIME, "").isEmpty()) { //Checking for data. If there is any then refresh, otherwise just skip.
+            try {
+//                getUnfilteredPollData();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return view;
     }
 
@@ -153,7 +160,13 @@ public class DeciderFragment extends Fragment {
 
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
-        Query publicPolls = pollsCollection.whereEqualTo(CONST.DB_SHOW_FOR_PUBLIC, true).limit(1);
+        Long lastDate = preferences.getLong(CONST.TIME, 0);
+        Set<String> facebookFriendsIds = preferences.getStringSet(CONST.FACEBOOK_FRIENDS_IDS, null);
+        final List<String> friendList = new ArrayList<String>(facebookFriendsIds);
+        Query publicPolls = pollsCollection.whereLessThan(CONST.DB_TIMESTAMP, lastDate).limit(1);
+        for(String facebookFriends : friendList) {
+            publicPolls.whereEqualTo(CONST.DB_USER_ID, facebookFriends);
+        }
         publicPolls.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -161,12 +174,22 @@ public class DeciderFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
+                                try {
+                                    saveLastPollTimestamp();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 currentPoll = document.toObject(Poll.class);
                                 updateQuestionText(currentPoll);
                                 imageId1 = currentPoll.getImage1ID();
                                 imageId2 = currentPoll.getImage2ID();
                                 getImage(imageId1, firstImg);
                                 getImage(imageId2, secondImg);
+                                if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && friendList.contains(currentPoll.getUserID()))) {
+
+                                } else {
+
+                                }
                             }
                         } else {
                             Log.d(TAG, "Error getting unfiltered documents: ", task.getException());
@@ -174,31 +197,6 @@ public class DeciderFragment extends Fragment {
                     }
                 });
     }
-
-//    public void getFriendsOnlyPollData() {
-//        CollectionReference friendsCollection = db.collection(CONST.DB_USERS_COLLECTION);
-//        Query friendsPolls = friendsCollection.whereEqualTo(CONST.DB_USER_ID, friendUserID);
-//        Query publicPolls = pollsCollection.whereEqualTo(CONST.DB_SHOW_FOR_PUBLIC, true).limit(1);
-//        publicPolls.get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (DocumentSnapshot document : task.getResult()) {
-//                                Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
-//                                currentPoll = document.toObject(Poll.class);
-//                                updateQuestionText(currentPoll);
-//                                imageId1 = currentPoll.getImage1ID();
-//                                imageId2 = currentPoll.getImage2ID();
-//                                getImage(imageId1, firstImg);
-//                                getImage(imageId2, secondImg);
-//                            }
-//                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-//    }
 
     public void getImage(String imageId, final ImageView imageView) {
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -215,7 +213,6 @@ public class DeciderFragment extends Fragment {
         });
     }
 
-    //Todo: Consider race condition
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
     private void incrementImageVotes(String imageVoteName) {
         int newVotes = 0;
@@ -234,11 +231,11 @@ public class DeciderFragment extends Fragment {
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
-    protected void getLastPoll() throws Exception { //Saved city name and refresh all data
-        String date = currentPoll.getTimeStamp();
-        String newSharedPreferences = preferences.getString(CONST.TIME, "") + txtCity.getText().toString() + "!"; //Expand sharedpreference list
+    protected void saveLastPollTimestamp() throws Exception { //Saved city name and refresh all data
+        Long date = currentPoll.getDate().getTime();
+        Long newSharedPreferences = date; //Expand sharedpreference list
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(CONST.TIME, newSharedPreferences);
+        editor.putLong(CONST.TIME, newSharedPreferences);
         editor.apply();
     }
 }

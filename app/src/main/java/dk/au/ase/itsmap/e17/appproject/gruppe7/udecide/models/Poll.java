@@ -2,23 +2,26 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
 import com.google.firebase.firestore.FieldValue;
 
-public class Poll {
+import java.io.Serializable;
+import java.util.Date;
 
-    private String question;
-    private int notifyNumber;
-    private boolean showForPublic;
-    private boolean archived;
-    private String image1ID;
-    private String image2ID;
-    private int image1Votes;
-    private int image2Votes;
-    private String userID;
-    private FieldValue timeStamp;
+public class Poll implements Serializable {
+
+    public String question;
+    public int notifyNumber;
+    public boolean showForPublic;
+    public boolean archived;
+    public String image1ID;
+    public String image2ID;
+    public int image1Votes;
+    public int image2Votes;
+    public String userID;
+    public Date date;
 
     public Poll() {}
 
     public Poll(String question, int notifyNumber, boolean showForPublic,
-                String image1ID, String image2ID, String fbUserId, FieldValue timeStamp)
+                String image1ID, String image2ID, String fbUserId, Date date)
     {
         this.question = question;
         this.notifyNumber = notifyNumber;
@@ -29,15 +32,15 @@ public class Poll {
         this.image1Votes = 0;
         this.image2Votes = 0;
         this.archived = false;
-        this.timeStamp = timeStamp;
+        this.date = date;
     }
 
-    public FieldValue getTimeStamp() {
-        return timeStamp;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTimeStamp(FieldValue timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getQuestion() {

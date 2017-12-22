@@ -3,6 +3,8 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -24,12 +26,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
@@ -177,7 +181,7 @@ public class NewQuestionFragment extends Fragment {
         String image2ID = uploadImageToFirebase(photo2);
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
-                publicOrFriends, image1ID, image2ID, userID);
+                publicOrFriends, image1ID, image2ID, userID, new Date());
 
         polls.add(poll)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

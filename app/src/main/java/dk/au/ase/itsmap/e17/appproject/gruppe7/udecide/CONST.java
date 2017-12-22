@@ -16,6 +16,7 @@ public class CONST {
     public static final String IMAGE_1_VOTE_KEY = "image1Votes";
     public static final String IMAGE_2_VOTE_KEY = "image2Votes";
     public static final String TIME = "time";
+    public static final String DB_TIMESTAMP = "timeStamp";
 
     public static final String DB_USERS_COLLECTION = "users";
     public static final String STORAGE_IMAGES_PATH = "images/";
