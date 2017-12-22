@@ -3,11 +3,9 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adaptor.QuestionAdaptor;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
