@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adaptor;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class questionAdaptor extends BaseAdapter{
 
     @Override
     public View getView(int position, View customView, ViewGroup viewGroup) {
+        RecyclerView.ViewHolder holder;
         if (customView == null){
             LayoutInflater Inflator = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,6 +62,5 @@ public class questionAdaptor extends BaseAdapter{
         return null;
     }
 
-    public void clreadData() {}
 }
 

@@ -95,7 +95,9 @@ public class NewQuestionFragment extends Fragment {
                 publicOrFriends = false;
             }
         });
+
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+        //https://stackoverflow.com/questions/15408240/take-photo-from-camera-in-fragment
         ivFirstPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +124,7 @@ public class NewQuestionFragment extends Fragment {
                 if(photo1 == null || photo2 == null) {
                     Toast.makeText(getContext().getApplicationContext(),
                             "You need to select two images.", Toast.LENGTH_LONG).show();
-                    return;
+                    //return;
                 }
 
                savePollToFirebase();
@@ -152,6 +154,7 @@ public class NewQuestionFragment extends Fragment {
 
     }
     //https://stackoverflow.com/questions/6147884/onactivityresult-is-not-being-called-in-fragment
+    //https://stackoverflow.com/questions/15408240/take-photo-from-camera-in-fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
