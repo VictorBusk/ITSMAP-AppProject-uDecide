@@ -4,7 +4,7 @@
 
     <string name="newPollNotify">Notifikation for hver</string>
     <string name="GenericImageError">Unable to find image</string>
-    <string name="newPollCancel">Annuller</string>
+    <string name="newPollCancel">Annullér</string>
     <string name="newPollSave">Gem</string>
     <string name="newPollPublic">Offentlig</string>
     <string name="newPollFriends">Venner</string>
@@ -12,16 +12,16 @@
     <string name="newPollPublicOrFreind">Vis for</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="navigation_drawer_open">Åben navigationsmenuen</string>
+    <string name="navigation_drawer_open">Åbn navigationsmenuen</string>
     <string name="navigation_drawer_close">Luk navigationsmenuen</string>
 
     <string name="action_settings">Indstillinger</string>
-    <string name="menu_myQuestions">Mit spørgsmål</string>
+    <string name="menu_myQuestions">Mine spørgsmål</string>
     <string name="menu_newQuestion">Nyt spørgsmål</string>
     <string name="menu_logout">Log ud</string>
     <string name="menu_decide">Vælg</string>
 
     <string name="welcome_message">Velkommen til uDecide</string>
     <string name="welcome_info">Brug menuen til at navigere</string>
-    <string name="no_more_polls">Ikke flere spørsgmål</string>
+    <string name="no_more_polls">Ikke flere spørgsmål</string>
 </resources>
