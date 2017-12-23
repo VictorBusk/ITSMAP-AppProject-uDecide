@@ -15,6 +15,7 @@ android {
     }
     compileSdkVersion 26
     defaultConfig {
+        multiDexEnabled true
         applicationId "dk.au.ase.itsmap.e17.appproject.gruppe7.udecide"
         minSdkVersion 16
         targetSdkVersion 26
