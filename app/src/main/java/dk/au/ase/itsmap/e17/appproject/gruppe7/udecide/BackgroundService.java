@@ -1,11 +1,13 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -51,6 +53,8 @@ public class BackgroundService extends Service {
     private FirebaseFirestore db;
     private CollectionReference pollsRef;
     private Query myPoolsRef;
+    private String NotiID;
+    private int NotiManagerID;
     private ListenerRegistration registration;
     NotificationManager notificationManager;
     private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
@@ -111,11 +115,11 @@ public class BackgroundService extends Service {
         date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
         String localTime = date.format(currentLocalTime);
 
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getText(R.string.app_name))
-                .setContentText(getText(R.string.notification_description) + question + localTime)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .build();
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,NotiID);
+        mBuilder.setContentTitle(getText(R.string.app_name));
+        mBuilder.setContentText(getText(R.string.notification_description) + question + localTime);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NotiManagerID,mBuilder.build());
     }
 }
