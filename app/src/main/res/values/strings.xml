@@ -27,7 +27,7 @@
     <string name="welcome_message">Welcome to uDecide</string>
     <string name="welcome_info">Feel free to use the menu to navigate</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_more_polls">No more questions</string>
 
 </resources>

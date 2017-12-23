@@ -27,4 +27,6 @@
 
     <string name="welcome_message">Welcome to uDecide</string>
     <string name="welcome_info">Feel free to use the menu to navigate</string>
+    <string name="no_more_polls">No more questions</string>
+
 </resources>

@@ -14,8 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="40dp"
         android:adjustViewBounds="true"
+        android:background="@drawable/ic_menu_camera"
         android:cropToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +32,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
+        android:background="@drawable/ic_menu_camera"
         app:layout_constraintBottom_toTopOf="@+id/BTNSaveDec"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,25 +52,24 @@
 
     <SeekBar
         android:id="@+id/SBNotify"
-        android:layout_width="248dp"
-        android:layout_height="18dp"
+        android:layout_width="350dp"
+        android:layout_height="23dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TVNotificationDec" />
 
     <TextView
         android:id="@+id/TVNotificationDec"
-        android:layout_width="247dp"
-        android:layout_height="20dp"
+        android:layout_width="336dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="32dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
@@ -86,17 +87,20 @@
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="80dp"
+        android:layout_width="0dp"
         android:layout_height="42dp"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
         android:checkedButton="@+id/RBFreinds"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/TVForP"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion">
 
         <RadioButton
             android:id="@+id/RBFreinds"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="19dp"
             android:layout_weight="1"
             android:text="@string/newPollFriends" />
@@ -112,8 +116,8 @@
 
     <EditText
         android:id="@+id/etQuestion"
-        android:layout_width="249dp"
-        android:layout_height="42dp"
+        android:layout_width="335dp"
+        android:layout_height="39dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
