@@ -49,13 +49,9 @@ public class BackgroundService extends Service {
             Log.i(TAG, "onEvent");
             for(DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
-                String question = poll.getQuestion();
-                int notificationRate = poll.getNotifyNumber();
-                int image1Votes = poll.getImage1Votes();
-                int image2Votes = poll.getImage2Votes();
-                if (notificationRate != 0 && ((image1Votes + image2Votes) % notificationRate == 0)) {
-                    Log.i(TAG,"You got new votes! " + question + ": " + image1Votes + "/" + image2Votes);
-                    sendNotification(question, image1Votes, image2Votes);
+                if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
+                    Log.i(TAG,"You got new votes! " + poll.getQuestion() + ": " + poll.getImage1Votes() + "/" + poll.getImage2Votes());
+                    sendNotification(poll.getQuestion(), poll.getImage1Votes(), poll.getImage2Votes());
                 }
             }
         }
