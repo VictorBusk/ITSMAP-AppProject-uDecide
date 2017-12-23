@@ -53,13 +53,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
 
-        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
-            Toast.makeText(MainActivity.this, "You NEED a active internet connection to use this app!", Toast.LENGTH_SHORT).show();
-        }
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             updateUserData();
@@ -76,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -109,19 +101,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
@@ -135,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-
         Fragment fragment = null;
         Class fragmentClass;
 
@@ -166,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-        // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContent, fragment);
@@ -181,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
     private void startBackgroundService(){
         Log.i(TAG, "startBackgroundService");
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -189,8 +174,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(backgroundServiceIntent);
     }
 
+    // https://developers.facebook.com/docs/android/graph
     private void updateUserData() {
-
+        Log.i(TAG, "updateUserData");
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -200,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.i(TAG, "meRequest:JSONObject" + object);
-                        Log.i(TAG, "meRequest:GraphResponse" + response);
                         try {
                             editor.putString(FACEBOOK_ID, object.getString("id")).apply();
                             editor.putString(FACEBOOK_NAME, object.getString("name")).apply();
@@ -220,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onCompleted(JSONArray objects, GraphResponse response) {
                         Log.i(TAG, "newMyFriendsRequest:JSONArray" + objects);
-                        Log.i(TAG, "newMyFriendsRequest:GraphResponse" + response);
                         Set<String> set = new HashSet<String>();
                         for (int i = 0; i < objects.length(); i++) {
                             try {
@@ -244,7 +228,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         batch.executeAsync();
     }
 
+    // https://stackoverflow.com/questions/42243341/navigation-drawer-header-how-to-put-name-and-profile-pic-image-from-google-sign
     private void updateNavHeader() {
+        Log.i(TAG, "updateNavHeader");
         ImageView ivProfilePhotoNav = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.iv_navHeader);
         TextView tvTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
@@ -254,13 +240,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
-
-        Log.i(TAG, "FacebookId: " + sharedPref.getString(FACEBOOK_ID, null));
-        Log.i(TAG, "FacebookName: " + sharedPref.getString(FACEBOOK_NAME, null));
-        Log.i(TAG, "FacebookPhotoUrl: " + sharedPref.getString(FACEBOOK_PHOTO_URL, null));
-        Set<String> stringSet = sharedPref.getStringSet(FACEBOOK_FRIENDS_IDS, null);
-        for (String facebookFriendId : stringSet) {
-            Log.i(TAG, "FacebookFriendId: "+ facebookFriendId);
-        }
     }
 }
