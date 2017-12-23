@@ -29,5 +29,6 @@ public class CONST {
     public static final String FACEBOOK_FRIENDS_IDS = "facebookFriendsIds";
 
     public static final String SHARED_PREFERENCES = "SharedPreferences";
-    public static final int NOTIFY_ID = 2433;
+    public static final String NOTIFY_CHANNEL = "uDecide";
+    public static final int NOTIFY_ID = 5246;
 }
