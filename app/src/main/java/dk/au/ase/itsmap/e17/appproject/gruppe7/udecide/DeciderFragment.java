@@ -42,12 +42,9 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFE
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class DeciderFragment extends Fragment {
 
-    public static final String TAG = "Deciderfragment: ";
+    public static final String TAG = "DeciderFragment";
     private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
     private TextView questionTextTV, myProgressTextTv;
@@ -166,7 +163,6 @@ public class DeciderFragment extends Fragment {
                                     firstImg.setImageResource(0);
                                     secondImg.setImageResource(0);
                                     questionTextTV.setText(getString(R.string.no_more_polls));
-
                                 } else {
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     getPollData();
@@ -181,7 +177,7 @@ public class DeciderFragment extends Fragment {
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
-        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).into(imageView);
+        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).fitCenter().into(imageView);
     }
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
@@ -202,7 +198,7 @@ public class DeciderFragment extends Fragment {
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
-    protected void saveLastPollTimestamp(Long timestamp) { //Saved city name and refresh all data
+    protected void saveLastPollTimestamp(Long timestamp) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
     }

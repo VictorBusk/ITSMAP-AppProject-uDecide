@@ -35,6 +35,8 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.NOTIFY_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 
+// ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
+// https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android
 public class BackgroundService extends Service {
 
     private static final String TAG = "BackgroundService";
@@ -46,11 +48,9 @@ public class BackgroundService extends Service {
     private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-            Log.i(TAG, "onEvent");
             for(DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
                 if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
-                    Log.i(TAG,"You got new votes! " + poll.getQuestion() + ": " + poll.getImage1Votes() + "/" + poll.getImage2Votes());
                     sendNotification(poll.getQuestion(), poll.getImage1Votes(), poll.getImage2Votes());
                 }
             }
