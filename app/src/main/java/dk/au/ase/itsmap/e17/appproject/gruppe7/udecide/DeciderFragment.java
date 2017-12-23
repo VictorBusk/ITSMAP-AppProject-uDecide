@@ -81,7 +81,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
-                getUnfilteredPollData();
+                getPollData();
             }
         });
 
@@ -89,7 +89,7 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
-                getUnfilteredPollData();
+                getPollData();
             }
         });
 
@@ -97,7 +97,7 @@ public class DeciderFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
-        getUnfilteredPollData();
+        getPollData();
 
         return view;
     }
@@ -132,7 +132,7 @@ public class DeciderFragment extends Fragment {
 
 
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
-    public void getUnfilteredPollData() {
+    public void getPollData() {
         Long lastTimestamp = preferences.getLong(LAST_POLL_TIMESTAMP, 0);
         Date lastDate = new Date(lastTimestamp);
         final Query publicPolls;
@@ -165,7 +165,7 @@ public class DeciderFragment extends Fragment {
                                     // set end fragment
                                 } else {
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
-                                    getUnfilteredPollData();
+                                    getPollData();
                                 }
                             }
                         } else {
