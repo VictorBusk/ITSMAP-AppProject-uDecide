@@ -57,7 +57,6 @@ public class BackgroundService extends Service {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
             notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            Log.i(TAG, "onEvent");
             for(DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
                 if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
