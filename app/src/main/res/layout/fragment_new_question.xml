@@ -16,6 +16,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="36dp"
         android:adjustViewBounds="true"
+        android:background="@drawable/ic_menu_camera"
         android:cropToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,6 +32,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
+        android:background="@drawable/ic_menu_camera"
         app:layout_constraintBottom_toTopOf="@+id/BTNSaveDec"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,17 +88,19 @@
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="80dp"
+        android:layout_width="0dp"
         android:layout_height="42dp"
-        android:layout_marginStart="108dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="20dp"
         android:checkedButton="@+id/RBFreinds"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/TVForP"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion">
 
         <RadioButton
             android:id="@+id/RBFreinds"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="19dp"
             android:layout_weight="1"
             android:text="@string/newPollFriends" />

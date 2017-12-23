@@ -162,7 +162,10 @@ public class DeciderFragment extends Fragment {
                                     pollsDocRef = document.getReference();
                                     updateProgessBar();
                                 } else if (currentPoll == null) {
-                                    // set end fragment
+                                    firstImg.setImageResource(0);
+                                    secondImg.setImageResource(0);
+                                    questionTextTV.setText(getString(R.string.no_more_polls));
+
                                 } else {
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     getPollData();

@@ -23,4 +23,5 @@
 
     <string name="welcome_message">Velkommen til uDecide</string>
     <string name="welcome_info">Brug menuen til at navigere</string>
+    <string name="no_more_polls">Ikke flere spørsgmål</string>
 </resources>
