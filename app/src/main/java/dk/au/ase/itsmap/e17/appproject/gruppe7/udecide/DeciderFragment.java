@@ -38,6 +38,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_DATE;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.LAST_POLL_TIMESTAMP;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 
@@ -74,7 +75,7 @@ public class DeciderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_decider, container, false);
 
         intitializeUIElements();
-        preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         saveLastPollTimestamp((long) 0);
 
         firstImg.setOnClickListener(new View.OnClickListener() {

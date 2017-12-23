@@ -1,92 +1,111 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
-public class BackgroundService extends AsyncTask<String, Void, String> {
-    Context context;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_POLLS_COLLECTION;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.NOTIFY_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
+
+public class BackgroundService extends Service {
+
+    private static final String TAG = "BackgroundService";
+    private String facebookId;
+    private FirebaseFirestore db;
+    private CollectionReference pollsRef;
+    private Query myPoolsRef;
+    private ListenerRegistration registration;
+    private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            Log.i(TAG, "onEvent");
+            for(DocumentSnapshot documentSnapshot : documentSnapshots) {
+                Poll poll = documentSnapshot.toObject(Poll.class);
+                String question = poll.getQuestion();
+                int notificationRate = poll.getNotifyNumber();
+                int image1Votes = poll.getImage1Votes();
+                int image2Votes = poll.getImage2Votes();
+                if (notificationRate != 0 && ((image1Votes + image2Votes) % notificationRate == 0)) {
+                    Log.i(TAG,"You got new votes! " + question + ": " + image1Votes + "/" + image2Votes);
+                    sendNotification(question, image1Votes, image2Votes);
+                }
+            }
+        }
+    };
 
     public BackgroundService() {
     }
 
     @Override
-    protected String doInBackground(String... strings) {
-
-        String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
-        getMyPolls(userID);
-
-        return null;
-    }
-
-    private List<Poll> getMyPolls(String userID)
-    {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference polls = db.collection("polls");
-
-        final List<Poll> pollList = new ArrayList<Poll>();
-
-        polls.whereEqualTo("userID", userID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                pollList.add(document.toObject(Poll.class));
-                            }
-                        } else {
-                            Log.d(String.valueOf(this), "Error getting documents: ", task.getException());
-                        }
-
-                        sendPolls(pollList);
-                    }
-                });
-
-        return pollList;
+    public void onCreate() {
+        super.onCreate();
+        Log.i(TAG, "Background service onCreate");
+        db = FirebaseFirestore.getInstance();
+        pollsRef = db.collection(DB_POLLS_COLLECTION);
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
-        double voteProcentes = (20 / (8 + 1)) * 100;
-        //sendPolls("test", voteProcentes);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "Background service onStartCommand");
+
+        facebookId = intent.getStringExtra(FACEBOOK_ID);
+        myPoolsRef = pollsRef.whereEqualTo(DB_USER_ID, facebookId);
+        registration = myPoolsRef.addSnapshotListener(eventListener);
+
+        return START_STICKY;
     }
 
-    protected void onPostExecute(String questionText, double voteForImage1, double voteForImage2) {
-        double voteProcentes = (voteForImage1 / (voteForImage1 + voteForImage2)) * 100;
-        //sendPolls(questionText, voteProcentes);
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i(TAG, "Background service onBind");
+        return null;
     }
 
-    private void sendPolls(List<Poll> polls) {
-        Intent intent = new Intent(CONST.UPDATE_EVENT);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "Background service onDestroy");
+        registration.remove();
+    }
 
-        ArrayList<Object> objects = new ArrayList<Object>();
-
-        Bundle extra = new Bundle();
-        extra.putSerializable("objects", objects);
-        intent.putExtra("extra", (Serializable) polls);
-
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    private void sendNotification(String question, int vote1, int vote2){
+        Notification notification =
+                new Notification.Builder(this)
+                        .setContentTitle("uDecide")
+                        .setContentText("new votes: " + vote1 + "/" + vote2)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        //        .setContentIntent(pendingIntent)
+                        .setTicker(question)
+                        .build();
+        startForeground(NOTIFY_ID, notification);
     }
 }

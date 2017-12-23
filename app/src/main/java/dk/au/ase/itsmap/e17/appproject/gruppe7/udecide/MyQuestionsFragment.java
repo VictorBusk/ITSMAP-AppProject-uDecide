@@ -25,6 +25,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 
 
 /**
@@ -53,7 +54,7 @@ public class MyQuestionsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_questions, container, false);
         listView = (ListView) view.findViewById(R.id.myQuestionsList);
-        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         facebookId = sharedPref.getString(FACEBOOK_ID, null);
         db = FirebaseFirestore.getInstance();
         pollsRef = db.collection(DB_POLLS_COLLECTION);

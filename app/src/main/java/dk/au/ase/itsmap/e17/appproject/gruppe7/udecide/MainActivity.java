@@ -42,6 +42,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRI
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_NAME;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_PHOTO_URL;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
 
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             updateUserData();
+            startBackgroundService();
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
@@ -178,9 +181,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    private void startBackgroundService(){
+        Log.i(TAG, "startBackgroundService");
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
+        backgroundServiceIntent.putExtra(FACEBOOK_ID, sharedPref.getString(FACEBOOK_ID, null));
+        startService(backgroundServiceIntent);
+    }
+
     private void updateUserData() {
 
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
 
         GraphRequest meRequest = GraphRequest.newMeRequest(
@@ -238,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
 
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
