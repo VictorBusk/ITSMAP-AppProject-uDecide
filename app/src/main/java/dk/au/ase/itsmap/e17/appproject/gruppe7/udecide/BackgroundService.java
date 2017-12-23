@@ -111,12 +111,11 @@ public class BackgroundService extends Service {
         date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
         String localTime = date.format(currentLocalTime);
 
-        NotificationCompat.Builder notification =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getText(R.string.app_name))
-                        .setContentText(getText(R.string.notification_description) + question + localTime)
-                        .setSmallIcon(R.mipmap.ic_launcher);
-                notificationManager.notify(NOTIFY_ID, notification.build());
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getText(R.string.app_name))
+                .setContentText(getText(R.string.notification_description) + question + localTime)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build();
     }
 }
