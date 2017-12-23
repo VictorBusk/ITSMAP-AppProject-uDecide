@@ -75,7 +75,6 @@ public class DeciderFragment extends Fragment {
 
         intitializeUIElements();
         preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        saveLastPollTimestamp((long) 0);
 
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
