@@ -3,7 +3,10 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -30,6 +33,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,8 +46,10 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAG
 public class NewQuestionFragment extends Fragment {
     private int REQUEST_CAM1 = 301;
     private int REQUEST_CAM2 = 302;
+    private int REQUEST_STORAGE1 = 303;
+    private int REQUEST_STORAGE2 = 304;
     private TextView tvPublicOrFriends, tvDecisionNotify;
-    private ImageView ivFirstPic, ivSecondPic;
+    private ImageView ivFirstPic, ivSecondPic, ivFirstStorage, ivSecondStorage, ivFirstCamera, ivSecondCamera;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec;
     private boolean publicOrFriends;
@@ -51,6 +59,7 @@ public class NewQuestionFragment extends Fragment {
     private SeekBar sbNotify;
     private View view;
     private String NotifyString;
+    private Uri imageUri1, imageUri2;
     private final Fragment frag = this;
 
     public NewQuestionFragment() {}
@@ -61,10 +70,16 @@ public class NewQuestionFragment extends Fragment {
         tvDecisionNotify = view.findViewById(R.id.TVNotificationDec);
         sbNotify = view.findViewById(R.id.SBNotify);
         ivFirstPic = view.findViewById(R.id.IWDecitionOne);
-        ivSecondPic = view.findViewById(R.id.IWDecition2);
+        ivFirstPic.setVisibility(View.INVISIBLE);
+        ivSecondPic = view.findViewById(R.id.IWDecitionTwo);
+        ivSecondPic.setVisibility(View.INVISIBLE);
         btnSaveDec = view.findViewById(R.id.BTNSaveDec);
         rbFriends = view.findViewById(R.id.RBFreinds);
         rbPublic = view.findViewById(R.id.RBPublic);
+        ivFirstStorage = view.findViewById(R.id.IWGallery1);
+        ivSecondStorage = view.findViewById(R.id.IWGallery2);
+        ivFirstCamera = view.findViewById(R.id.IWCamera1);
+        ivSecondCamera = view.findViewById(R.id.IWCamera2);
     }
 
     @Override
@@ -105,7 +120,31 @@ public class NewQuestionFragment extends Fragment {
             }
         });
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
-        ivFirstPic.setOnClickListener(new View.OnClickListener() {
+        ivFirstStorage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent inStorage = new Intent(Intent.ACTION_PICK);
+                File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                String imageDirPath = imageDir.getPath();
+                Uri data = Uri.parse(imageDirPath);
+                inStorage.setDataAndType(data, "image/*");
+                frag.startActivityForResult(inStorage, REQUEST_STORAGE1);
+            }
+        });
+        ivSecondStorage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent inStorage = new Intent(Intent.ACTION_PICK);
+                File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                String imageDirPath = imageDir.getPath();
+                Uri data = Uri.parse(imageDirPath);
+                inStorage.setDataAndType(data, "image/*");
+                frag.startActivityForResult(inStorage, REQUEST_STORAGE2);
+            }
+        });
+
+        //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+        ivFirstCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -115,7 +154,7 @@ public class NewQuestionFragment extends Fragment {
             }
         });
 
-        ivSecondPic.setOnClickListener(new View.OnClickListener() {
+        ivSecondCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -158,12 +197,52 @@ public class NewQuestionFragment extends Fragment {
             if (resultCode == getActivity().RESULT_OK ) {
                 photo1 = (Bitmap) data.getExtras().get("data");
                 ivFirstPic.setImageBitmap(photo1);
+                ivFirstPic.setVisibility(View.VISIBLE);
+                ivFirstStorage.setVisibility(View.INVISIBLE);
+                ivFirstCamera.setVisibility(View.INVISIBLE);
             }
         }
         if (requestCode == REQUEST_CAM2) {
             if (resultCode == getActivity().RESULT_OK){
                 photo2 = (Bitmap) data.getExtras().get("data");
                 ivSecondPic.setImageBitmap(photo2);
+                ivSecondPic.setVisibility(View.VISIBLE);
+                ivSecondStorage.setVisibility(View.INVISIBLE);
+                ivSecondCamera.setVisibility(View.INVISIBLE);
+            }
+        }
+        if (requestCode == REQUEST_STORAGE1) {
+            if (resultCode == getActivity().RESULT_OK) {
+                imageUri1 = data.getData();
+                InputStream inputStream;
+
+                try {
+                    inputStream = getActivity().getContentResolver().openInputStream(imageUri1);
+                    photo1 = BitmapFactory.decodeStream(inputStream);
+                    ivFirstPic.setVisibility(View.VISIBLE);
+                    ivFirstStorage.setVisibility(View.INVISIBLE);
+                    ivFirstCamera.setVisibility(View.INVISIBLE);
+                    ivFirstPic.setImageBitmap(photo1);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (requestCode == REQUEST_STORAGE2) {
+            if (resultCode == getActivity().RESULT_OK) {
+                imageUri2 = data.getData();
+                InputStream inputStream;
+
+                try {
+                    inputStream = getActivity().getContentResolver().openInputStream(imageUri2);
+                    photo2 = BitmapFactory.decodeStream(inputStream);
+                    ivSecondPic.setVisibility(View.VISIBLE);
+                    ivSecondStorage.setVisibility(View.INVISIBLE);
+                    ivSecondCamera.setVisibility(View.INVISIBLE);
+                    ivFirstPic.setImageBitmap(photo2);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -22,14 +22,25 @@
     <ProgressBar
         android:id="@+id/QLWprogressBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="328dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:background="#ffff0000"
         android:max="100"
         android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvQuestion"
         app:layout_constraintTop_toBottomOf="@+id/tvQuestion"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvVotes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/QLWprogressBar"
+        app:layout_constraintEnd_toEndOf="@+id/QLWprogressBar"
+        app:layout_constraintStart_toStartOf="@+id/QLWprogressBar"
+        app:layout_constraintTop_toTopOf="@+id/QLWprogressBar" />
 
 </android.support.constraint.ConstraintLayout>

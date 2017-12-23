@@ -58,6 +58,8 @@ public class MyQuestionsAdapter extends BaseAdapter {
             TextView tvQuestion = view.findViewById(R.id.tvQuestion);
             tvQuestion.setText(poll.getQuestion());
             ProgressBar progressBar = view.findViewById(R.id.QLWprogressBar);
+            TextView tvVotes = view.findViewById(R.id.tvVotes);
+            tvVotes.setText(poll.getImage1Votes() + "/" + poll.getImage2Votes());
 
             if (poll.getImage1Votes() == 0 && poll.getImage2Votes() == 0) {
                 progressBar.setProgress((int) 50);
