@@ -182,6 +182,7 @@ public class DeciderFragment extends Fragment {
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
     private void incrementImageVotes(String imageVoteName) {
+        saveLastPollTimestamp(currentPoll.getDate().getTime());
         int newVotes = 0;
         if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
             newVotes = currentPoll.getImage1Votes() + 1;
@@ -192,7 +193,6 @@ public class DeciderFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        saveLastPollTimestamp(currentPoll.getDate().getTime());
                     }
                 });
     }
