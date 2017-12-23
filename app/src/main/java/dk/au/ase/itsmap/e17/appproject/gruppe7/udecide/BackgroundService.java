@@ -1,6 +1,7 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,8 +26,13 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
@@ -43,9 +50,11 @@ public class BackgroundService extends Service {
     private CollectionReference pollsRef;
     private Query myPoolsRef;
     private ListenerRegistration registration;
+    NotificationManager  notificationManager;
     private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             Log.i(TAG, "onEvent");
             for(DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
@@ -94,14 +103,19 @@ public class BackgroundService extends Service {
     }
 
     private void sendNotification(String question, int vote1, int vote2){
-        Notification notification =
-                new Notification.Builder(this)
-                        .setContentTitle("uDecide")
-                        .setContentText("new votes: " + vote1 + "/" + vote2)
+
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1:00"));
+        Date currentLocalTime = cal.getTime();
+        DateFormat date = new SimpleDateFormat("HH:mm:ss");
+        date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
+        String localTime = date.format(currentLocalTime);
+
+        NotificationCompat.Builder notification =
+                new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        //        .setContentIntent(pendingIntent)
-                        .setTicker(question)
-                        .build();
-        startForeground(NOTIFY_ID, notification);
+                        .setContentTitle(getText(R.string.app_name))
+                        .setContentText(getText(R.string.notification_description) + question + localTime)
+                        .setSmallIcon(R.mipmap.ic_launcher);
+                notificationManager.notify(NOTIFY_ID, notification.build());
     }
 }
