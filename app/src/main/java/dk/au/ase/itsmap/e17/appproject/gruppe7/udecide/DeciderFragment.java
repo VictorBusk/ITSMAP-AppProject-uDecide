@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -131,35 +130,12 @@ public class DeciderFragment extends Fragment {
         questionTextTV.setText(questionText);
     }
 
-    public void getPollData() {
-        pollsDocRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot != null) {
-                            Log.d(String.valueOf(this), "DocumentSnapshot data: " + documentSnapshot.getData());
-                            currentPoll = documentSnapshot.toObject(Poll.class);
-                            updateQuestionText(currentPoll);
-                            imageId1 = currentPoll.getImage1ID();
-                            imageId2 = currentPoll.getImage2ID();
-                            getImage(imageId1, firstImg);
-                            getImage(imageId2, secondImg);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(String.valueOf(this), "Unable to extract poll from Firebase", e);
-                    }
-                });
-    }
 
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void getUnfilteredPollData() {
         Long lastTimestamp = preferences.getLong(LAST_POLL_TIMESTAMP, 0);
         Date lastDate = new Date(lastTimestamp);
-        Query publicPolls;
+        final Query publicPolls;
         if (lastTimestamp != 0) {
             publicPolls = pollsCollection.whereGreaterThan(DB_DATE, lastDate).orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
         } else {
