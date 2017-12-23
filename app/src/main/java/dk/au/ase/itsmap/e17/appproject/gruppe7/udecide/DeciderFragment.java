@@ -185,7 +185,10 @@ public class DeciderFragment extends Fragment {
                                     getImage(imageId2, secondImg);
                                     pollsDocRef = document.getReference();
                                     updateProgessBar();
+                                } else if (currentPoll == null) {
+                                    // set end fragment
                                 } else {
+                                    saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     getUnfilteredPollData();
                                 }
                             }

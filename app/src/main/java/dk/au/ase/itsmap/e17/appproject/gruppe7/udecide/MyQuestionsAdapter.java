@@ -12,10 +12,6 @@ import java.util.List;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
-/**
- * Created by jeppestaerk on 23/12/2017.
- */
-
 public class MyQuestionsAdapter extends BaseAdapter {
 
     Context context;
