@@ -38,15 +38,13 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_DATE;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.LAST_POLL_TIMESTAMP;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class DeciderFragment extends Fragment {
 
-    public static final String TAG = "Deciderfragment: ";
+    public static final String TAG = "DeciderFragment";
     private DocumentReference pollsDocRef;
     private ImageView firstImg, secondImg;
     private TextView questionTextTV, myProgressTextTv;
@@ -74,7 +72,7 @@ public class DeciderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_decider, container, false);
 
         intitializeUIElements();
-        preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         saveLastPollTimestamp((long) 0);
 
         firstImg.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +163,6 @@ public class DeciderFragment extends Fragment {
                                     firstImg.setImageResource(0);
                                     secondImg.setImageResource(0);
                                     questionTextTV.setText(getString(R.string.no_more_polls));
-
                                 } else {
                                     saveLastPollTimestamp(currentPoll.getDate().getTime());
                                     getPollData();
@@ -180,11 +177,12 @@ public class DeciderFragment extends Fragment {
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
-        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).into(imageView);
+        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).fitCenter().into(imageView);
     }
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
     private void incrementImageVotes(String imageVoteName) {
+        saveLastPollTimestamp(currentPoll.getDate().getTime());
         int newVotes = 0;
         if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
             newVotes = currentPoll.getImage1Votes() + 1;
@@ -195,13 +193,12 @@ public class DeciderFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        saveLastPollTimestamp(currentPoll.getDate().getTime());
                     }
                 });
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
-    protected void saveLastPollTimestamp(Long timestamp) { //Saved city name and refresh all data
+    protected void saveLastPollTimestamp(Long timestamp) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
     }

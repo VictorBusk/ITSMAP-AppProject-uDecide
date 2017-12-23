@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 
+// https://firebase.google.com/docs/auth/android/facebook-login?authuser=0
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = "SignInActivity";
@@ -40,14 +41,11 @@ public class SignInActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
 
-        // If using in a fragment
-        // loginButton.setFragment(this);
         loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.i(TAG, "facebook:onSuccess:" + loginResult);
-                Toast.makeText(SignInActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
@@ -55,16 +53,12 @@ public class SignInActivity extends AppCompatActivity {
             public void onCancel() {
                 Log.i(TAG, "facebook:onCancel");
                 Toast.makeText(SignInActivity.this, "Authentication canceled.", Toast.LENGTH_SHORT).show();
-
-                // ...
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.i(TAG, "facebook:onError", error);
                 Toast.makeText(SignInActivity.this, "Authentication error.", Toast.LENGTH_SHORT).show();
-
-                // ...
             }
         });
     }
@@ -99,16 +93,12 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.i(TAG, "signInWithCredential:success");
-                            // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
-
-                        // ...
                     }
                 });
     }

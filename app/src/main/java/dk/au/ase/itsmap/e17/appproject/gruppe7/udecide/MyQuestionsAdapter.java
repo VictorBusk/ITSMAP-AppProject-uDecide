@@ -12,6 +12,7 @@ import java.util.List;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
+// ITSMAP L5: UI, Fragments and Support Libraries - DemoCode: FragmentRick
 public class MyQuestionsAdapter extends BaseAdapter {
 
     Context context;

@@ -25,11 +25,10 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+// ITSMAP L5: UI, Fragments and Support Libraries - DemoCode: FragmentRick
 public class MyQuestionsFragment extends Fragment {
 
     private static final String TAG = "MyQuestionsFragment";
@@ -50,10 +49,9 @@ public class MyQuestionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_questions, container, false);
         listView = (ListView) view.findViewById(R.id.myQuestionsList);
-        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         facebookId = sharedPref.getString(FACEBOOK_ID, null);
         db = FirebaseFirestore.getInstance();
         pollsRef = db.collection(DB_POLLS_COLLECTION);
@@ -62,6 +60,7 @@ public class MyQuestionsFragment extends Fragment {
         return view;
     }
 
+    // https://firebase.google.com/docs/firestore/query-data/order-limit-data?authuser=0
     private void updatePolls() {
         final FragmentActivity activity = getActivity();
         pollsRef.whereEqualTo(DB_USER_ID, facebookId).get()
