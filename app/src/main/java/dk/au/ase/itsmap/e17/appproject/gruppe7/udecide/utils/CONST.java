@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils;
 
 public class CONST {
     public static final int REQUEST_NEXT_IMAGE = 1;

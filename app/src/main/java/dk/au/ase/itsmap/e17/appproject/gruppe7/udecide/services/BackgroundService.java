@@ -1,23 +1,14 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,19 +19,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_POLLS_COLLECTION;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.NOTIFY_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
 
 // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
 // https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android

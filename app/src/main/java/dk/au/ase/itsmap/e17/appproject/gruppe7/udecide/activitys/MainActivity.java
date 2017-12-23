@@ -1,10 +1,8 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -20,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -38,11 +35,18 @@ import org.json.JSONObject;
 import java.util.HashSet;
 import java.util.Set;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_NAME;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_PHOTO_URL;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.DeciderFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.MyQuestionsFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.NewQuestionFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services.BackgroundService;
+
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_NAME;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_PHOTO_URL;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 

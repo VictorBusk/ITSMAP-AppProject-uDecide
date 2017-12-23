@@ -4,7 +4,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.DeciderFragment">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.DeciderFragment">
 
     <TextView
         android:id="@+id/personTV"
