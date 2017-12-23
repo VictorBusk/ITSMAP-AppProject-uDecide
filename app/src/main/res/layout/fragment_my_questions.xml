@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.MyQuestionsFragment">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.MyQuestionsFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

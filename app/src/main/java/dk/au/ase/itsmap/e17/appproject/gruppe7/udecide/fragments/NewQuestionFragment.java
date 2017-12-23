@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 
 
 import android.content.Intent;
@@ -39,9 +39,10 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 public class NewQuestionFragment extends Fragment {
     private int REQUEST_CAM1 = 301;

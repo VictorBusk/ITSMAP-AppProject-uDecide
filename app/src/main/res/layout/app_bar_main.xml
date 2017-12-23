@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.MainActivity">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

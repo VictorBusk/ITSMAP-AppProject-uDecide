@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 
 
 import android.content.Context;
@@ -32,14 +32,16 @@ import com.google.firebase.storage.StorageReference;
 import java.util.Date;
 import java.util.Set;
 
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_DATE;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.DB_USER_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.FACEBOOK_FRIENDS_IDS;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.LAST_POLL_TIMESTAMP;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.SHARED_PREFERENCES;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.CONST.STORAGE_IMAGES_PATH;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_DATE;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.LAST_POLL_TIMESTAMP;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 
 public class DeciderFragment extends Fragment {

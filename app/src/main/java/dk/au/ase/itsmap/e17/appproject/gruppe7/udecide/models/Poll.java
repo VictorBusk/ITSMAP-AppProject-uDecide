@@ -1,7 +1,5 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
-import com.google.firebase.firestore.FieldValue;
-
 import java.io.Serializable;
 import java.util.Date;
 
