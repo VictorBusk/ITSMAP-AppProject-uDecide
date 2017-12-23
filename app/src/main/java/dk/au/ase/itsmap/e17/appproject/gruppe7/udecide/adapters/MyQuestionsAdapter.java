@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 // ITSMAP L5: UI, Fragments and Support Libraries - DemoCode: FragmentRick
@@ -59,6 +60,8 @@ public class MyQuestionsAdapter extends BaseAdapter {
             TextView tvQuestion = view.findViewById(R.id.tvQuestion);
             tvQuestion.setText(poll.getQuestion());
             ProgressBar progressBar = view.findViewById(R.id.QLWprogressBar);
+            TextView tvVotes = view.findViewById(R.id.tvVotes);
+            tvVotes.setText(poll.getImage1Votes() + "/" + poll.getImage2Votes());
 
             if (poll.getImage1Votes() == 0 && poll.getImage2Votes() == 0) {
                 progressBar.setProgress((int) 50);

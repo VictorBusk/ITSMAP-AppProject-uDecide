@@ -4,7 +4,7 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.BlankFragment">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
