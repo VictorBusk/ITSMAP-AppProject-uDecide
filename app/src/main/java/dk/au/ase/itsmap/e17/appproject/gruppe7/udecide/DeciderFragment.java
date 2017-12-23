@@ -191,6 +191,7 @@ public class DeciderFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        saveLastPollTimestamp(currentPoll.getDate().getTime());
                     }
                 });
     }
