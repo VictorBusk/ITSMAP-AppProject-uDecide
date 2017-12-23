@@ -240,7 +240,7 @@ public class NewQuestionFragment extends Fragment {
                     ivSecondPic.setVisibility(View.VISIBLE);
                     ivSecondStorage.setVisibility(View.INVISIBLE);
                     ivSecondCamera.setVisibility(View.INVISIBLE);
-                    ivFirstPic.setImageBitmap(photo2);
+                    ivSecondPic.setImageBitmap(photo2);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
