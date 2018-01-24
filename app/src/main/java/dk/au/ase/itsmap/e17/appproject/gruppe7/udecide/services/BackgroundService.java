@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -22,9 +23,17 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities.MainActivity;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
@@ -46,7 +55,7 @@ public class BackgroundService extends Service {
             for (DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
                 if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
-                    sendNotification(poll.getQuestion(), poll.getImage1Votes(), poll.getImage2Votes());
+                    sendNotification(poll.getQuestion(), "New Votes", poll.getImage1Votes(), poll.getImage2Votes());
                 }
             }
         }
@@ -61,7 +70,8 @@ public class BackgroundService extends Service {
         Log.i(TAG, "Background service onCreate");
         db = FirebaseFirestore.getInstance();
         pollsRef = db.collection(DB_POLLS_COLLECTION);
-        sendNotification("- Eric Cartman", 0, 0);
+        sendNotification("Eric Cartman Says:", "How would you like to... Suck my balls!?", 0, 0);
+        new GetChuckNorrisJoke().execute();
     }
 
     @Override
@@ -89,21 +99,21 @@ public class BackgroundService extends Service {
         return null;
     }
 
-    private void sendNotification(String question, int vote1, int vote2) {
-        Log.i(TAG, "Background service sendNotification: " + question);
+    private void sendNotification(String title, String text, int vote1, int vote2) {
+        Log.i(TAG, "Background service sendNotification: " + title + " " + text);
 
         Intent mainIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, mainIntent, 0);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null);
-        builder.setContentTitle("How would you like to... Suck my balls!?")
+        builder.setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_compare_arrows_black_24dp)
                 .setContentIntent(pendingIntent)
-                .setContentText(question);
+                .setContentText(text);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(question, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
-            mChannel.setDescription("Screw you guys, I'm going home!");
+            NotificationChannel mChannel = new NotificationChannel(title, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            mChannel.setDescription(getString(R.string.app_name));
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.RED);
             mChannel.enableVibration(true);
@@ -118,7 +128,40 @@ public class BackgroundService extends Service {
                     .setAutoCancel(true);
         }
 
-        builder.setChannelId(question);
+        builder.setChannelId(title);
         mNotificationManager.notify(1, builder.build());
+    }
+
+    private class GetChuckNorrisJoke extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... strings) {
+
+            OkHttpClient client = new OkHttpClient();
+            String url = "https://api.chucknorris.io/jokes/random";
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            String joke = "";
+            try {
+                Response response = client.newCall(request).execute();
+                String body = response.body().string();
+                Log.i(TAG, "okHttp: " + body);
+                joke = new JSONObject(body).getString("value");
+                Log.i(TAG, "joke: " + joke);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return joke;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            sendNotification("Chuck Norris Fact:", s, 0, 0);
+        }
     }
 }
