@@ -52,7 +52,7 @@ public class MyQuestionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_questions, container, false);
-        listView = (ListView) view.findViewById(R.id.myQuestionsList);
+        listView = view.findViewById(R.id.myQuestionsList);
         sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         facebookId = sharedPref.getString(FACEBOOK_ID, null);
         db = FirebaseFirestore.getInstance();

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/tv_blankFragment"
         android:layout_width="wrap_content"
