@@ -40,7 +40,7 @@ public class SignInActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
 
         loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -71,7 +71,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             Log.i(TAG, "onStart:user:true");
-            startActivity(new Intent(SignInActivity.this, MainActivity.class));
+            finish();
         } else {
             Log.i(TAG, "onStart:user:false");
         }
@@ -94,8 +94,7 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.i(TAG, "signInWithCredential:success");
-                            FirebaseUser user = auth.getCurrentUser();
-                            startActivity(new Intent(SignInActivity.this, MainActivity.class));
+                            finish();
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
