@@ -49,7 +49,7 @@ public class NewQuestionFragment extends Fragment {
     private int REQUEST_CAM2 = 302;
     private int REQUEST_STORAGE1 = 303;
     private int REQUEST_STORAGE2 = 304;
-    private TextView tvPublicOrFriends, tvDecisionNotify;
+    private TextView tvDecisionNotify;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage, ivSecondStorage, ivFirstCamera, ivSecondCamera;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec;
@@ -67,7 +67,6 @@ public class NewQuestionFragment extends Fragment {
 
     private void InitComponents() {
         etQuestion = view.findViewById(R.id.etQuestion);
-        tvPublicOrFriends = view.findViewById(R.id.TVForP);
         tvDecisionNotify = view.findViewById(R.id.TVNotificationDec);
         sbNotify = view.findViewById(R.id.SBNotify);
         ivFirstPic = view.findViewById(R.id.IWDecitionOne);
@@ -267,11 +266,7 @@ public class NewQuestionFragment extends Fragment {
                         Toast.makeText(getContext().getApplicationContext(),
                                 "Your poll is created", Toast.LENGTH_LONG).show();
 
-                        etQuestion.setText("");
-                        ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
-                        ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
-                        photo1 = null;
-                        photo2 = null;
+                        resetUI();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -317,5 +312,20 @@ public class NewQuestionFragment extends Fragment {
         byte[] data = baos.toByteArray();
 
         return data;
+    }
+
+    private void resetUI(){
+        photo1 = null;
+        photo2 = null;
+        etQuestion.setText("");
+        sbNotify.setProgress(0);
+        ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
+        ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
+        ivFirstPic.setVisibility(View.INVISIBLE);
+        ivSecondPic.setVisibility(View.INVISIBLE);
+        ivFirstStorage.setVisibility(View.VISIBLE);
+        ivFirstCamera.setVisibility(View.VISIBLE);
+        ivSecondStorage.setVisibility(View.VISIBLE);
+        ivSecondCamera.setVisibility(View.VISIBLE);
     }
 }
