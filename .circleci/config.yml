@@ -1,22 +1,18 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/code
+    working_directory: $PROJECT_REPO
     docker:
       - image: circleci/android:api-27-alpha
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-#      - run:
-#          name: Download Keystore and Services Config
-#          command: |
-#            echo 'export KEYSTORE=$(pwd)/signing.jks' >> $BASH_ENV
-#            echo 'export GOOGLESERVICE=$(pwd)/google-services.json' >> $BASH_ENV
-#            chmod +x ./misc/download_keystore.sh
-#            chmod +x ./misc/download_google-services.sh
-#            bash ./misc/download_keystore.sh
-#            bash ./misc/download_google-services.sh
+      - run:
+          name: Download Keystore and Services Config
+          command: |
+            bash ./misc/download_keystore.sh
+            bash ./misc/download_google-services.sh
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 #      - run:
