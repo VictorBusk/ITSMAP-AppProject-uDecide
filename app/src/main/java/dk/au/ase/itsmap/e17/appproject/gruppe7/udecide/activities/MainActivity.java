@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             updateUserData();
-//            startBackgroundService();
+            startBackgroundService();
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
+            stopBackgroundService();
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
             return true;
         }
@@ -172,6 +173,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
         backgroundServiceIntent.putExtra(FACEBOOK_ID, sharedPref.getString(FACEBOOK_ID, null));
         startService(backgroundServiceIntent);
+    }
+
+    private void stopBackgroundService() {
+        Log.i(TAG, "stopBackgroundService");
+        Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
+        stopService(backgroundServiceIntent);
     }
 
     // https://developers.facebook.com/docs/android/graph

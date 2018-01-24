@@ -53,13 +53,12 @@ public class SignInActivity extends AppCompatActivity {
         ivSignIn = findViewById(R.id.ivSignIn);
 
         loginButton = findViewById(R.id.login_button);
-//
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                loading(true);
-//            }
-//        });
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loading(true);
+            }
+        });
         loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, facebookCallback());
     }
@@ -83,7 +82,6 @@ public class SignInActivity extends AppCompatActivity {
         Log.d(TAG, "onActivityResult:requestCode: " + requestCode);
         Log.d(TAG, "onActivityResult:resultCode: " + resultCode);
         Log.d(TAG, "onActivityResult:data: " + data);
-
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 

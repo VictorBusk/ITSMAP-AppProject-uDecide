@@ -56,7 +56,7 @@ public class DeciderFragment extends Fragment {
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
-    //When receiving a broadcast we will extract the values from the intent to create a new listview item
+
     private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -74,6 +74,7 @@ public class DeciderFragment extends Fragment {
             updateProgessBar();
         }
     };
+
     private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -82,9 +83,11 @@ public class DeciderFragment extends Fragment {
             questionTextTV.setText(getString(R.string.no_more_polls));
         }
     };
+
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
             saveLastPollTimestamp(currentPoll.getDate().getTime());
             loadPoll();
         }
