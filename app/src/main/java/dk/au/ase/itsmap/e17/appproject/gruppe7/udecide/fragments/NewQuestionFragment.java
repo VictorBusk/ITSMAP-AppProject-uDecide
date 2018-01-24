@@ -1,6 +1,5 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,8 +48,7 @@ public class NewQuestionFragment extends Fragment {
     private int REQUEST_CAM2 = 302;
     private int REQUEST_STORAGE1 = 303;
     private int REQUEST_STORAGE2 = 304;
-    private TextView tvPublicOrFriends, tvDecisionNotify;
-    private ImageView ivFirstPic, ivSecondPic, ivFirstStorage, ivSecondStorage, ivFirstCamera, ivSecondCamera;
+    private TextView tvDecisionNotify;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec;
     private boolean publicOrFriends;
@@ -62,12 +60,13 @@ public class NewQuestionFragment extends Fragment {
     private String NotifyString;
     private Uri imageUri1, imageUri2;
     private final Fragment frag = this;
+    private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
+            ivSecondStorage, ivFirstCamera, ivSecondCamera;
 
     public NewQuestionFragment() {}
 
     private void InitComponents() {
         etQuestion = view.findViewById(R.id.etQuestion);
-        tvPublicOrFriends = view.findViewById(R.id.TVForP);
         tvDecisionNotify = view.findViewById(R.id.TVNotificationDec);
         sbNotify = view.findViewById(R.id.SBNotify);
         ivFirstPic = view.findViewById(R.id.IWDecitionOne);
@@ -87,9 +86,9 @@ public class NewQuestionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_new_question, container, false);
         InitComponents();
+
         NotifyString = getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber);
         tvDecisionNotify.setText(NotifyString );
 
@@ -120,6 +119,7 @@ public class NewQuestionFragment extends Fragment {
                 publicOrFriends = false;
             }
         });
+
         //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstStorage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +144,6 @@ public class NewQuestionFragment extends Fragment {
             }
         });
 
-        //https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
         ivFirstCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,7 +203,7 @@ public class NewQuestionFragment extends Fragment {
             }
         }
         if (requestCode == REQUEST_CAM2) {
-            if (resultCode == getActivity().RESULT_OK){
+            if (resultCode == getActivity().RESULT_OK) {
                 photo2 = (Bitmap) data.getExtras().get("data");
                 ivSecondPic.setImageBitmap(photo2);
                 ivSecondPic.setVisibility(View.VISIBLE);
@@ -267,11 +266,7 @@ public class NewQuestionFragment extends Fragment {
                         Toast.makeText(getContext().getApplicationContext(),
                                 "Your poll is created", Toast.LENGTH_LONG).show();
 
-                        etQuestion.setText("");
-                        ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
-                        ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
-                        photo1 = null;
-                        photo2 = null;
+                        resetUI();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -279,10 +274,10 @@ public class NewQuestionFragment extends Fragment {
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext().getApplicationContext(),
                                 "Something went wrong", Toast.LENGTH_LONG).show();
+
                         Log.w(String.valueOf(this), "Error adding document", e);
                     }
                 });
-
 
         Toast.makeText(getContext().getApplicationContext(),
                 "Your poll is created", Toast.LENGTH_LONG).show();
@@ -317,5 +312,21 @@ public class NewQuestionFragment extends Fragment {
         byte[] data = baos.toByteArray();
 
         return data;
+    }
+
+    private void resetUI()
+    {
+        photo1 = null;
+        photo2 = null;
+        etQuestion.setText("");
+        sbNotify.setProgress(0);
+        ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
+        ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
+        ivFirstPic.setVisibility(View.INVISIBLE);
+        ivSecondPic.setVisibility(View.INVISIBLE);
+        ivFirstStorage.setVisibility(View.VISIBLE);
+        ivFirstCamera.setVisibility(View.VISIBLE);
+        ivSecondStorage.setVisibility(View.VISIBLE);
+        ivSecondCamera.setVisibility(View.VISIBLE);
     }
 }

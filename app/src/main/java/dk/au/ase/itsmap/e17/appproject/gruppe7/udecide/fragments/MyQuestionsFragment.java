@@ -1,6 +1,5 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,11 +28,8 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USE
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
-
-// ITSMAP L5: UI, Fragments and Support Libraries - DemoCode: FragmentRick
 public class MyQuestionsFragment extends Fragment {
 
-    private static final String TAG = "MyQuestionsFragment";
     private MyQuestionsAdapter adapter;
     private ListView listView;
     private List<Poll> polls = new ArrayList<Poll>();
@@ -43,41 +39,41 @@ public class MyQuestionsFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference pollsRef;
 
-    public MyQuestionsFragment() {
-        // Required empty public constructor
-    }
-
+    // Required empty public constructor
+    public MyQuestionsFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_my_questions, container, false);
         listView = view.findViewById(R.id.myQuestionsList);
         sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         facebookId = sharedPref.getString(FACEBOOK_ID, null);
         db = FirebaseFirestore.getInstance();
         pollsRef = db.collection(DB_POLLS_COLLECTION);
+
         updatePolls();
 
         return view;
     }
 
-    // https://firebase.google.com/docs/firestore/query-data/order-limit-data?authuser=0
     private void updatePolls() {
         final FragmentActivity activity = getActivity();
+
         pollsRef.whereEqualTo(DB_USER_ID, facebookId).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                for(DocumentSnapshot documentSnapshot : documentSnapshots) {
-                    polls.add(documentSnapshot.toObject(Poll.class));
-                }
-                if (polls != null) {
-                    adapter = new MyQuestionsAdapter(activity, polls);
-                    listView.setAdapter(adapter);
-                }
-            }
-        });
-    }
 
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                            polls.add(documentSnapshot.toObject(Poll.class));
+                        }
+
+                        if (polls != null) {
+                            adapter = new MyQuestionsAdapter(activity, polls);
+                            listView.setAdapter(adapter);
+                        }
+                    }
+                });
+    }
 }

@@ -53,24 +53,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
     private NavigationView navigationView;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            updateUserData();
-            startBackgroundService();
-        } else {
-            startActivity(new Intent(MainActivity.this, SignInActivity.class));
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navigationView = findViewById(R.id.nav_view);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -80,14 +68,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        BlankFragment fragment = new BlankFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            BlankFragment fragment = new BlankFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
+            updateUserData();
+            startBackgroundService();
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
@@ -129,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
         Class fragmentClass;
 
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_decide:
                 fragmentClass = DeciderFragment.class;
                 break;
@@ -170,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
-    private void startBackgroundService(){
+    private void startBackgroundService() {
         Log.i(TAG, "startBackgroundService");
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
@@ -181,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // https://developers.facebook.com/docs/android/graph
     private void updateUserData() {
         Log.i(TAG, "updateUserData");
+
         SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
 
@@ -235,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // https://stackoverflow.com/questions/42243341/navigation-drawer-header-how-to-put-name-and-profile-pic-image-from-google-sign
     private void updateNavHeader() {
         Log.i(TAG, "updateNavHeader");
+
         ImageView ivProfilePhotoNav = navigationView.getHeaderView(0).findViewById(R.id.iv_navHeader);
         TextView tvTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
