@@ -15,7 +15,7 @@
         android:layout_marginTop="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintHorizontal_bias="0.025"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:background="#ffff0000"
         android:max="100"
         android:visibility="visible"
@@ -36,7 +37,7 @@
     <TextView
         android:id="@+id/tvVotes"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/QLWprogressBar"
         app:layout_constraintEnd_toEndOf="@+id/QLWprogressBar"

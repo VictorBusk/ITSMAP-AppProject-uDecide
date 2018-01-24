@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/IWDecitionOne"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="185dp"
+        android:layout_height="145dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -24,16 +24,14 @@
 
     <ImageView
         android:id="@+id/IWDecitionTwo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="185dp"
+        android:layout_height="145dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/IWDecitionOne"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/IWDecitionOne"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+        app:layout_constraintTop_toTopOf="@+id/IWDecitionOne"
         app:srcCompat="@drawable/com_facebook_auth_dialog_background" />
 
     <Button
@@ -50,47 +48,40 @@
 
     <SeekBar
         android:id="@+id/SBNotify"
-        android:layout_width="248dp"
-        android:layout_height="18dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="274dp"
+        android:layout_height="20dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/TVForP"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/TVNotificationDec"
+        app:layout_constraintStart_toStartOf="@+id/etQuestion"
         app:layout_constraintTop_toBottomOf="@+id/TVNotificationDec" />
 
     <TextView
         android:id="@+id/TVNotificationDec"
-        android:layout_width="247dp"
+        android:layout_width="278dp"
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/etQuestion"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion" />
 
     <TextView
         android:id="@+id/TVForP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
         android:text="@string/newPollPublicOrFreind"
-        app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
-        app:layout_constraintStart_toEndOf="@+id/TVNotificationDec"
-        app:layout_constraintTop_toBottomOf="@+id/etQuestion" />
+        app:layout_constraintStart_toStartOf="@+id/IWDecitionTwo"
+        app:layout_constraintTop_toTopOf="@+id/TVNotificationDec" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="122dp"
         android:layout_height="55dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:checkedButton="@+id/RBFreinds"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.304"
         app:layout_constraintStart_toEndOf="@+id/TVForP"
         app:layout_constraintTop_toBottomOf="@+id/etQuestion">
 
@@ -112,8 +103,8 @@
 
     <EditText
         android:id="@+id/etQuestion"
-        android:layout_width="411dp"
-        android:layout_height="41dp"
+        android:layout_width="437dp"
+        android:layout_height="39dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -126,9 +117,10 @@
 
     <ImageView
         android:id="@+id/IWGallery1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/ic_menu_gallery"
@@ -139,8 +131,8 @@
 
     <ImageView
         android:id="@+id/IWGallery2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -153,30 +145,26 @@
 
     <ImageView
         android:id="@+id/IWCamera1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="82dp"
+        android:layout_height="62dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/ic_menu_camera"
         android:src="@drawable/ic_menu_camera"
-        app:layout_constraintBottom_toTopOf="@+id/IWGallery1"
-        app:layout_constraintEnd_toEndOf="@+id/IWGallery1"
+        app:layout_constraintEnd_toEndOf="@+id/IWDecitionOne"
         app:layout_constraintStart_toStartOf="@+id/IWDecitionOne"
         app:layout_constraintTop_toTopOf="@+id/IWDecitionOne" />
 
     <ImageView
         android:id="@+id/IWCamera2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="82dp"
+        android:layout_height="62dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/ic_menu_camera"
         android:src="@drawable/ic_menu_camera"
-        app:layout_constraintBottom_toTopOf="@+id/IWGallery2"
         app:layout_constraintEnd_toEndOf="@+id/IWDecitionTwo"
         app:layout_constraintStart_toStartOf="@+id/IWDecitionTwo"
         app:layout_constraintTop_toTopOf="@+id/IWDecitionTwo" />
