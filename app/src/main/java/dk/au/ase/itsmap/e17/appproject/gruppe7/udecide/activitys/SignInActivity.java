@@ -19,7 +19,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 
@@ -27,11 +26,10 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = "SignInActivity";
-    private String[] permissions = new String[] {"read_custom_friendlists", "public_profile", "user_friends", "email"};
+    private String[] permissions = new String[]{"read_custom_friendlists", "public_profile", "user_friends", "email"};
 
     private FirebaseAuth auth;
     private CallbackManager callbackManager;
-    private LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,67 +38,78 @@ public class SignInActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        LoginButton loginButton = findViewById(R.id.login_button);
 
         loginButton.setReadPermissions(permissions);
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.i(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                Log.i(TAG, "facebook:onCancel");
-                Toast.makeText(SignInActivity.this, "Authentication canceled.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.i(TAG, "facebook:onError", error);
-                Toast.makeText(SignInActivity.this, "Authentication error.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        loginButton.registerCallback(callbackManager, facebookCallback());
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            Log.i(TAG, "onStart:user:true");
-            startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Log.d(TAG, "onStart:user:true");
+            finish();
         } else {
-            Log.i(TAG, "onStart:user:false");
+            Log.d(TAG, "onStart:user:false");
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult:requestCode: " + requestCode);
+        Log.d(TAG, "onActivityResult:resultCode: " + resultCode);
+        Log.d(TAG, "onActivityResult:data: " + data);
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    private FacebookCallback<LoginResult> facebookCallback() {
+
+        return new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                Toast.makeText(SignInActivity.this, R.string.FacebookSignInAuthenticationCanceled, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                Toast.makeText(SignInActivity.this, R.string.FacebookSignInAuthenticationError, Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
     private void handleFacebookAccessToken(AccessToken token) {
-        Log.i(TAG, "handleFacebookAccessToken:" + token);
+        Log.d(TAG, "handleFacebookAccessToken: " + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.i(TAG, "signInWithCredential:success");
-                            FirebaseUser user = auth.getCurrentUser();
-                            startActivity(new Intent(SignInActivity.this, MainActivity.class));
-                        } else {
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        auth.signInWithCredential(credential).addOnCompleteListener(this, signInWithCredentialOnCompleteListener());
+    }
+
+    private OnCompleteListener<AuthResult> signInWithCredentialOnCompleteListener() {
+
+        return new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "signInWithCredential:success");
+                    finish();
+                } else {
+                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    Toast.makeText(SignInActivity.this, R.string.FirebaseSignInAuthenticationFailed, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 }

@@ -29,6 +29,9 @@
 
     <string name="no_more_polls">No more questions</string>
     <string name="notification_description">Vote alert triggered: </string>
+    <string name="FacebookSignInAuthenticationCanceled">Authentication canceled.</string>
+    <string name="FacebookSignInAuthenticationError">Authentication error.</string>
+    <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
 
 
 </resources>
