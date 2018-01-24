@@ -184,6 +184,7 @@ public class DeciderFragment extends Fragment {
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
             saveLastPollTimestamp(currentPoll.getDate().getTime());
             loadPoll();
         }

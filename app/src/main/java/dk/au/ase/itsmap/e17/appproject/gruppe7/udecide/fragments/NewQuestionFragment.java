@@ -40,14 +40,11 @@ import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 public class NewQuestionFragment extends Fragment {
-    private int REQUEST_CAM1 = 301;
-    private int REQUEST_CAM2 = 302;
-    private int REQUEST_STORAGE1 = 303;
-    private int REQUEST_STORAGE2 = 304;
     private TextView tvDecisionNotify;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec;
@@ -124,43 +121,30 @@ public class NewQuestionFragment extends Fragment {
         ivFirstStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent inStorage = new Intent(Intent.ACTION_PICK);
-                File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                String imageDirPath = imageDir.getPath();
-                Uri data = Uri.parse(imageDirPath);
-                inStorage.setDataAndType(data, "image/*");
-                frag.startActivityForResult(inStorage, REQUEST_STORAGE1);
+                handleStorageClick(CONST.REQUEST_STORAGE1);
+
             }
         });
         ivSecondStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent inStorage = new Intent(Intent.ACTION_PICK);
-                File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                String imageDirPath = imageDir.getPath();
-                Uri data = Uri.parse(imageDirPath);
-                inStorage.setDataAndType(data, "image/*");
-                frag.startActivityForResult(inStorage, REQUEST_STORAGE2);
+                handleStorageClick(CONST.REQUEST_STORAGE2);
             }
         });
 
         ivFirstCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (inCamera.resolveActivity(getActivity().getPackageManager()) != null) {
-                    frag.startActivityForResult(inCamera, REQUEST_CAM1);
-                }
+                handleCameraClick(CONST.REQUEST_CAM1);
+
             }
         });
 
         ivSecondCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (inCamera.resolveActivity(getActivity().getPackageManager()) != null) {
-                   frag.startActivityForResult(inCamera, REQUEST_CAM2);
-                }
+                handleCameraClick(CONST.REQUEST_CAM2);
+
             }
         });
 
@@ -188,12 +172,28 @@ public class NewQuestionFragment extends Fragment {
         return view;
     }
 
+    private void handleStorageClick(int requestCode) {
+        Intent inStorage = new Intent(Intent.ACTION_PICK);
+        File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String imageDirPath = imageDir.getPath();
+        Uri data = Uri.parse(imageDirPath);
+        inStorage.setDataAndType(data, "image/*");
+        frag.startActivityForResult(inStorage, requestCode);
+    }
+
+    private void handleCameraClick(int requestCode) {
+        Intent inCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (inCamera.resolveActivity(getActivity().getPackageManager()) != null) {
+            frag.startActivityForResult(inCamera, requestCode);
+        }
+    }
+
     //https://stackoverflow.com/questions/6147884/onactivityresult-is-not-being-called-in-fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CAM1) {
+        if (requestCode == CONST.REQUEST_CAM1) {
             if (resultCode == getActivity().RESULT_OK ) {
                 photo1 = (Bitmap) data.getExtras().get("data");
                 ivFirstPic.setImageBitmap(photo1);
@@ -202,7 +202,7 @@ public class NewQuestionFragment extends Fragment {
                 ivFirstCamera.setVisibility(View.INVISIBLE);
             }
         }
-        if (requestCode == REQUEST_CAM2) {
+        if (requestCode == CONST.REQUEST_CAM2) {
             if (resultCode == getActivity().RESULT_OK) {
                 photo2 = (Bitmap) data.getExtras().get("data");
                 ivSecondPic.setImageBitmap(photo2);
@@ -211,7 +211,7 @@ public class NewQuestionFragment extends Fragment {
                 ivSecondCamera.setVisibility(View.INVISIBLE);
             }
         }
-        if (requestCode == REQUEST_STORAGE1) {
+        if (requestCode == CONST.REQUEST_STORAGE1) {
             if (resultCode == getActivity().RESULT_OK) {
                 imageUri1 = data.getData();
                 InputStream inputStream;
@@ -228,7 +228,7 @@ public class NewQuestionFragment extends Fragment {
                 }
             }
         }
-        if (requestCode == REQUEST_STORAGE2) {
+        if (requestCode == CONST.REQUEST_STORAGE2) {
             if (resultCode == getActivity().RESULT_OK) {
                 imageUri2 = data.getData();
                 InputStream inputStream;
