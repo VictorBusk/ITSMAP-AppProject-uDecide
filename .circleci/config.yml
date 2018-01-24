@@ -14,7 +14,9 @@ jobs:
 #          command: echo 'export KEYSTORE=$(pwd)/signing.jks' >> $BASH_ENV
       - run:
           name: Download Keystore
-          command: ./misc/download_keystore.sh
+          command: |
+            chmod +x misc/download_keystore.sh
+            sh misc/download_keystore.sh
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 #      - run:
