@@ -1,11 +1,14 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -20,14 +23,21 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities.MainActivity;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_CHANNEL;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_ID;
 
 // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
 // https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android
@@ -42,10 +52,10 @@ public class BackgroundService extends Service {
     private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-            for(DocumentSnapshot documentSnapshot : documentSnapshots) {
+            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
                 Poll poll = documentSnapshot.toObject(Poll.class);
                 if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
-                    sendNotification(poll.getQuestion(), poll.getImage1Votes(), poll.getImage2Votes());
+                    sendNotification(poll.getQuestion(), "New Votes", poll.getImage1Votes(), poll.getImage2Votes());
                 }
             }
         }
@@ -60,11 +70,8 @@ public class BackgroundService extends Service {
         Log.i(TAG, "Background service onCreate");
         db = FirebaseFirestore.getInstance();
         pollsRef = db.collection(DB_POLLS_COLLECTION);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(NOTIFY_CHANNEL, NOTIFY_CHANNEL, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
+        sendNotification("Eric Cartman Says:", "How would you like to... Suck my balls!?", 0, 0);
+        new GetChuckNorrisJoke().execute();
     }
 
     @Override
@@ -78,13 +85,6 @@ public class BackgroundService extends Service {
         return START_STICKY;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.i(TAG, "Background service onBind");
-        return null;
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -92,15 +92,76 @@ public class BackgroundService extends Service {
         registration.remove();
     }
 
-    // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo2
-    // https://stackoverflow.com/questions/45395669/notifications-fail-to-display-in-android-oreo-api-26
-    private void sendNotification(String question, int vote1, int vote2){
-        Notification notification = new NotificationCompat.Builder(this, NOTIFY_CHANNEL)
-                        .setContentTitle(getText(R.string.app_name))
-                        .setContentText(getText(R.string.notification_description) + " " + question)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setChannelId(NOTIFY_CHANNEL)
-                        .build();
-        startForeground(NOTIFY_ID, notification);
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.i(TAG, "Background service onBind");
+        return null;
+    }
+
+    private void sendNotification(String title, String text, int vote1, int vote2) {
+        Log.i(TAG, "Background service sendNotification: " + title + " " + text);
+
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, mainIntent, 0);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null);
+        builder.setContentTitle(title)
+                .setSmallIcon(R.drawable.ic_compare_arrows_black_24dp)
+                .setContentIntent(pendingIntent)
+                .setContentText(text);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(title, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            mChannel.setDescription(getString(R.string.app_name));
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mNotificationManager.createNotificationChannel(mChannel);
+        } else {
+            builder.setContentTitle(getString(R.string.app_name))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setColor(Color.TRANSPARENT)
+                    .setVibrate(new long[]{100, 250})
+                    .setLights(Color.YELLOW, 500, 5000)
+                    .setAutoCancel(true);
+        }
+
+        builder.setChannelId(title);
+        mNotificationManager.notify(1, builder.build());
+    }
+
+    private class GetChuckNorrisJoke extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... strings) {
+
+            OkHttpClient client = new OkHttpClient();
+            String url = "https://api.chucknorris.io/jokes/random";
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            String joke = "";
+            try {
+                Response response = client.newCall(request).execute();
+                String body = response.body().string();
+                Log.i(TAG, "okHttp: " + body);
+                joke = new JSONObject(body).getString("value");
+                Log.i(TAG, "joke: " + joke);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return joke;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            sendNotification("Chuck Norris Fact:", s, 0, 0);
+        }
     }
 }
