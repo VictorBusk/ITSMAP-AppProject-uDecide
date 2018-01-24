@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys.SignInActivity">
+    tools:context="dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys.SignInActivity"
+    tools:layout_editor_absoluteY="25dp">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
@@ -13,24 +14,30 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_logo" />
+        tools:layout_editor_absoluteY="466dp" />
 
-    <ImageView
-        android:id="@+id/iv_logo"
+    <TextView
+        android:id="@+id/tvSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_udecide" />
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        tools:layout_editor_absoluteY="66dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/login_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/login_button"
+        app:srcCompat="@drawable/ic_compare_arrows_black_24dp"
+        tools:layout_editor_absoluteY="173dp" />
 
 </android.support.constraint.ConstraintLayout>
