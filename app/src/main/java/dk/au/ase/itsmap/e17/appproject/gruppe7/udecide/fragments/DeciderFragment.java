@@ -4,6 +4,7 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +27,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.Set;
@@ -47,11 +47,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAG
 public class DeciderFragment extends Fragment {
 
     public static final String TAG = "DeciderFragment";
-    private DocumentReference pollsDocRef;
-    private ImageView firstImg, secondImg;
-    private TextView questionTextTV, myProgressTextTv;
-    private ProgressBar lastQuestionResult;
-    private FirebaseFirestore db;
+    public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
     double image1Votes, image2Votes;
     Poll currentPoll;
     String questionText, imageId1, imageId2;
@@ -60,7 +56,11 @@ public class DeciderFragment extends Fragment {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     View view;
-    public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
+    private DocumentReference pollsDocRef;
+    private ImageView firstImg, secondImg;
+    private TextView questionTextTV, myProgressTextTv;
+    private ProgressBar lastQuestionResult;
+    private FirebaseFirestore db;
 
 
     public DeciderFragment() {
@@ -152,7 +152,7 @@ public class DeciderFragment extends Fragment {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
                                 currentPoll = document.toObject(Poll.class);
-                                if(currentPoll.showForPublic == true || (currentPoll.showForPublic == false && stringSet.contains(currentPoll.getUserID()))) {
+                                if (currentPoll.showForPublic == true || (currentPoll.showForPublic == false && stringSet.contains(currentPoll.getUserID()))) {
                                     updateQuestionText(currentPoll);
                                     imageId1 = currentPoll.getImage1ID();
                                     imageId2 = currentPoll.getImage2ID();
@@ -178,7 +178,12 @@ public class DeciderFragment extends Fragment {
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
-        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).fitCenter().into(imageView);
+        storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getContext()).load(uri).fit().centerInside().into(imageView);
+            }
+        });
     }
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
