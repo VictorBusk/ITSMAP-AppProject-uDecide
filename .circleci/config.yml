@@ -17,6 +17,8 @@ jobs:
             chmod +x ./misc/download_google-services.sh
             bash ./misc/download_keystore.sh
             bash ./misc/download_google-services.sh
+            ls ~/code
+            ls ~/code/misc
             mv ~/code/misc/signing.jks $ANDROID_KEY_STORE_FILE
             mv ~/code/misc/google-services.json $GOOGLE_SERVICE_FILE
       - restore_cache:
