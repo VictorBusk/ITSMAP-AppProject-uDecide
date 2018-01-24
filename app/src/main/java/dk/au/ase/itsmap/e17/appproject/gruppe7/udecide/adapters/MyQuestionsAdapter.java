@@ -13,7 +13,6 @@ import java.util.List;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
-// ITSMAP L5: UI, Fragments and Support Libraries - DemoCode: FragmentRick
 public class MyQuestionsAdapter extends BaseAdapter {
 
     Context context;
@@ -56,19 +55,20 @@ public class MyQuestionsAdapter extends BaseAdapter {
         }
 
         poll = polls.get(i);
-        if (poll != null) {
-            TextView tvQuestion = view.findViewById(R.id.tvQuestion);
-            tvQuestion.setText(poll.getQuestion());
-            ProgressBar progressBar = view.findViewById(R.id.QLWprogressBar);
-            TextView tvVotes = view.findViewById(R.id.tvVotes);
-            tvVotes.setText(poll.getImage1Votes() + "/" + poll.getImage2Votes());
 
-            if (poll.getImage1Votes() == 0 && poll.getImage2Votes() == 0) {
-                progressBar.setProgress((int) 50);
-            } else {
-                double votePercentage = ((double) poll.getImage1Votes() / ((double) poll.getImage1Votes() + (double) poll.getImage2Votes())) * 100;
-                progressBar.setProgress((int) votePercentage);
-            }
+        TextView tvQuestion = view.findViewById(R.id.tvQuestion);
+        tvQuestion.setText(poll.getQuestion());
+        ProgressBar progressBar = view.findViewById(R.id.QLWprogressBar);
+        TextView tvVotes = view.findViewById(R.id.tvVotes);
+        tvVotes.setText(poll.getImage1Votes() + "/" + poll.getImage2Votes());
+
+        if (poll.getImage1Votes() == 0 && poll.getImage2Votes() == 0) {
+            progressBar.setProgress(50);
+        } else {
+            double votePercentage = ((double) poll.getImage1Votes() /
+                    ((double) poll.getImage1Votes() + (double) poll.getImage2Votes())) * 100;
+
+            progressBar.setProgress((int) votePercentage);
         }
 
         return view;
