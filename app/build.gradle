@@ -4,23 +4,28 @@ plugins {
 
 apply plugin: 'com.android.application'
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
-def sonarProjectPropertiesFile = rootProject.file("sonar-project.properties")
-def sonarProjectProperties = new Properties()
-sonarProjectProperties.load(new FileInputStream(sonarProjectPropertiesFile))
 
 ext {
-    androidKeyStoreFile = keystoreProperties['storeFile'] ?: String.valueOf(System.getenv("ANDROID_KEY_STORE_FILE"))
-    androidKeyStorePassword = keystoreProperties['storePassword'] ?: System.getenv("ANDROID_KEY_STORE_PASSWORD")
-    androidKeyAlias = keystoreProperties['keyAlias'] ?: System.getenv("ANDROID_KEY_ALIAS")
-    androidKeyPassword = keystoreProperties['keyPassword'] ?: System.getenv("ANDROID_KEY_PASSWORD")
-
-    sonarHostUrl = sonarProjectProperties['sonar.host.url'] ?: System.getenv("SONAR_HOST_URL")
-    sonarOrganization = sonarProjectProperties['sonar.organization'] ?: System.getenv("SONAR_ORGANIZATION")
-    sonarLogin = sonarProjectProperties['sonar.login'] ?: System.getenv("SONAR_LOGIN")
+    if (System.getenv("CIRCLECI")) {
+        androidKeyStoreFile = String.valueOf(System.getenv("ANDROID_KEY_STORE_FILE"))
+        androidKeyStorePassword = System.getenv("ANDROID_KEY_STORE_PASSWORD")
+        androidKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
+        androidKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+        sonarHostUrl = System.getenv("SONAR_HOST_URL")
+        sonarOrganization = System.getenv("SONAR_ORGANIZATION")
+        sonarLogin = System.getenv("SONAR_LOGIN")
+    } else {
+        def keystorePropertiesFile = rootProject.file("keystore.properties")
+        def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        androidKeyStoreFile = keystoreProperties['storeFile']
+        androidKeyStorePassword = keystoreProperties['storePassword']
+        androidKeyAlias = keystoreProperties['keyAlias']
+        androidKeyPassword = keystoreProperties['keyPassword']
+        sonarHostUrl = System.getenv("SONAR_HOST_URL")
+        sonarOrganization = System.getenv("SONAR_ORGANIZATION")
+        sonarLogin = System.getenv("SONAR_LOGIN")
+    }
 }
 
 android {
