@@ -4,6 +4,9 @@ public class CONST {
     public static final String STORAGE_IMAGES_PATH = "images/";
     public static final String IMAGE_1_VOTE_KEY = "image1Votes";
     public static final String IMAGE_2_VOTE_KEY = "image2Votes";
+    public static final String IMAGE_1 = "image1";
+    public static final String IMAGE_2 = "image2";
+    public static final String CURRENT_POLL = "current_poll";
 
     public static final String DB_POLLS_COLLECTION = "polls";
     public static final String DB_DATE = "date";
@@ -19,4 +22,8 @@ public class CONST {
 
     public static final String NOTIFY_CHANNEL = "uDecide";
     public static final int NOTIFY_ID = 5246;
+    public static final String UPDATE_EVENT = "update-list-event";
+    public static final String NO_MORE_POLLS = "no-more-polls-event";
+    public static final String UPDATE_POLL = "update-poll-event";
+
 }

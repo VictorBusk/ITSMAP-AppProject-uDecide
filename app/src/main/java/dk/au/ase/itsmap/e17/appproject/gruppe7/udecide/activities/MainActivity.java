@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities;
 
 import android.content.Context;
 import android.content.Intent;

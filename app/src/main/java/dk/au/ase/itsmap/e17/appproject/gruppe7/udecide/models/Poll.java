@@ -1,9 +1,11 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class Poll implements Serializable {
+public class Poll implements Parcelable {
 
     public String question;
     public int notifyNumber;
@@ -15,6 +17,7 @@ public class Poll implements Serializable {
     public int image2Votes;
     public String userID;
     public Date date;
+    private int mData;
 
     public Poll() {}
 
@@ -109,5 +112,29 @@ public class Poll implements Serializable {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mData);
+    }
+
+    public static final Parcelable.Creator<Poll> CREATOR = new Parcelable.Creator<Poll>() {
+        public Poll createFromParcel(Parcel in) {
+            return new Poll(in);
+        }
+
+        public Poll[] newArray(int size) {
+            return new Poll[size];
+        }
+    };
+
+    private Poll(Parcel in) {
+        mData = in.readInt();
     }
 }
