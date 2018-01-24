@@ -11,12 +11,14 @@ jobs:
       - run:
           name: Download Keystore and Services Config
           command: |
-            echo 'export KEYSTORE=$ANDROID_KEY_STORE_FILE' >> $BASH_ENV
-            echo 'export GOOGLESERVICE=$GOOGLE_SERVICE_FILE' >> $BASH_ENV
+            echo 'export KEYSTORE=$(pwd)/signing.jks' >> $BASH_ENV
+            echo 'export GOOGLESERVICE=$(pwd)/google-services.json' >> $BASH_ENV
             chmod +x ./misc/download_keystore.sh
             chmod +x ./misc/download_google-services.sh
             bash ./misc/download_keystore.sh
             bash ./misc/download_google-services.sh
+            mv ./misc/signing.jks $ANDROID_KEY_STORE_FILE
+            mv ./misc/google-services.json $GOOGLE_SERVICE_FILE
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
