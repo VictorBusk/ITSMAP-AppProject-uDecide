@@ -10,23 +10,22 @@
 
     <ImageView
         android:id="@+id/IWDecitionOne"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="364dp"
+        android:layout_height="75dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/IWDecitionTwo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SBNotify"
         app:srcCompat="@drawable/com_facebook_auth_dialog_background" />
 
     <ImageView
         android:id="@+id/IWDecitionTwo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="364dp"
+        android:layout_height="75dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -52,8 +51,8 @@
 
     <SeekBar
         android:id="@+id/SBNotify"
-        android:layout_width="248dp"
-        android:layout_height="18dp"
+        android:layout_width="325dp"
+        android:layout_height="25dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -63,8 +62,8 @@
 
     <TextView
         android:id="@+id/TVNotificationDec"
-        android:layout_width="247dp"
-        android:layout_height="20dp"
+        android:layout_width="317dp"
+        android:layout_height="18dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
@@ -116,8 +115,8 @@
 
     <EditText
         android:id="@+id/etQuestion"
-        android:layout_width="249dp"
-        android:layout_height="42dp"
+        android:layout_width="317dp"
+        android:layout_height="39dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -131,8 +130,8 @@
 
     <ImageView
         android:id="@+id/IWGallery1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -140,30 +139,27 @@
         android:src="@drawable/ic_menu_gallery"
         app:layout_constraintBottom_toBottomOf="@+id/IWDecitionOne"
         app:layout_constraintEnd_toEndOf="@+id/IWDecitionOne"
-        app:layout_constraintHorizontal_bias="0.088"
         app:layout_constraintStart_toEndOf="@+id/IWCamera1"
-        app:layout_constraintTop_toBottomOf="@+id/SBNotify" />
+        app:layout_constraintTop_toTopOf="@+id/IWDecitionOne" />
 
     <ImageView
         android:id="@+id/IWGallery2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/ic_menu_gallery"
-        app:layout_constraintBottom_toTopOf="@+id/BTNSaveDec"
+        app:layout_constraintBottom_toBottomOf="@+id/IWDecitionTwo"
         app:layout_constraintEnd_toEndOf="@+id/IWDecitionTwo"
-        app:layout_constraintHorizontal_bias="0.17"
         app:layout_constraintStart_toEndOf="@+id/IWCamera2"
-        app:layout_constraintTop_toTopOf="@+id/IWDecitionTwo"
-        app:layout_constraintVertical_bias="0.494" />
+        app:layout_constraintTop_toTopOf="@+id/IWDecitionTwo" />
 
     <ImageView
         android:id="@+id/IWCamera1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="82dp"
+        android:layout_height="62dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -177,8 +173,8 @@
 
     <ImageView
         android:id="@+id/IWCamera2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="82dp"
+        android:layout_height="62dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -187,8 +183,8 @@
         android:src="@drawable/ic_menu_camera"
         app:layout_constraintBottom_toBottomOf="@+id/IWDecitionTwo"
         app:layout_constraintEnd_toStartOf="@+id/IWGallery2"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/IWDecitionTwo"
         app:layout_constraintTop_toTopOf="@+id/IWDecitionTwo"
-        app:layout_constraintVertical_bias="0.55" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>
