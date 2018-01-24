@@ -9,9 +9,9 @@ jobs:
       KEYSTORE: ${HOME}/${CIRCLE_PROJECT_REPONAME}/signing.keystore
     steps:
       - checkout
-#      - run:
-#          name: export KEYSTORE path
-#          command: echo 'export KEYSTORE=$(pwd)/signing.jks' >> $BASH_ENV
+      - run:
+          name: export KEYSTORE path
+          command: echo 'export KEYSTORE=${HOME}/${CIRCLE_PROJECT_REPONAME}/signing.keystore' >> $BASH_ENV
       - run:
           name: Download Keystore
           command: |
