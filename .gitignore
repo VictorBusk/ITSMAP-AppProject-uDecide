@@ -93,7 +93,7 @@ freeline_project_description.json
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-#!gradle-wrapper.jar
+!gradle-wrapper.jar
 
 # Cache of project
 .gradletasknamecache
@@ -207,3 +207,4 @@ fabric.properties
 /google-services.json
 /keystore.properties
 /sonar-project.properties
+!gradle-wrapper.jar
