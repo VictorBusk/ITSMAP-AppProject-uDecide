@@ -27,6 +27,7 @@ public class CONST {
     public static final String NO_MORE_POLLS = "no-more-polls-event";
     public static final String UPDATE_POLL = "update-poll-event";
     public static final String MYQUESTION_POLL = "myquestion-poll-event";
+    public static final String POLL_SAVED = "polls-saved-event";
 
     public static final int REQUEST_CAM1 = 301;
     public static final int REQUEST_CAM2 = 302;

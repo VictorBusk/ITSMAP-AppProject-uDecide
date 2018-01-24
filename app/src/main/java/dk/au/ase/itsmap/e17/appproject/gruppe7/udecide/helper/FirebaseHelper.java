@@ -2,13 +2,15 @@ package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -16,17 +18,21 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.adapters.MyQuestionsAdapter;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 //Inspired by own Assignment 2 solution
 public class FirebaseHelper {
@@ -104,6 +110,62 @@ public class FirebaseHelper {
         return currentPoll;
     }
 
+    public void savePollToFirebase(CollectionReference pollsCollection, Poll poll, final Context context)
+    {
+        pollsCollection.add(poll)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(context.getApplicationContext(),
+                                "Your poll is created", Toast.LENGTH_LONG).show();
+                        sendMessagePollSaved();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context.getApplicationContext(),
+                                "Something went wrong", Toast.LENGTH_LONG).show();
+
+                        Log.w(String.valueOf(this), "Error adding document", e);
+                    }
+                });
+
+        Toast.makeText(context.getApplicationContext(),
+                "Your poll is created", Toast.LENGTH_LONG).show();
+    }
+
+    public String uploadImageToFirebase(Bitmap bitmap)
+    {
+        UUID uuid = UUID.randomUUID();
+        final String imageID = uuid.toString();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imagesRef = storageRef.child(STORAGE_IMAGES_PATH + imageID);
+
+        byte[] data = convertBitmap(bitmap);
+
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.w(String.valueOf(this), "Unable to upload image to Firebase", exception);
+            }
+        });
+
+        return imageID;
+    }
+
+    private byte[] convertBitmap(Bitmap bitmap)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        return data;
+    }
+
     private void sendMessageNoMorePolls() {
         Log.d("No more polls", "Broadcasting message");
         Intent intent = new Intent(CONST.NO_MORE_POLLS);
@@ -134,6 +196,13 @@ public class FirebaseHelper {
         Log.d("My questions loaded", "Broadcasting message");
         Intent intent = new Intent(CONST.MYQUESTION_POLL);
         intent.putParcelableArrayListExtra(CONST.MY_POLLS, (ArrayList<? extends Parcelable>) polls);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    private void sendMessagePollSaved() {
+        Log.d("My questions loaded", "Broadcasting message");
+        Intent intent = new Intent(CONST.POLL_SAVED);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }

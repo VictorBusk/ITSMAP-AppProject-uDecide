@@ -57,42 +57,6 @@ public class DeciderFragment extends Fragment {
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
 
-    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
-            //Extract values from intent
-            String img1 = intent.getStringExtra(CONST.IMAGE_1);
-            String img2 = intent.getStringExtra(CONST.IMAGE_2);
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
-
-            updateQuestionText(currentPoll);
-            getImage(img1, firstImg);
-            getImage(img2, secondImg);
-            updateProgessBar();
-        }
-    };
-
-    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            firstImg.setImageResource(0);
-            secondImg.setImageResource(0);
-            questionTextTV.setText(getString(R.string.no_more_polls));
-        }
-    };
-
-    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
-            saveLastPollTimestamp(currentPoll.getDate().getTime());
-            loadPoll();
-        }
-    };
-
     public DeciderFragment() {
         // Required empty public constructor
     }
@@ -192,4 +156,40 @@ public class DeciderFragment extends Fragment {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
     }
+
+    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            //Extract values from intent
+            String img1 = intent.getStringExtra(CONST.IMAGE_1);
+            String img2 = intent.getStringExtra(CONST.IMAGE_2);
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+
+            updateQuestionText(currentPoll);
+            getImage(img1, firstImg);
+            getImage(img2, secondImg);
+            updateProgessBar();
+        }
+    };
+
+    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            firstImg.setImageResource(0);
+            secondImg.setImageResource(0);
+            questionTextTV.setText(getString(R.string.no_more_polls));
+        }
+    };
+
+    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+            saveLastPollTimestamp(currentPoll.getDate().getTime());
+            loadPoll();
+        }
+    };
 }
