@@ -1,15 +1,17 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,28 +23,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.UUID;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 
 public class NewQuestionFragment extends Fragment {
     private TextView tvDecisionNotify;
@@ -59,6 +54,7 @@ public class NewQuestionFragment extends Fragment {
     private final Fragment frag = this;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
             ivSecondStorage, ivFirstCamera, ivSecondCamera;
+    FirebaseHelper firebaseHelper;
 
     public NewQuestionFragment() {}
 
@@ -85,6 +81,9 @@ public class NewQuestionFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_new_question, container, false);
         InitComponents();
+        firebaseHelper = new FirebaseHelper(getContext());
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(UpdatePollReceiver, new IntentFilter(CONST.POLL_SAVED)); //Listen for a local broadcast with this action
+
 
         NotifyString = getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber);
         tvDecisionNotify.setText(NotifyString );
@@ -164,8 +163,7 @@ public class NewQuestionFragment extends Fragment {
                             "You need to provide two images", Toast.LENGTH_LONG).show();
                     return;
                 }
-
-               savePollToFirebase();
+                savePollData();
             }
         });
 
@@ -247,71 +245,17 @@ public class NewQuestionFragment extends Fragment {
         }
     }
 
-    public void savePollToFirebase()
-    {
+    private void savePollData() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference polls = db.collection("polls");
+        CollectionReference pollsCollection = db.collection(DB_POLLS_COLLECTION);
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getUid();
-        String image1ID = uploadImageToFirebase(photo1);
-        String image2ID = uploadImageToFirebase(photo2);
+        String image1ID = firebaseHelper.uploadImageToFirebase(photo1);
+        String image2ID = firebaseHelper.uploadImageToFirebase(photo2);
 
         Poll poll = new Poll(etQuestion.getText().toString(), notifyNumber,
                 publicOrFriends, image1ID, image2ID, userID, new Date());
-
-        polls.add(poll)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getContext().getApplicationContext(),
-                                "Your poll is created", Toast.LENGTH_LONG).show();
-
-                        resetUI();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext().getApplicationContext(),
-                                "Something went wrong", Toast.LENGTH_LONG).show();
-
-                        Log.w(String.valueOf(this), "Error adding document", e);
-                    }
-                });
-
-        Toast.makeText(getContext().getApplicationContext(),
-                "Your poll is created", Toast.LENGTH_LONG).show();
-    }
-
-    public String uploadImageToFirebase(Bitmap bitmap)
-    {
-        UUID uuid = UUID.randomUUID();
-        final String imageID = uuid.toString();
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        StorageReference imagesRef = storageRef.child(STORAGE_IMAGES_PATH + imageID);
-
-        byte[] data = convertBitmap(bitmap);
-
-        UploadTask uploadTask = imagesRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.w(String.valueOf(this), "Unable to upload image to Firebase", exception);
-            }
-        });
-
-        return imageID;
-    }
-
-    private byte[] convertBitmap(Bitmap bitmap)
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        return data;
+        firebaseHelper.savePollToFirebase(pollsCollection, poll, getContext());
     }
 
     private void resetUI()
@@ -329,4 +273,11 @@ public class NewQuestionFragment extends Fragment {
         ivSecondStorage.setVisibility(View.VISIBLE);
         ivSecondCamera.setVisibility(View.VISIBLE);
     }
+
+    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            resetUI();
+        }
+    };
 }
