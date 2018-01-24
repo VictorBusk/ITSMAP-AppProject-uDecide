@@ -274,10 +274,10 @@ public class NewQuestionFragment extends Fragment {
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext().getApplicationContext(),
                                 "Something went wrong", Toast.LENGTH_LONG).show();
+
                         Log.w(String.valueOf(this), "Error adding document", e);
                     }
                 });
-
 
         Toast.makeText(getContext().getApplicationContext(),
                 "Your poll is created", Toast.LENGTH_LONG).show();
