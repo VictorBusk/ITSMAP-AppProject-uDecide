@@ -1,10 +1,17 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activitys;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -30,6 +37,10 @@ public class SignInActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private CallbackManager callbackManager;
+    private LoginButton loginButton;
+
+    private TextView tvSignIn;
+    private ImageView ivSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +49,17 @@ public class SignInActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.login_button);
+        tvSignIn = findViewById(R.id.tvSignIn);
+        ivSignIn = findViewById(R.id.ivSignIn);
 
+        loginButton = findViewById(R.id.login_button);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loading(true);
+            }
+        });
         loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, facebookCallback());
     }
@@ -79,12 +99,14 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
+                loading(false);
                 Toast.makeText(SignInActivity.this, R.string.FacebookSignInAuthenticationCanceled, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
+                loading(false);
                 Toast.makeText(SignInActivity.this, R.string.FacebookSignInAuthenticationError, Toast.LENGTH_SHORT).show();
             }
         };
@@ -107,9 +129,32 @@ public class SignInActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    loading(false);
                     Toast.makeText(SignInActivity.this, R.string.FirebaseSignInAuthenticationFailed, Toast.LENGTH_SHORT).show();
                 }
             }
         };
+    }
+
+    private void loading(Boolean status) {
+        Log.d(TAG, "loading: " + status);
+
+        final RotateAnimation rotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(500);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setInterpolator(new LinearInterpolator());
+
+        if (status) {
+            loginButton.setVisibility(View.INVISIBLE);
+            tvSignIn.setVisibility(View.INVISIBLE);
+            ivSignIn.setColorFilter(Color.GRAY);
+            ivSignIn.startAnimation(rotate);
+
+        } else {
+            loginButton.setVisibility(View.VISIBLE);
+            tvSignIn.setVisibility(View.VISIBLE);
+            ivSignIn.setColorFilter(Color.BLACK);
+            ivSignIn.clearAnimation();
+        }
     }
 }
