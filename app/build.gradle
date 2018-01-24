@@ -4,7 +4,6 @@ plugins {
 
 apply plugin: 'com.android.application'
 
-
 ext {
     if (System.getenv("CIRCLECI")) {
         androidKeyStoreFile = String.valueOf(System.getenv("ANDROID_KEY_STORE_FILE"))
