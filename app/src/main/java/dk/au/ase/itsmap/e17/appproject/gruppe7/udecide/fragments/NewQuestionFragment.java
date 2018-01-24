@@ -49,7 +49,7 @@ public class NewQuestionFragment extends Fragment {
     private EditText etQuestion;
     private SeekBar sbNotify;
     private View view;
-    private String NotifyString;
+    private String NotifyString, question;
     private Uri imageUri1, imageUri2;
     private final Fragment frag = this;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
@@ -73,6 +73,36 @@ public class NewQuestionFragment extends Fragment {
         ivSecondStorage = view.findViewById(R.id.IWGallery2);
         ivFirstCamera = view.findViewById(R.id.IWCamera1);
         ivSecondCamera = view.findViewById(R.id.IWCamera2);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("QuestionText", question);
+        outState.putInt("NotifyNumber", notifyNumber);
+        outState.putParcelable("PictureOne",photo1);
+        outState.putParcelable("PictureTwo", photo2);
+       /* outState.putInt("PicVisibility", picVisibility);
+        outState.putInt("CameraVisibility", cameraVisibility);
+        outState.putInt("StorageVisibility", storageVisibility); */
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState != null) {
+            /*ivFirstPic.setVisibility(picVisibility);
+            ivSecondPic.setVisibility(picVisibility);
+            ivFirstCamera.setVisibility(cameraVisibility);
+            ivSecondCamera.setVisibility(cameraVisibility);
+            ivFirstStorage.setVisibility(storageVisibility);
+            ivSecondStorage.setVisibility(storageVisibility); */
+            photo1 = savedInstanceState.getParcelable("PictureOne");
+            photo2 = savedInstanceState.getParcelable("PictureTwo");
+            question = savedInstanceState.getString("QuestionText");
+            notifyNumber = savedInstanceState.getInt("NotifyNumber");
+        }
+
     }
 
     @Override
@@ -151,7 +181,7 @@ public class NewQuestionFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                String question = etQuestion.getText().toString();
+                question = etQuestion.getText().toString();
                 if(question.trim().equals(""))
                 {
                     Toast.makeText(getContext().getApplicationContext(),

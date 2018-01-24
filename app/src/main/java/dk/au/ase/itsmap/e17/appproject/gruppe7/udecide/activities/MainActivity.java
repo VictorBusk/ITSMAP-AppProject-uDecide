@@ -49,7 +49,10 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBO
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    private NewQuestionFragment newQuestionFragment;
+    private MyQuestionsFragment myQuestionsFragment;
+    private DeciderFragment deciderFragment;
+    private BlankFragment blankFragment;
     private static final String TAG = "MainActivity";
     private NavigationView navigationView;
 
@@ -71,11 +74,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        BlankFragment fragment = new BlankFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragmentContent, fragment).commit();
+        setUpFragments();
+        if (savedInstanceState != null) {
+            FragmentManager manager = getSupportFragmentManager();
+            newQuestionFragment = (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+        } else {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragmentContent, blankFragment).commit();
+        }
     }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -124,32 +131,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Fragment fragment = null;
-        Class fragmentClass;
 
-        switch (item.getItemId()) {
+        switch(item.getItemId()) {
             case R.id.nav_decide:
-                fragmentClass = DeciderFragment.class;
+                fragment = deciderFragment;
                 break;
             case R.id.nav_myQuestions:
-                fragmentClass = MyQuestionsFragment.class;
+                fragment = myQuestionsFragment;
                 break;
             case R.id.nav_newQuestion:
-                fragmentClass = NewQuestionFragment.class;
+                fragment = newQuestionFragment;
                 break;
             case R.id.nav_logout:
-                fragmentClass = BlankFragment.class;
+                fragment = blankFragment;
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
                 startActivity(new Intent(MainActivity.this, SignInActivity.class));
                 break;
             default:
-                fragmentClass = DeciderFragment.class;
-        }
-
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+                fragment = deciderFragment;
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -249,5 +249,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
+    }
+    public void setUpFragments(){
+        if (newQuestionFragment == null) {
+            newQuestionFragment = new NewQuestionFragment();
+        }
+        if (myQuestionsFragment == null) {
+            myQuestionsFragment = new MyQuestionsFragment();
+        }
+        if (deciderFragment == null) {
+            deciderFragment = new DeciderFragment();
+        }
+        if (blankFragment == null) {
+            blankFragment = new BlankFragment();
+        }
     }
 }
