@@ -204,3 +204,4 @@ fabric.properties
 /build
 /google-services.json
 /keystore.properties
+/sonar-project.properties
