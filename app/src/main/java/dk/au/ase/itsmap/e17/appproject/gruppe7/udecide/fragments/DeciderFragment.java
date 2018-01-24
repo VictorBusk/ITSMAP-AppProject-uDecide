@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -17,13 +18,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.Set;
@@ -42,10 +43,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAG
 
 public class DeciderFragment extends Fragment {
 
-    private ImageView firstImg, secondImg;
-    private TextView questionTextTV, myProgressTextTv;
-    private ProgressBar lastQuestionResult;
-    private FirebaseFirestore db;
+    public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
     double image1Votes, image2Votes;
     Poll currentPoll;
     String questionText;
@@ -54,8 +52,46 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
-    public static SharedPreferences preferences; //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
+    private ImageView firstImg, secondImg;
+    private TextView questionTextTV, myProgressTextTv;
+    private ProgressBar lastQuestionResult;
+    private FirebaseFirestore db;
 
+    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            //Extract values from intent
+            String img1 = intent.getStringExtra(CONST.IMAGE_1);
+            String img2 = intent.getStringExtra(CONST.IMAGE_2);
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+
+            updateQuestionText(currentPoll);
+            getImage(img1, firstImg);
+            getImage(img2, secondImg);
+            updateProgessBar();
+        }
+    };
+
+    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            firstImg.setImageResource(0);
+            secondImg.setImageResource(0);
+            questionTextTV.setText(getString(R.string.no_more_polls));
+        }
+    };
+
+    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+            saveLastPollTimestamp(currentPoll.getDate().getTime());
+            loadPoll();
+        }
+    };
 
     public DeciderFragment() {
         // Required empty public constructor
@@ -127,7 +163,6 @@ public class DeciderFragment extends Fragment {
         questionTextTV.setText(questionText);
     }
 
-
     //Inspired by: https://firebase.google.com/docs/firestore/query-data/get-data
     public void loadPoll() {
         Long lastTimestamp = preferences.getLong(LAST_POLL_TIMESTAMP, 0);
@@ -144,7 +179,12 @@ public class DeciderFragment extends Fragment {
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
-        Glide.with(getContext()).using(new FirebaseImageLoader()).load(storageRef.child(STORAGE_IMAGES_PATH + imageId)).fitCenter().into(imageView);
+        storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.with(getContext()).load(uri).fit().centerInside().into(imageView);
+            }
+        });
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
@@ -152,41 +192,4 @@ public class DeciderFragment extends Fragment {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
     }
-
-    //When receiving a broadcast we will extract the values from the intent to create a new listview item
-    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
-            //Extract values from intent
-            String img1 = intent.getStringExtra(CONST.IMAGE_1);
-            String img2 = intent.getStringExtra(CONST.IMAGE_2);
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
-
-            updateQuestionText(currentPoll);
-            getImage(img1, firstImg);
-            getImage(img2, secondImg);
-            updateProgessBar();
-        }
-    };
-
-    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            firstImg.setImageResource(0);
-            secondImg.setImageResource(0);
-            questionTextTV.setText(getString(R.string.no_more_polls));
-        }
-    };
-
-    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
-            saveLastPollTimestamp(currentPoll.getDate().getTime());
-            loadPoll();
-        }
-    };
 }

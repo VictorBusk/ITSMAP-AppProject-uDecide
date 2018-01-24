@@ -201,6 +201,10 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/app/release
+.idea
 /build
 /google-services.json
 /keystore.properties
+/sonar-project.properties
+!gradle-wrapper.jar
