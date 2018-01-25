@@ -7,7 +7,9 @@ public class CONST {
     public static final String IMAGE_1 = "image1";
     public static final String IMAGE_2 = "image2";
     public static final String CURRENT_POLL = "current_poll";
-    public static final String MY_POLLS = "myt_poll";
+    public static final String MY_POLLS = "my_poll";
+    public static final String SIGN_IN_EVENT = "sign_in_event";
+    public static final String SIGN_IN_RESULT = "sign_in_result";
 
     public static final String DB_POLLS_COLLECTION = "polls";
     public static final String DB_DATE = "date";

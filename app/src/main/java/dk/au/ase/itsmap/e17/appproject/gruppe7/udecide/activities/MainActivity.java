@@ -40,6 +40,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.DeciderFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.MyQuestionsFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.NewQuestionFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services.BackgroundService;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
@@ -55,12 +56,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BlankFragment blankFragment;
     private static final String TAG = "MainActivity";
     private NavigationView navigationView;
+    FirebaseHelper firebaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        firebaseHelper = new FirebaseHelper(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -86,14 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            updateUserData();
-            startBackgroundService();
-        } else {
-            startActivity(new Intent(MainActivity.this, SignInActivity.class));
-        }
+        getUser();
     }
 
     @Override
@@ -168,6 +164,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void getUser() {
+        FirebaseUser user = firebaseHelper.extractUser();
+        if (user != null) {
+            updateUserData();
+            startBackgroundService();
+        } else {
+            startActivity(new Intent(MainActivity.this, SignInActivity.class));
+        }
     }
 
     // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo

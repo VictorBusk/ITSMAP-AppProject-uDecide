@@ -49,17 +49,6 @@ public class BackgroundService extends Service {
     private CollectionReference pollsRef;
     private Query myPoolsRef;
     private ListenerRegistration registration;
-    private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
-        @Override
-        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-                Poll poll = documentSnapshot.toObject(Poll.class);
-                if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
-                    sendNotification(poll.getQuestion(), "New Votes", poll.getImage1Votes(), poll.getImage2Votes());
-                }
-            }
-        }
-    };
 
     public BackgroundService() {
     }
@@ -98,6 +87,18 @@ public class BackgroundService extends Service {
         Log.i(TAG, "Background service onBind");
         return null;
     }
+
+    private EventListener<QuerySnapshot> eventListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                Poll poll = documentSnapshot.toObject(Poll.class);
+                if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
+                    sendNotification(poll.getQuestion(), "New Votes", poll.getImage1Votes(), poll.getImage2Votes());
+                }
+            }
+        }
+    };
 
     private void sendNotification(String title, String text, int vote1, int vote2) {
         Log.i(TAG, "Background service sendNotification: " + title + " " + text);
