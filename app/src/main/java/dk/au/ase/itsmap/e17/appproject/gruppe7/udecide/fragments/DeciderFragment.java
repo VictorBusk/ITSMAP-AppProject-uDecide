@@ -61,6 +61,7 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
+    private boolean loading = false;
     private Bitmap image1, image2;
     private boolean imagesSaved = false;
     private ImageView firstImg, secondImg;
@@ -240,11 +241,13 @@ public class DeciderFragment extends Fragment {
         rotate.setInterpolator(new LinearInterpolator());
 
         if (status) {
+            loading = true;
             imageView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
             imageView.setColorFilter(Color.GRAY);
             imageView.startAnimation(rotate);
 
         } else {
+            loading = false;
             imageView.clearColorFilter();
             imageView.clearAnimation();
         }
@@ -252,7 +255,7 @@ public class DeciderFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (questionTextTV.getText() != getText(R.string.no_more_polls)) {
+        if (questionTextTV.getText() != getText(R.string.no_more_polls) && loading == false) {
             BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
             BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
             outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
