@@ -43,6 +43,7 @@ public class BackgroundService extends Service {
     private NotificationManager mNotificationManager;
     private CollectionReference pollsRef;
     private ListenerRegistration registration;
+    private boolean mRunning;
 
     public BackgroundService() {
     }
@@ -51,6 +52,8 @@ public class BackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "Background service onCreate");
+
+        mRunning = false;
 
         firebaseHelper = new FirebaseHelper(getBaseContext());
 
@@ -72,9 +75,16 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Background service onStartCommand");
 
-        String facebookId = intent.getStringExtra(FACEBOOK_ID);
-        registration = pollsRef.whereEqualTo(DB_USER_ID, facebookId).addSnapshotListener(getEventListener());
-        return START_STICKY;
+        if (!mRunning) {
+            mRunning = true;
+            Log.d(TAG, "onStartCommand: is Starting");
+            String facebookId = intent.getStringExtra(FACEBOOK_ID);
+            registration = pollsRef.whereEqualTo(DB_USER_ID, facebookId).addSnapshotListener(getEventListener());
+            return START_STICKY;
+        } else {
+            Log.d(TAG, "onStartCommand: is Running");
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override

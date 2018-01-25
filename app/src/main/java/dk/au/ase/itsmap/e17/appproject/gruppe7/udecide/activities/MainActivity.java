@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services.BackgroundServic
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_LAST_UPDATE;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_NAME;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_PHOTO_URL;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.LAST_POLL_TIMESTAMP;
@@ -52,12 +54,12 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
+    FirebaseHelper firebaseHelper;
     private NewQuestionFragment newQuestionFragment;
     private MyQuestionsFragment myQuestionsFragment;
     private DeciderFragment deciderFragment;
     private BlankFragment blankFragment;
     private NavigationView navigationView;
-    FirebaseHelper firebaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         firebaseHelper = new FirebaseHelper(this);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -117,20 +120,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         int id = item.getItemId();
-
         if (id == R.id.action_logout) {
             setFragment(blankFragment);
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
             stopBackgroundService();
+            editor.remove(FACEBOOK_LAST_UPDATE).apply();
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
             return true;
         } else if (id == R.id.action_reset) {
             setFragment(blankFragment);
-            SharedPreferences sharedPref;
-            sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
-            sharedPref.edit().remove(LAST_POLL_TIMESTAMP).apply();
+            editor.remove(LAST_POLL_TIMESTAMP);
+            editor.remove(FACEBOOK_LAST_UPDATE);
+            editor.apply();
         }
 
         return super.onOptionsItemSelected(item);
@@ -140,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Fragment fragment = null;
-
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         switch (item.getItemId()) {
             case R.id.nav_decide:
                 fragment = deciderFragment;
@@ -156,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
                 stopBackgroundService();
+                editor.remove(FACEBOOK_LAST_UPDATE).apply();
                 startActivity(new Intent(MainActivity.this, SignInActivity.class));
                 break;
             default:
@@ -183,10 +190,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getUser() {
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         FirebaseUser user = firebaseHelper.extractUser();
         if (user != null) {
-            updateUserData();
-            startBackgroundService();
+            Long nextTimestamp = sharedPref.getLong(FACEBOOK_LAST_UPDATE, 0);
+            if (nextTimestamp < new Date().getTime()) {
+                updateUserData();
+                startBackgroundService();
+                editor.putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
+            } else {
+                Log.d(TAG, "getUser: next update: " + new Date(nextTimestamp));
+//                updateNavHeader();
+            }
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
         }
@@ -221,9 +237,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.i(TAG, "meRequest:JSONObject" + object);
                         try {
-                            editor.putString(FACEBOOK_ID, object.getString("id")).apply();
-                            editor.putString(FACEBOOK_NAME, object.getString("name")).apply();
-                            editor.putString(FACEBOOK_PHOTO_URL, object.getJSONObject("picture").getJSONObject("data").getString("url")).apply();
+                            editor.putString(FACEBOOK_ID, object.getString("id"));
+                            editor.putString(FACEBOOK_NAME, object.getString("name"));
+                            editor.putString(FACEBOOK_PHOTO_URL, object.getJSONObject("picture").getJSONObject("data").getString("url"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -248,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 e.printStackTrace();
                             }
                         }
-                        editor.putStringSet(FACEBOOK_FRIENDS_IDS, set).apply();
+                        editor.putStringSet(FACEBOOK_FRIENDS_IDS, set);
                     }
                 });
 
@@ -257,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
+                editor.commit();
                 updateNavHeader();
             }
         });
@@ -267,11 +284,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateNavHeader() {
         Log.i(TAG, "updateNavHeader");
 
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
         ImageView ivProfilePhotoNav = navigationView.getHeaderView(0).findViewById(R.id.iv_navHeader);
         TextView tvTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
-
-        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));

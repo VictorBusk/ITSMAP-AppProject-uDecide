@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">uDecide</string>
 
-    <string name="newPollNotify">Notifikation for hver</string>
+    <string name="newPollNotify">Notifikation når</string>
     <string name="GenericImageError">Unable to find image</string>
     <string name="newPollCancel">Annullér</string>
     <string name="newPollSave">Gem</string>
