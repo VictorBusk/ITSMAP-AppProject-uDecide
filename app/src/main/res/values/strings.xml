@@ -32,6 +32,8 @@
     <string name="FacebookSignInAuthenticationCanceled">Authentication canceled.</string>
     <string name="FacebookSignInAuthenticationError">Authentication error.</string>
     <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
+    <string name="Loading">Loading</string>
+    <string name="reset_decider">Reset decider</string>
 
 
 </resources>
