@@ -54,6 +54,10 @@ public class NewQuestionFragment extends Fragment {
     private final Fragment frag = this;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
             ivSecondStorage, ivFirstCamera, ivSecondCamera;
+    private int firstPicVisibility = View.VISIBLE,
+            secondPicVisibility = View.VISIBLE,
+            firstPhotoVisibility = View.INVISIBLE,
+            secondPhotoVisibility = View.INVISIBLE;
     FirebaseHelper firebaseHelper;
 
     public NewQuestionFragment() {}
@@ -77,38 +81,34 @@ public class NewQuestionFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putString(CONST.QUESTION_TEXT, question);
+        outState.putInt(CONST.NOTIFY_NUMBER, notifyNumber);
+        outState.putParcelable(CONST.PICTURE_ONE, photo1);
+        outState.putParcelable(CONST.PICTURE_TWO, photo2);
+        outState.putInt(CONST.FIRST_PHOTO_VISIBILITY, firstPhotoVisibility);
+        outState.putInt(CONST.SECOND_PHOTO_VISIBILITY, secondPhotoVisibility);
+        outState.putInt(CONST.FIRST_PIC_VISIBILITY, firstPicVisibility);
+        outState.putInt(CONST.SECOND_PIC_VISIBILITY, secondPicVisibility);
         super.onSaveInstanceState(outState);
-        outState.putString("QuestionText", question);
-        outState.putInt("NotifyNumber", notifyNumber);
-        outState.putParcelable("PictureOne",photo1);
-        outState.putParcelable("PictureTwo", photo2);
-       /* outState.putInt("PicVisibility", picVisibility);
-        outState.putInt("CameraVisibility", cameraVisibility);
-        outState.putInt("StorageVisibility", storageVisibility); */
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if(savedInstanceState != null) {
-            /*ivFirstPic.setVisibility(picVisibility);
-            ivSecondPic.setVisibility(picVisibility);
-            ivFirstCamera.setVisibility(cameraVisibility);
-            ivSecondCamera.setVisibility(cameraVisibility);
-            ivFirstStorage.setVisibility(storageVisibility);
-            ivSecondStorage.setVisibility(storageVisibility); */
-            photo1 = savedInstanceState.getParcelable("PictureOne");
-            photo2 = savedInstanceState.getParcelable("PictureTwo");
-            question = savedInstanceState.getString("QuestionText");
-            notifyNumber = savedInstanceState.getInt("NotifyNumber");
-        }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        if(savedInstanceState != null) {
+            firstPicVisibility = savedInstanceState.getInt(CONST.FIRST_PIC_VISIBILITY);
+            secondPicVisibility = savedInstanceState.getInt(CONST.SECOND_PIC_VISIBILITY);
+            photo1 = savedInstanceState.getParcelable(CONST.PICTURE_ONE);
+            photo2 = savedInstanceState.getParcelable(CONST.PICTURE_TWO);
+            firstPhotoVisibility = savedInstanceState.getInt(CONST.FIRST_PHOTO_VISIBILITY);
+            secondPhotoVisibility = savedInstanceState.getInt(CONST.SECOND_PHOTO_VISIBILITY);
+            question = savedInstanceState.getString(CONST.QUESTION_TEXT);
+            notifyNumber = savedInstanceState.getInt(CONST.NOTIFY_NUMBER);
+        }
         view = inflater.inflate(R.layout.fragment_new_question, container, false);
         InitComponents();
         firebaseHelper = new FirebaseHelper(getContext());
@@ -118,6 +118,8 @@ public class NewQuestionFragment extends Fragment {
         NotifyString = getResources().getString(R.string.newPollNotify) + " " + String.valueOf(notifyNumber);
         tvDecisionNotify.setText(NotifyString );
 
+        firstPic(firstPicVisibility, firstPhotoVisibility, photo1);
+        secondPic(secondPicVisibility, secondPhotoVisibility, photo2);
         //https://stackoverflow.com/questions/15326290/get-android-seekbar-value-and-display-it-on-screen
         sbNotify.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -224,19 +226,17 @@ public class NewQuestionFragment extends Fragment {
         if (requestCode == CONST.REQUEST_CAM1) {
             if (resultCode == getActivity().RESULT_OK ) {
                 photo1 = (Bitmap) data.getExtras().get("data");
-                ivFirstPic.setImageBitmap(photo1);
-                ivFirstPic.setVisibility(View.VISIBLE);
-                ivFirstStorage.setVisibility(View.INVISIBLE);
-                ivFirstCamera.setVisibility(View.INVISIBLE);
+                firstPhotoVisibility = View.VISIBLE;
+                firstPicVisibility = View.INVISIBLE;
+                firstPic(firstPicVisibility, firstPhotoVisibility, photo1);
             }
         }
         if (requestCode == CONST.REQUEST_CAM2) {
             if (resultCode == getActivity().RESULT_OK) {
                 photo2 = (Bitmap) data.getExtras().get("data");
-                ivSecondPic.setImageBitmap(photo2);
-                ivSecondPic.setVisibility(View.VISIBLE);
-                ivSecondStorage.setVisibility(View.INVISIBLE);
-                ivSecondCamera.setVisibility(View.INVISIBLE);
+                secondPhotoVisibility = View.VISIBLE;
+                secondPicVisibility = View.INVISIBLE;
+                secondPic(secondPicVisibility, secondPhotoVisibility, photo2 );
             }
         }
         if (requestCode == CONST.REQUEST_STORAGE1) {
@@ -247,10 +247,9 @@ public class NewQuestionFragment extends Fragment {
                 try {
                     inputStream = getActivity().getContentResolver().openInputStream(imageUri1);
                     photo1 = BitmapFactory.decodeStream(inputStream);
-                    ivFirstPic.setVisibility(View.VISIBLE);
-                    ivFirstStorage.setVisibility(View.INVISIBLE);
-                    ivFirstCamera.setVisibility(View.INVISIBLE);
-                    ivFirstPic.setImageBitmap(photo1);
+                    firstPhotoVisibility = View.VISIBLE;
+                    firstPicVisibility = View.INVISIBLE;
+                    firstPic(firstPicVisibility, firstPhotoVisibility, photo1);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -264,10 +263,9 @@ public class NewQuestionFragment extends Fragment {
                 try {
                     inputStream = getActivity().getContentResolver().openInputStream(imageUri2);
                     photo2 = BitmapFactory.decodeStream(inputStream);
-                    ivSecondPic.setVisibility(View.VISIBLE);
-                    ivSecondStorage.setVisibility(View.INVISIBLE);
-                    ivSecondCamera.setVisibility(View.INVISIBLE);
-                    ivSecondPic.setImageBitmap(photo2);
+                    secondPhotoVisibility = View.VISIBLE;
+                    secondPicVisibility = View.INVISIBLE;
+                    secondPic(secondPicVisibility, secondPhotoVisibility, photo2 );
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -288,22 +286,33 @@ public class NewQuestionFragment extends Fragment {
         firebaseHelper.savePollToFirebase(pollsCollection, poll, getContext());
     }
 
-    private void resetUI()
-    {
+    private void resetUI() {
         photo1 = null;
         photo2 = null;
+        firstPicVisibility = View.VISIBLE;
+        secondPicVisibility = View.VISIBLE;
+        firstPhotoVisibility = View.INVISIBLE;
+        secondPhotoVisibility = View.INVISIBLE;
         etQuestion.setText("");
         sbNotify.setProgress(0);
         ivFirstPic.setImageResource(R.drawable.common_full_open_on_phone);
         ivSecondPic.setImageResource(R.drawable.common_full_open_on_phone);
-        ivFirstPic.setVisibility(View.INVISIBLE);
-        ivSecondPic.setVisibility(View.INVISIBLE);
-        ivFirstStorage.setVisibility(View.VISIBLE);
-        ivFirstCamera.setVisibility(View.VISIBLE);
-        ivSecondStorage.setVisibility(View.VISIBLE);
-        ivSecondCamera.setVisibility(View.VISIBLE);
+        firstPic(firstPicVisibility, firstPhotoVisibility, photo1);
+        secondPic(secondPicVisibility, secondPhotoVisibility, photo2);
     }
 
+    private void firstPic( int moduelsVisibility, int photoVisibility, Bitmap photo) {
+        ivFirstStorage.setVisibility(moduelsVisibility);
+        ivFirstCamera.setVisibility(moduelsVisibility);
+        ivFirstPic.setVisibility(photoVisibility);
+        ivFirstPic.setImageBitmap(photo);
+    }
+    private void secondPic( int visibility, int photoVisibility, Bitmap photo) {
+        ivSecondStorage.setVisibility(visibility);
+        ivSecondCamera.setVisibility(visibility);
+        ivSecondPic.setVisibility(photoVisibility);
+        ivSecondPic.setImageBitmap(photo);
+    }
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

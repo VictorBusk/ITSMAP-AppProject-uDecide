@@ -34,4 +34,12 @@ public class CONST {
     public static final int REQUEST_STORAGE1 = 303;
     public static final int REQUEST_STORAGE2 = 304;
 
+    public static final String FIRST_PIC_VISIBILITY = "firstPicVisibility";
+    public static final String SECOND_PIC_VISIBILITY = "secondPicVisibility";
+    public static final String QUESTION_TEXT = "QuestionText";
+    public static final String NOTIFY_NUMBER = "NotifyNumber";
+    public static final String PICTURE_ONE = "PictureOne";
+    public static final String PICTURE_TWO ="PictureTwo";
+    public static final String FIRST_PHOTO_VISIBILITY = "PhotoOne";
+    public static final String SECOND_PHOTO_VISIBILITY = "PhotoTwo";
 }
