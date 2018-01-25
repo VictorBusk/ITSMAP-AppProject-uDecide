@@ -15,9 +15,8 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
 public class MyQuestionsAdapter extends BaseAdapter {
 
-    Context context;
-    List<Poll> polls;
-    Poll poll = null;
+    private Context context;
+    private List<Poll> polls;
 
     public MyQuestionsAdapter(Context context, List<Poll> polls) {
         this.context = context;
@@ -54,7 +53,7 @@ public class MyQuestionsAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.question_list_item, null);
         }
 
-        poll = polls.get(i);
+        Poll poll = polls.get(i);
 
         TextView tvQuestion = view.findViewById(R.id.tvQuestion);
         tvQuestion.setText(poll.getQuestion());
@@ -65,8 +64,8 @@ public class MyQuestionsAdapter extends BaseAdapter {
         if (poll.getImage1Votes() == 0 && poll.getImage2Votes() == 0) {
             progressBar.setProgress(50);
         } else {
-            double votePercentage = ((double) poll.getImage1Votes() /
-                    ((double) poll.getImage1Votes() + (double) poll.getImage2Votes())) * 100;
+            double votePercentage = (double) poll.getImage1Votes() /
+                    ((double) poll.getImage1Votes() + (double) poll.getImage2Votes()) * 100;
 
             progressBar.setProgress((int) votePercentage);
         }

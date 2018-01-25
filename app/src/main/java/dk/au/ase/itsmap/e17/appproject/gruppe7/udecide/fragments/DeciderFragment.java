@@ -265,34 +265,31 @@ public class DeciderFragment extends Fragment {
         private ImageView imageView;
         private Uri uri;
 
-        public DownloadImageTask(ImageView imageView, Uri uri) {
+        DownloadImageTask(ImageView imageView, Uri uri) {
             this.imageView = imageView;
             this.uri = uri;
         }
 
-        public ImageView getImageView() {
+        ImageView getImageView() {
             return imageView;
         }
 
-        public Uri getUri() {
-            return uri;
-        }
     }
 
     private class DownloadedImage {
         private Bitmap bitmap;
         private ImageView imageView;
 
-        public DownloadedImage(Bitmap bitmap, ImageView imageView) {
+        DownloadedImage(Bitmap bitmap, ImageView imageView) {
             this.bitmap = bitmap;
             this.imageView = imageView;
         }
 
-        public Bitmap getBitmap() {
+        Bitmap getBitmap() {
             return bitmap;
         }
 
-        public ImageView getImageView() {
+        ImageView getImageView() {
             return imageView;
         }
     }

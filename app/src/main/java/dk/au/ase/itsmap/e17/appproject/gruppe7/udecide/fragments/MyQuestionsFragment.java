@@ -33,14 +33,7 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED
 
 public class MyQuestionsFragment extends Fragment {
 
-    private MyQuestionsAdapter adapter;
     private ListView listView;
-    private List<Poll> polls = new ArrayList<Poll>();
-    private String facebookId;
-
-    private SharedPreferences sharedPref;
-    private FirebaseFirestore db;
-    private CollectionReference pollsRef;
 
     // Required empty public constructor
     public MyQuestionsFragment() {}
@@ -52,10 +45,10 @@ public class MyQuestionsFragment extends Fragment {
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(LoadedMyQuestionsMsgReceiver, new IntentFilter(CONST.MYQUESTION_POLL));
 
         listView = view.findViewById(R.id.myQuestionsList);
-        sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        facebookId = sharedPref.getString(FACEBOOK_ID, null);
-        db = FirebaseFirestore.getInstance();
-        pollsRef = db.collection(DB_POLLS_COLLECTION);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        String facebookId = sharedPref.getString(FACEBOOK_ID, null);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference pollsRef = db.collection(DB_POLLS_COLLECTION);
 
         new FirebaseHelper(getContext()).updateMyQuestionPolls(pollsRef, facebookId);
 
@@ -69,9 +62,9 @@ public class MyQuestionsFragment extends Fragment {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
             Log.d("receiver", "Got message: " + message);
-            polls = intent.getParcelableArrayListExtra(CONST.MY_POLLS);
+            List<Poll> polls = intent.getParcelableArrayListExtra(CONST.MY_POLLS);
             if (polls != null) {
-                adapter = new MyQuestionsAdapter(activity, polls);
+                MyQuestionsAdapter adapter = new MyQuestionsAdapter(activity, polls);
                 listView.setAdapter(adapter);
             }
         }

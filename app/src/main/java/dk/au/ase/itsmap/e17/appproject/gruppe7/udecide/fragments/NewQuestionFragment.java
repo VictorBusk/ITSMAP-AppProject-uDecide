@@ -50,7 +50,6 @@ public class NewQuestionFragment extends Fragment {
     private SeekBar sbNotify;
     private View view;
     private String NotifyString, question;
-    private Uri imageUri1, imageUri2;
     private final Fragment frag = this;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
             ivSecondStorage, ivFirstCamera, ivSecondCamera;
@@ -244,7 +243,7 @@ public class NewQuestionFragment extends Fragment {
         }
         if (requestCode == CONST.REQUEST_STORAGE1) {
             if (resultCode == getActivity().RESULT_OK) {
-                imageUri1 = data.getData();
+                Uri imageUri1 = data.getData();
                 InputStream inputStream;
 
                 try {
@@ -260,7 +259,7 @@ public class NewQuestionFragment extends Fragment {
         }
         if (requestCode == CONST.REQUEST_STORAGE2) {
             if (resultCode == getActivity().RESULT_OK) {
-                imageUri2 = data.getData();
+                Uri imageUri2 = data.getData();
                 InputStream inputStream;
 
                 try {

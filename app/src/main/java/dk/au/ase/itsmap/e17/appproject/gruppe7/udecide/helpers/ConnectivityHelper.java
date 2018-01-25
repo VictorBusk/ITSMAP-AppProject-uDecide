@@ -22,7 +22,7 @@ public class ConnectivityHelper {
     }
 
     // https://stackoverflow.com/questions/3767591/check-intent-internet-connection
-    public void registerInternetReceiver()
+    private void registerInternetReceiver()
     {
         if (this.internetReceiver != null) return;
         this.internetReceiver = new BroadcastReceiver()
@@ -51,9 +51,7 @@ public class ConnectivityHelper {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo connection = manager.getActiveNetworkInfo();
 
-        if (connection != null && connection.isConnectedOrConnecting())
-            return true;
+        return connection != null && connection.isConnectedOrConnecting();
 
-        return false;
     }
 }

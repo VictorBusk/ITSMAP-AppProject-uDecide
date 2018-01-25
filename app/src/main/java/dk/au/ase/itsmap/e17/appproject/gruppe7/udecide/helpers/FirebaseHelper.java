@@ -45,11 +45,11 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAG
 //Inspired by own Assignment 2 solution
 public class FirebaseHelper {
 
-    Context context;
-    Poll currentPoll;
-    DocumentReference pollsDocRef;
+    private Context context;
+    private Poll currentPoll;
+    private DocumentReference pollsDocRef;
     private List<Poll> polls = new ArrayList<Poll>();
-    String TAG = "FirebaseHelper";
+    private final String TAG = "FirebaseHelper";
 
     public FirebaseHelper(Context context) {
         this.context = context;
