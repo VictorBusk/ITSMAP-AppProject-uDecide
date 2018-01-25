@@ -63,6 +63,7 @@ sonarqube {
         property "sonar.host.url", sonarHostUrl
         property "sonar.organization", sonarOrganization
         property "sonar.login", sonarLogin
+        property "sonar.projectKey", "gruppe7:uDecide"
     }
 }
 
