@@ -50,11 +50,11 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBO
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
     private NewQuestionFragment newQuestionFragment;
     private MyQuestionsFragment myQuestionsFragment;
     private DeciderFragment deciderFragment;
     private BlankFragment blankFragment;
-    private static final String TAG = "MainActivity";
     private NavigationView navigationView;
     FirebaseHelper firebaseHelper;
 
@@ -77,9 +77,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         setUpFragments();
+
         if (savedInstanceState != null) {
             FragmentManager manager = getSupportFragmentManager();
-            newQuestionFragment = (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+
+            NewQuestionFragment savedNewQuestionFragment =
+                    (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+
+            if(savedNewQuestionFragment != null)
+                newQuestionFragment = savedNewQuestionFragment;
         } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, blankFragment).commit();
@@ -142,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragment = blankFragment;
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
+                stopBackgroundService();
                 startActivity(new Intent(MainActivity.this, SignInActivity.class));
                 break;
             default:
