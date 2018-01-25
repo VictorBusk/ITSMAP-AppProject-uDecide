@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
     private NavigationView navigationView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, blankFragment).commit();
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -153,10 +153,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContent, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        boolean fragmentPopped = fragmentManager.popBackStackImmediate (fragment.getClass().getName(), 0);
+
+        if (!fragmentPopped) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContent, fragment);
+            fragmentTransaction.addToBackStack(fragment.getClass().getName());
+            fragmentTransaction.commit();
+        }
 
         item.setChecked(true);
         setTitle(item.getTitle());
@@ -203,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                 });
+
         Bundle meParameters = new Bundle();
         meParameters.putString("fields", "id,name,picture.type(large)");
         meRequest.setParameters(meParameters);
