@@ -97,13 +97,6 @@ public class DeciderFragment extends Fragment {
             setEmptyDecider();
         }
     };
-
-    private void setEmptyDecider() {
-        firstImg.setImageResource(0);
-        secondImg.setImageResource(0);
-        questionTextTV.setText(getString(R.string.no_more_polls));
-    }
-
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -115,6 +108,12 @@ public class DeciderFragment extends Fragment {
 
     public DeciderFragment() {
         // Required empty public constructor
+    }
+
+    private void setEmptyDecider() {
+        firstImg.setImageResource(0);
+        secondImg.setImageResource(0);
+        questionTextTV.setText(getString(R.string.no_more_polls));
     }
 
     @Override
@@ -249,12 +248,10 @@ public class DeciderFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (questionTextTV.getText() != getText(R.string.no_more_polls)) {
             BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
             BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
             outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
             outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
-        }
         super.onSaveInstanceState(outState);
     }
 
