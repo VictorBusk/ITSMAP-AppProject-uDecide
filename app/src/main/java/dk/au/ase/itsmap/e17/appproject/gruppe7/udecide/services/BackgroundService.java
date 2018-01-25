@@ -29,6 +29,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_CHANNEL;
 
 // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
 // https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android
@@ -50,7 +51,7 @@ public class BackgroundService extends Service {
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(getString(R.string.app_name), getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel mChannel = new NotificationChannel(NOTIFY_CHANNEL, getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH);
             mChannel.setDescription(getString(R.string.app_name));
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.RED);
@@ -110,7 +111,7 @@ public class BackgroundService extends Service {
                 Intent mainIntent = new Intent(getBaseContext(), MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0, mainIntent, 0);
 
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), getString(R.string.app_name));
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), NOTIFY_CHANNEL);
                 builder.setSmallIcon(R.drawable.ic_compare_arrows_black_24dp)
                         .setContentTitle(notification.getTitle())
                         .setContentText(notification.getText())
