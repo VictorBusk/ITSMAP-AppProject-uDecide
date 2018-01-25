@@ -61,7 +61,6 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
-    private String noMorePolls = "";
     private Bitmap image1, image2;
     private boolean imagesSaved = false;
     private ImageView firstImg, secondImg;
