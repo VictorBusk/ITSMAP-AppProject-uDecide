@@ -60,6 +60,7 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
+    private String noMorePolls;
     private Bitmap image1, image2;
     private boolean imagesSaved = false;
     private ImageView firstImg, secondImg;
@@ -113,7 +114,11 @@ public class DeciderFragment extends Fragment {
     private void setEmptyDecider() {
         firstImg.setImageResource(0);
         secondImg.setImageResource(0);
-        questionTextTV.setText(getString(R.string.no_more_polls));
+        if (noMorePolls.isEmpty()) {
+            questionTextTV.setText(getString(R.string.no_more_polls));
+        } else {
+            questionTextTV.setText(noMorePolls);
+        }
     }
 
     @Override
@@ -154,6 +159,7 @@ public class DeciderFragment extends Fragment {
             imagesSaved = true;
             image1 = savedInstanceState.getParcelable("IMAGE1");
             image2 = savedInstanceState.getParcelable("IMAGE2");
+            noMorePolls = savedInstanceState.getString("QUESTION", "");
         }
 
         loadPoll();
@@ -253,6 +259,8 @@ public class DeciderFragment extends Fragment {
             BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
             outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
             outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
+        } else {
+            outState.putString("QUESTION", String.valueOf(questionTextTV.getText()));
         }
         super.onSaveInstanceState(outState);
     }
