@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,6 +60,8 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
+    private Bitmap image1, image2;
+    private boolean imagesSaved = false;
     private ImageView firstImg, secondImg;
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
@@ -76,8 +79,14 @@ public class DeciderFragment extends Fragment {
             currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
 
             updateQuestionText(currentPoll);
-            getImage(img1, firstImg);
-            getImage(img2, secondImg);
+            if (imagesSaved) {
+                setImage(new DownloadedImage(image1, firstImg));
+                setImage(new DownloadedImage(image2, secondImg));
+                imagesSaved = false;
+            } else {
+                getImage(img1, firstImg);
+                getImage(img2, secondImg);
+            }
             updateProgessBar();
         }
     };
@@ -137,6 +146,13 @@ public class DeciderFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
+
+        if (savedInstanceState != null) {
+            imagesSaved = true;
+            image1 = savedInstanceState.getParcelable("IMAGE1");
+            image2 = savedInstanceState.getParcelable("IMAGE2");
+        }
+
         loadPoll();
 
         return view;
@@ -225,6 +241,16 @@ public class DeciderFragment extends Fragment {
             imageView.clearColorFilter();
             imageView.clearAnimation();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
+        BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
+        outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
+        outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
+
+        super.onSaveInstanceState(outState);
     }
 
     private class DownloadImageTask {
