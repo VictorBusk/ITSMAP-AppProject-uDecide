@@ -3,7 +3,7 @@
 
     <string name="facebook_application_id" translatable="false">1992025451036511</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1992025451036511</string>
-    <string name="newPollNotify">Notification for every</string>
+    <string name="newPollNotify">Notification when</string>
     <string name="facebook_app_id" translatable="false">1992025451036511</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb1992025451036511</string>
     <string name="GenericImageError">Unable to find image</string>
@@ -35,5 +35,7 @@
     <string name="FacebookSignInAuthenticationCanceled">Authentication canceled.</string>
     <string name="FacebookSignInAuthenticationError">Authentication error.</string>
     <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
+    <string name="Loading">Loading</string>
+    <string name="reset_decider">Reset decider</string>
 
 </resources>

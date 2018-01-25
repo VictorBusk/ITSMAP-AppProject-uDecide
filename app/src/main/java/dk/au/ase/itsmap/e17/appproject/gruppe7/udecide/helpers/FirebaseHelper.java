@@ -1,5 +1,6 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,10 +10,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,6 +39,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_NUMBER;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 //Inspired by own Assignment 2 solution
@@ -41,10 +49,38 @@ public class FirebaseHelper {
     Poll currentPoll;
     DocumentReference pollsDocRef;
     private List<Poll> polls = new ArrayList<Poll>();
-
+    String TAG = "FirebaseHelper";
 
     public FirebaseHelper(Context context) {
         this.context = context;
+    }
+
+    public FirebaseUser extractUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public void signInFirebase(AccessToken token, Context context) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        auth.signInWithCredential(credential).addOnCompleteListener((Activity) context, signInWithCredentialOnCompleteListener());
+    }
+
+    private OnCompleteListener<AuthResult> signInWithCredentialOnCompleteListener() {
+
+        return new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Boolean signInSucceeded;
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "signInWithCredential:success");
+                    signInSucceeded = true;
+                } else {
+                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    signInSucceeded = false;
+                }
+                sendMessageSignInAttempted(signInSucceeded);
+            }
+        };
     }
 
     public void getPollData(Query publicPolls, final Set<String> facebookFriends) {
@@ -73,19 +109,21 @@ public class FirebaseHelper {
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
     public void incrementImageVotes(String imageVoteName) {
         int newVotes = 0;
-        if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
-            newVotes = currentPoll.getImage1Votes() + 1;
-        } else if (imageVoteName == CONST.IMAGE_2_VOTE_KEY) {
-            newVotes = currentPoll.getImage2Votes() + 1;
+        if (currentPoll != null) {
+            if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
+                newVotes = currentPoll.getImage1Votes() + 1;
+            } else if (imageVoteName == CONST.IMAGE_2_VOTE_KEY) {
+                newVotes = currentPoll.getImage2Votes() + 1;
+            }
+            pollsDocRef.update(imageVoteName, newVotes)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("incrementer", "Image has been incremented");
+                        }
+                    });
+            sendMessagePollUpdate();
         }
-        pollsDocRef.update(imageVoteName, newVotes)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("incrementer", "Image has been incremented");
-                    }
-                });
-        sendMessagePollUpdate();
     }
 
     public void updateMyQuestionPolls(CollectionReference pollsRef, String facebookId) {
@@ -101,6 +139,16 @@ public class FirebaseHelper {
                     }
                 });
     }
+
+    public void removePollNotification(DocumentReference pollsRef) {
+        pollsRef.update(NOTIFY_NUMBER, 0).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "NotifyNumber successfully updated!");
+                    }
+                });
+    }
+
 
     private Poll deciderBroadcast(Poll currentPoll, final Set<String> facebookFriends) {
         if (currentPoll.showForPublic || facebookFriends.contains(currentPoll.getUserID())) {
@@ -162,6 +210,14 @@ public class FirebaseHelper {
         byte[] data = baos.toByteArray();
 
         return data;
+    }
+
+    private void sendMessageSignInAttempted(Boolean signInResult) {
+        Log.d("Sign in attempted", "Broadcasting message");
+        Intent intent = new Intent(CONST.SIGN_IN_EVENT);
+        intent.putExtra(CONST.SIGN_IN_RESULT, signInResult);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     private void sendMessageNoMorePolls() {

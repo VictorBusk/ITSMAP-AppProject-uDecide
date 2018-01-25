@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -14,6 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,6 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
 
@@ -56,6 +63,39 @@ public class DeciderFragment extends Fragment {
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
+    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.d("receiver", "Got message: " + message);
+            //Extract values from intent
+            String img1 = intent.getStringExtra(CONST.IMAGE_1);
+            String img2 = intent.getStringExtra(CONST.IMAGE_2);
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+
+            updateQuestionText(currentPoll);
+            getImage(img1, firstImg);
+            getImage(img2, secondImg);
+            updateProgessBar();
+        }
+    };
+    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            firstImg.setImageResource(0);
+            secondImg.setImageResource(0);
+            questionTextTV.setText(getString(R.string.no_more_polls));
+        }
+    };
+    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+            saveLastPollTimestamp(currentPoll.getDate().getTime());
+            loadPoll();
+        }
+    };
 
     public DeciderFragment() {
         // Required empty public constructor
@@ -67,7 +107,6 @@ public class DeciderFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_decider, container, false);
         firebaseHelper = new FirebaseHelper(getContext());
-
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NewPollmsgReceiver, new IntentFilter(CONST.UPDATE_EVENT)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NoMorePollsMsgReceiver, new IntentFilter(CONST.NO_MORE_POLLS)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(UpdatePollReceiver, new IntentFilter(CONST.UPDATE_POLL)); //Listen for a local broadcast with this action
@@ -78,6 +117,7 @@ public class DeciderFragment extends Fragment {
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                firstImg.setClickable(false);
                 firebaseHelper.incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
             }
         });
@@ -85,6 +125,7 @@ public class DeciderFragment extends Fragment {
         secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                secondImg.setClickable(false);
                 firebaseHelper.incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
             }
         });
@@ -108,6 +149,8 @@ public class DeciderFragment extends Fragment {
 
         firstImg = view.findViewById(R.id.firstQuestionImg);
         secondImg = view.findViewById(R.id.secondQuestionImg);
+        firstImg.setClickable(false);
+        secondImg.setClickable(false);
     }
 
     private void updateProgessBar() {
@@ -142,12 +185,19 @@ public class DeciderFragment extends Fragment {
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
+        loading(true, imageView);
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.with(getContext()).load(uri).fit().centerInside().into(imageView);
+                new DownloadImage().execute(new DownloadImageTask(imageView, uri));
             }
         });
+    }
+
+    private void setImage(DownloadedImage downloadedImage) {
+        downloadedImage.getImageView().setImageBitmap(downloadedImage.getBitmap());
+        loading(false, downloadedImage.getImageView());
+        downloadedImage.getImageView().setClickable(true);
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
@@ -156,39 +206,84 @@ public class DeciderFragment extends Fragment {
         editor.putLong(LAST_POLL_TIMESTAMP, timestamp).apply();
     }
 
-    private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            String message = intent.getStringExtra("message");
-            Log.d("receiver", "Got message: " + message);
-            //Extract values from intent
-            String img1 = intent.getStringExtra(CONST.IMAGE_1);
-            String img2 = intent.getStringExtra(CONST.IMAGE_2);
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
+    private void loading(Boolean status, ImageView imageView) {
 
-            updateQuestionText(currentPoll);
-            getImage(img1, firstImg);
-            getImage(img2, secondImg);
-            updateProgessBar();
-        }
-    };
+        final RotateAnimation rotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(1000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setInterpolator(new LinearInterpolator());
 
-    private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            firstImg.setImageResource(0);
-            secondImg.setImageResource(0);
-            questionTextTV.setText(getString(R.string.no_more_polls));
-        }
-    };
+        if (status) {
+            imageView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
+            imageView.setColorFilter(Color.GRAY);
+            imageView.startAnimation(rotate);
 
-    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
-            saveLastPollTimestamp(currentPoll.getDate().getTime());
-            loadPoll();
+        } else {
+            imageView.clearColorFilter();
+            imageView.clearAnimation();
         }
-    };
+    }
+
+    private class DownloadImageTask {
+        private ImageView imageView;
+        private Uri uri;
+
+        public DownloadImageTask(ImageView imageView, Uri uri) {
+            this.imageView = imageView;
+            this.uri = uri;
+        }
+
+        public ImageView getImageView() {
+            return imageView;
+        }
+
+        public Uri getUri() {
+            return uri;
+        }
+    }
+
+    private class DownloadedImage {
+        private Bitmap bitmap;
+        private ImageView imageView;
+
+        public DownloadedImage(Bitmap bitmap, ImageView imageView) {
+            this.bitmap = bitmap;
+            this.imageView = imageView;
+        }
+
+        public Bitmap getBitmap() {
+            return bitmap;
+        }
+
+        public ImageView getImageView() {
+            return imageView;
+        }
+    }
+
+    private class DownloadImage extends AsyncTask<DownloadImageTask, Void, DownloadedImage> {
+
+        @Override
+        protected DownloadedImage doInBackground(DownloadImageTask... downloadImageTasks) {
+
+            Bitmap bitmap = null;
+            ImageView imageView = null;
+
+            for (DownloadImageTask downloadImageTask : downloadImageTasks) {
+                try {
+                    imageView = downloadImageTask.getImageView();
+                    bitmap = Picasso.with(getContext()).load(downloadImageTask.uri).get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return new DownloadedImage(bitmap, imageView);
+        }
+
+        @Override
+        protected void onPostExecute(DownloadedImage downloadedImage) {
+            super.onPostExecute(downloadedImage);
+            setImage(downloadedImage);
+        }
+    }
 }

@@ -204,11 +204,13 @@ public class NewQuestionFragment extends Fragment {
 
     private void handleStorageClick(int requestCode) {
         Intent inStorage = new Intent(Intent.ACTION_PICK);
-        File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String imageDirPath = imageDir.getPath();
-        Uri data = Uri.parse(imageDirPath);
-        inStorage.setDataAndType(data, "image/*");
-        frag.startActivityForResult(inStorage, requestCode);
+        if (inStorage.resolveActivity(getActivity().getPackageManager()) != null) {
+            File imageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            String imageDirPath = imageDir.getPath();
+            Uri data = Uri.parse(imageDirPath);
+            inStorage.setDataAndType(data, "image/*");
+            frag.startActivityForResult(inStorage, requestCode);
+        }
     }
 
     private void handleCameraClick(int requestCode) {

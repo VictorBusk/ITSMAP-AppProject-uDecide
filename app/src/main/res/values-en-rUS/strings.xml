@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">uDecide</string>
 
-    <string name="newPollNotify">Notification for every</string>
+    <string name="newPollNotify">Notification when</string>
     <string name="GenericImageError">Unable to find image</string>
     <string name="newPollCancel">Cancel</string>
     <string name="newPollSave">Save</string>
@@ -28,6 +28,8 @@
     <string name="FacebookSignInAuthenticationCanceled">Authentication canceled.</string>
     <string name="FacebookSignInAuthenticationError">Authentication error.</string>
     <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
+    <string name="Loading">Loading</string>
+    <string name="reset_decider">Reset decider</string>
 
 
 </resources>
