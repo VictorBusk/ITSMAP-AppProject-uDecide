@@ -7,16 +7,16 @@ import java.util.Date;
 
 public class Poll implements Parcelable {
 
-    public String question;
-    public int notifyNumber;
+    private String question;
+    private int notifyNumber;
     public boolean showForPublic;
-    public boolean archived;
-    public String image1ID;
-    public String image2ID;
-    public int image1Votes;
-    public int image2Votes;
-    public String userID;
-    public Date date;
+    private boolean archived;
+    private String image1ID;
+    private String image2ID;
+    private int image1Votes;
+    private int image2Votes;
+    private String userID;
+    private Date date;
     private int mData;
 
     public Poll() {}
