@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.action_reset) {
             setFragment(blankFragment);
             sharedPref.edit().remove(LAST_POLL_TIMESTAMP).apply();
+            sharedPref.edit().remove(FACEBOOK_LAST_UPDATE).apply();
         }
 
         return super.onOptionsItemSelected(item);
@@ -194,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 sharedPref.edit().putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
             } else {
                 Log.d(TAG, "getUser: next update: " + new Date(nextTimestamp));
+                updateNavHeader();
             }
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
@@ -275,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
 
-        Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
+        Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).centerInside().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
     }
