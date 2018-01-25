@@ -94,11 +94,15 @@ public class DeciderFragment extends Fragment {
     private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            firstImg.setImageResource(0);
-            secondImg.setImageResource(0);
-            questionTextTV.setText(getString(R.string.no_more_polls));
+            setEmptyDecider();
         }
     };
+
+    private void setEmptyDecider() {
+        firstImg.setImageResource(0);
+        secondImg.setImageResource(0);
+        questionTextTV.setText(getString(R.string.no_more_polls));
+    }
 
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
