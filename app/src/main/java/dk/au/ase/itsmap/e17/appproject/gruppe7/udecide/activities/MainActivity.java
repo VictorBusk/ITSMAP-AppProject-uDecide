@@ -41,7 +41,8 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.DeciderFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.MyQuestionsFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.NewQuestionFragment;
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.ConnectivityHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services.BackgroundService;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
@@ -60,11 +61,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DeciderFragment deciderFragment;
     private BlankFragment blankFragment;
     private NavigationView navigationView;
+    private ConnectivityHelper connectivityHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connectivityHelper = new ConnectivityHelper(MainActivity.this);
 
         firebaseHelper = new FirebaseHelper(this);
 
@@ -86,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager manager = getSupportFragmentManager();
 
             NewQuestionFragment savedNewQuestionFragment =
-                    (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+                    (NewQuestionFragment) manager.getFragment(savedInstanceState,
+                            NewQuestionFragment.class.getSimpleName());
 
             if (savedNewQuestionFragment != null)
                 newQuestionFragment = savedNewQuestionFragment;
@@ -99,7 +104,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        getUser();
+
+        if (connectivityHelper.isConnected(getApplicationContext()))
+            getUser();
+        else
+            startActivity(new Intent(MainActivity.this, OfflineActivity.class));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connectivityHelper.unRegisterReceiver();
     }
 
     @Override
@@ -298,14 +313,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setUpFragments() {
         if (newQuestionFragment == null) {
             newQuestionFragment = new NewQuestionFragment();
-        }
-        if (myQuestionsFragment == null) {
+
+        if (myQuestionsFragment == null)
             myQuestionsFragment = new MyQuestionsFragment();
-        }
-        if (deciderFragment == null) {
+
+        if (deciderFragment == null)
             deciderFragment = new DeciderFragment();
-        }
-        if (blankFragment == null) {
+
+        if (blankFragment == null)
             blankFragment = new BlankFragment();
         }
     }

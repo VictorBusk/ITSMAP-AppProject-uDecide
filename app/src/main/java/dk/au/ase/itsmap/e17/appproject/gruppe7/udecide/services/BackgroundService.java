@@ -24,7 +24,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities.MainActivity;
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Notification;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 

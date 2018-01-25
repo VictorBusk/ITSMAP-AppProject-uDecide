@@ -26,7 +26,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 // https://firebase.google.com/docs/auth/android/facebook-login?authuser=0
@@ -63,7 +63,6 @@ public class SignInActivity extends AppCompatActivity {
         loginButton.setReadPermissions(permissions);
         loginButton.registerCallback(callbackManager, facebookCallback());
     }
-
 
     @Override
     protected void onStart() {

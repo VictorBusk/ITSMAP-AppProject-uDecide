@@ -57,6 +57,8 @@
             android:name=".services.BackgroundService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity android:name=".activities.OfflineActivity"></activity>
     </application>
 
 </manifest>

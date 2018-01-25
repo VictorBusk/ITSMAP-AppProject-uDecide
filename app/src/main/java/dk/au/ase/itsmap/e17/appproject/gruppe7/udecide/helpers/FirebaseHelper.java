@@ -1,4 +1,4 @@
-package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper;
+package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers;
 
 import android.app.Activity;
 import android.content.Context;

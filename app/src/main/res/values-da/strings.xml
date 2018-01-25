@@ -21,6 +21,9 @@
     <string name="menu_logout">Log ud</string>
     <string name="menu_decide">Vælg</string>
 
+    <string name="offline_message">Ingen forbindelse</string>
+    <string name="offline_info">Du ser ud til at være offline. Prøv igen senere.</string>
+
     <string name="welcome_message">Velkommen til uDecide</string>
     <string name="welcome_info">Brug menuen til at navigere</string>
     <string name="no_more_polls">Ikke flere spørgsmål</string>
