@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
         TextView tvSubTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_subtitle_navHeader);
 
-        Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).centerInside().into(ivProfilePhotoNav);
+        Picasso.with(MainActivity.this).load(sharedPref.getString(FACEBOOK_PHOTO_URL, null)).fit().into(ivProfilePhotoNav);
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
     }
