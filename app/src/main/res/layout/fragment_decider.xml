@@ -40,7 +40,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text=""
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/secondQuestionImg"
         app:layout_constraintEnd_toEndOf="parent"

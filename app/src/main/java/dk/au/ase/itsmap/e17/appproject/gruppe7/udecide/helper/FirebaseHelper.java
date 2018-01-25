@@ -109,19 +109,21 @@ public class FirebaseHelper {
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
     public void incrementImageVotes(String imageVoteName) {
         int newVotes = 0;
-        if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
-            newVotes = currentPoll.getImage1Votes() + 1;
-        } else if (imageVoteName == CONST.IMAGE_2_VOTE_KEY) {
-            newVotes = currentPoll.getImage2Votes() + 1;
+        if (currentPoll != null) {
+            if (imageVoteName == CONST.IMAGE_1_VOTE_KEY) {
+                newVotes = currentPoll.getImage1Votes() + 1;
+            } else if (imageVoteName == CONST.IMAGE_2_VOTE_KEY) {
+                newVotes = currentPoll.getImage2Votes() + 1;
+            }
+            pollsDocRef.update(imageVoteName, newVotes)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("incrementer", "Image has been incremented");
+                        }
+                    });
+            sendMessagePollUpdate();
         }
-        pollsDocRef.update(imageVoteName, newVotes)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("incrementer", "Image has been incremented");
-                    }
-                });
-        sendMessagePollUpdate();
     }
 
     public void updateMyQuestionPolls(CollectionReference pollsRef, String facebookId) {
