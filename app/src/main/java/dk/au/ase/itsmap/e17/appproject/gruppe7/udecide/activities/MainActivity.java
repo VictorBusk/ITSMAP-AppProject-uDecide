@@ -74,9 +74,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         setUpFragments();
+
         if (savedInstanceState != null) {
             FragmentManager manager = getSupportFragmentManager();
-            newQuestionFragment = (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+
+            NewQuestionFragment savedNewQuestionFragment =
+                    (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+
+            if(savedNewQuestionFragment != null)
+                newQuestionFragment = savedNewQuestionFragment;
         } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, blankFragment).commit();
