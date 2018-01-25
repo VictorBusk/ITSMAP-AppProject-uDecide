@@ -40,6 +40,8 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POLLS_COLLECTION;
 
 public class NewQuestionFragment extends Fragment {
+    private final Fragment frag = this;
+    FirebaseHelper firebaseHelper;
     private TextView tvDecisionNotify;
     private RadioButton rbPublic, rbFriends;
     private Button btnSaveDec;
@@ -50,14 +52,18 @@ public class NewQuestionFragment extends Fragment {
     private SeekBar sbNotify;
     private View view;
     private String NotifyString, question;
-    private final Fragment frag = this;
     private ImageView ivFirstPic, ivSecondPic, ivFirstStorage,
             ivSecondStorage, ivFirstCamera, ivSecondCamera;
     private int firstPicVisibility = View.VISIBLE,
             secondPicVisibility = View.VISIBLE,
             firstPhotoVisibility = View.INVISIBLE,
             secondPhotoVisibility = View.INVISIBLE;
-    FirebaseHelper firebaseHelper;
+    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            resetUI();
+        }
+    };
 
     public NewQuestionFragment() {}
 
@@ -94,6 +100,13 @@ public class NewQuestionFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // retain this fragment
+        setRetainInstance(true);
     }
 
     @Override
@@ -309,16 +322,11 @@ public class NewQuestionFragment extends Fragment {
         ivFirstPic.setVisibility(photoVisibility);
         ivFirstPic.setImageBitmap(photo);
     }
+
     private void secondPic( int visibility, int photoVisibility, Bitmap photo) {
         ivSecondStorage.setVisibility(visibility);
         ivSecondCamera.setVisibility(visibility);
         ivSecondPic.setVisibility(photoVisibility);
         ivSecondPic.setImageBitmap(photo);
     }
-    private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            resetUI();
-        }
-    };
 }
