@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
-                editor.commit();
+                editor.apply();
                 updateNavHeader();
             }
         });
