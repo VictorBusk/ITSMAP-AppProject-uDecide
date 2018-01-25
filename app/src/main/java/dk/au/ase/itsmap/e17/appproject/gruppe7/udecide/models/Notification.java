@@ -6,8 +6,7 @@ public class Notification {
     private String title;
     private String text;
 
-    public Notification() {
-    }
+    public Notification() {}
 
     public Notification(int id, String title, String text) {
         this.id = id;
