@@ -91,7 +91,9 @@ public class BackgroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "Background service onDestroy");
-        registration.remove();
+        if (registration != null) {
+            registration.remove();
+        }
     }
 
     @Nullable
