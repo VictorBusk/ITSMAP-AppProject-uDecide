@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -33,9 +32,6 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POL
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_CHANNEL;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.LAST_POLL_TIMESTAMP;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFIED;
-import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
 // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
 // https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android
@@ -43,10 +39,10 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED
 public class BackgroundService extends Service {
 
     private static final String TAG = "BackgroundService";
+    FirebaseHelper firebaseHelper;
     private NotificationManager mNotificationManager;
     private CollectionReference pollsRef;
     private ListenerRegistration registration;
-    FirebaseHelper firebaseHelper;
 
     public BackgroundService() {
     }
