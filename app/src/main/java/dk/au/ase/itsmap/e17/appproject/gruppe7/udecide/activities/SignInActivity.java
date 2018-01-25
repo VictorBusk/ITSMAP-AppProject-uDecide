@@ -1,9 +1,12 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,14 +23,11 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 // https://firebase.google.com/docs/auth/android/facebook-login?authuser=0
 public class SignInActivity extends AppCompatActivity {
@@ -35,9 +35,9 @@ public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "SignInActivity";
     private String[] permissions = new String[]{"read_custom_friendlists", "public_profile", "user_friends", "email"};
 
-    private FirebaseAuth auth;
     private CallbackManager callbackManager;
     private LoginButton loginButton;
+    FirebaseHelper firebaseHelper;
 
     private TextView tvSignIn;
     private ImageView ivSignIn;
@@ -46,8 +46,9 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        firebaseHelper = new FirebaseHelper(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(SignInReceiver, new IntentFilter(CONST.SIGN_IN_EVENT));
 
-        auth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
         tvSignIn = findViewById(R.id.tvSignIn);
         ivSignIn = findViewById(R.id.ivSignIn);
@@ -113,25 +114,7 @@ public class SignInActivity extends AppCompatActivity {
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken: " + token);
 
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        auth.signInWithCredential(credential).addOnCompleteListener(this, signInWithCredentialOnCompleteListener());
-    }
-
-    private OnCompleteListener<AuthResult> signInWithCredentialOnCompleteListener() {
-
-        return new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "signInWithCredential:success");
-                    finish();
-                } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.getException());
-                    loading(false);
-                    Toast.makeText(SignInActivity.this, R.string.FirebaseSignInAuthenticationFailed, Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+        firebaseHelper.signInFirebase(token, this);
     }
 
     private void loading(Boolean status) {
@@ -155,4 +138,17 @@ public class SignInActivity extends AppCompatActivity {
             ivSignIn.clearAnimation();
         }
     }
+
+    private BroadcastReceiver SignInReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Boolean signInSucceeded = intent.getBooleanExtra(CONST.SIGN_IN_RESULT, false);
+            if (signInSucceeded) {
+                finish();
+            } else {
+                loading(false);
+                Toast.makeText(SignInActivity.this, R.string.FirebaseSignInAuthenticationFailed, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 }

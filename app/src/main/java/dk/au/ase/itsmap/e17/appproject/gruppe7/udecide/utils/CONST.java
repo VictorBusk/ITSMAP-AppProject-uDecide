@@ -7,7 +7,9 @@ public class CONST {
     public static final String IMAGE_1 = "image1";
     public static final String IMAGE_2 = "image2";
     public static final String CURRENT_POLL = "current_poll";
-    public static final String MY_POLLS = "myt_poll";
+    public static final String MY_POLLS = "my_poll";
+    public static final String SIGN_IN_EVENT = "sign_in_event";
+    public static final String SIGN_IN_RESULT = "sign_in_result";
 
     public static final String DB_POLLS_COLLECTION = "polls";
     public static final String DB_DATE = "date";
@@ -34,4 +36,12 @@ public class CONST {
     public static final int REQUEST_STORAGE1 = 303;
     public static final int REQUEST_STORAGE2 = 304;
 
+    public static final String FIRST_PIC_VISIBILITY = "firstPicVisibility";
+    public static final String SECOND_PIC_VISIBILITY = "secondPicVisibility";
+    public static final String QUESTION_TEXT = "QuestionText";
+    public static final String NOTIFY_NUMBER = "NotifyNumber";
+    public static final String PICTURE_ONE = "PictureOne";
+    public static final String PICTURE_TWO ="PictureTwo";
+    public static final String FIRST_PHOTO_VISIBILITY = "PhotoOne";
+    public static final String SECOND_PHOTO_VISIBILITY = "PhotoTwo";
 }

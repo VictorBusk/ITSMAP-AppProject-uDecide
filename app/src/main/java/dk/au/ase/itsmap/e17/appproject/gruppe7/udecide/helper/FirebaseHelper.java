@@ -1,5 +1,6 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,10 +10,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,10 +48,38 @@ public class FirebaseHelper {
     Poll currentPoll;
     DocumentReference pollsDocRef;
     private List<Poll> polls = new ArrayList<Poll>();
-
+    String TAG = "FirebaseHelper";
 
     public FirebaseHelper(Context context) {
         this.context = context;
+    }
+
+    public FirebaseUser extractUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public void signInFirebase(AccessToken token, Context context) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        auth.signInWithCredential(credential).addOnCompleteListener((Activity) context, signInWithCredentialOnCompleteListener());
+    }
+
+    private OnCompleteListener<AuthResult> signInWithCredentialOnCompleteListener() {
+
+        return new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Boolean signInSucceeded;
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "signInWithCredential:success");
+                    signInSucceeded = true;
+                } else {
+                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    signInSucceeded = false;
+                }
+                sendMessageSignInAttempted(signInSucceeded);
+            }
+        };
     }
 
     public void getPollData(Query publicPolls, final Set<String> facebookFriends) {
@@ -162,6 +197,14 @@ public class FirebaseHelper {
         byte[] data = baos.toByteArray();
 
         return data;
+    }
+
+    private void sendMessageSignInAttempted(Boolean signInResult) {
+        Log.d("Sign in attempted", "Broadcasting message");
+        Intent intent = new Intent(CONST.SIGN_IN_EVENT);
+        intent.putExtra(CONST.SIGN_IN_RESULT, signInResult);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     private void sendMessageNoMorePolls() {
