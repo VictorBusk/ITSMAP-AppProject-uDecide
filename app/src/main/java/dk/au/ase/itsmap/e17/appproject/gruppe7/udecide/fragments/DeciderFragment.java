@@ -97,13 +97,6 @@ public class DeciderFragment extends Fragment {
             setEmptyDecider();
         }
     };
-
-    private void setEmptyDecider() {
-        firstImg.setImageResource(0);
-        secondImg.setImageResource(0);
-        questionTextTV.setText(getString(R.string.no_more_polls));
-    }
-
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -115,6 +108,12 @@ public class DeciderFragment extends Fragment {
 
     public DeciderFragment() {
         // Required empty public constructor
+    }
+
+    private void setEmptyDecider() {
+        firstImg.setImageResource(0);
+        secondImg.setImageResource(0);
+        questionTextTV.setText(getString(R.string.no_more_polls));
     }
 
     @Override
