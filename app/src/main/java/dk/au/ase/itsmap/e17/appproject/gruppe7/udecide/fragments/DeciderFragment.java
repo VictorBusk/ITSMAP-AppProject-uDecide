@@ -61,7 +61,7 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
-    private boolean loading = false;
+    private int tasks = 0;
     private Bitmap image1, image2;
     private boolean imagesSaved = false;
     private ImageView firstImg, secondImg;
@@ -82,8 +82,8 @@ public class DeciderFragment extends Fragment {
 
             updateQuestionText(currentPoll);
             if (imagesSaved) {
-                setImage(new DownloadedImage(image1, firstImg));
-                setImage(new DownloadedImage(image2, secondImg));
+                firstImg.setImageBitmap(image1);
+                secondImg.setImageBitmap(image2);
                 imagesSaved = false;
             } else {
                 getImage(img1, firstImg);
@@ -156,7 +156,7 @@ public class DeciderFragment extends Fragment {
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
 
         if (savedInstanceState != null) {
-            imagesSaved = true;
+            imagesSaved = savedInstanceState.getBoolean("IMAGESSAVED");
             image1 = savedInstanceState.getParcelable("IMAGE1");
             image2 = savedInstanceState.getParcelable("IMAGE2");
         }
@@ -213,6 +213,7 @@ public class DeciderFragment extends Fragment {
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
         loading(true, imageView);
+        tasks++;
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -225,6 +226,7 @@ public class DeciderFragment extends Fragment {
         downloadedImage.getImageView().setImageBitmap(downloadedImage.getBitmap());
         loading(false, downloadedImage.getImageView());
         downloadedImage.getImageView().setClickable(true);
+        tasks--;
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
@@ -241,13 +243,11 @@ public class DeciderFragment extends Fragment {
         rotate.setInterpolator(new LinearInterpolator());
 
         if (status) {
-            loading = true;
             imageView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
             imageView.setColorFilter(Color.GRAY);
             imageView.startAnimation(rotate);
 
         } else {
-            loading = false;
             imageView.clearColorFilter();
             imageView.clearAnimation();
         }
@@ -255,11 +255,15 @@ public class DeciderFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (questionTextTV.getText() != getText(R.string.no_more_polls) && loading == false) {
+
+        if (tasks == 0 && questionTextTV.getText() != getText(R.string.no_more_polls)) {
             BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
             BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
             outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
             outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
+            outState.putBoolean("IMAGESSAVED", true);
+        } else {
+            outState.putBoolean("IMAGESSAVED", false);
         }
         super.onSaveInstanceState(outState);
     }
