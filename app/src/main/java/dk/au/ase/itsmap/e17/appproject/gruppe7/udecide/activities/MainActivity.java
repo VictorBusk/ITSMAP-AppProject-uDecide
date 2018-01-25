@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editor.putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
             } else {
                 Log.d(TAG, "getUser: next update: " + new Date(nextTimestamp));
-                // updateNavHeader();
+                updateNavHeader();
             }
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));

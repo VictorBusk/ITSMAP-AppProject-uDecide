@@ -208,3 +208,4 @@ fabric.properties
 /keystore.properties
 /sonar-project.properties
 !gradle-wrapper.jar
+app/uDecide.jks
