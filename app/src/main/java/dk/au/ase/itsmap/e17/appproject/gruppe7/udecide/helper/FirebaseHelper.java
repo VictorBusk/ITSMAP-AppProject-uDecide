@@ -47,24 +47,27 @@ public class FirebaseHelper {
         this.context = context;
     }
 
-    public void getPollData(Query publicPolls, final Set<String> stringSet) {
-        currentPoll = null;
-        publicPolls.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
-                                currentPoll = document.toObject(Poll.class);
-                                deciderBroadcast(currentPoll, stringSet);
-                                pollsDocRef = document.getReference();
-                            }
-                        } else {
-                            Log.d(this.toString(), "Error getting unfiltered documents: ", task.getException());
+    public void getPollData(Query publicPolls, final Set<String> facebookFriends) {
+        final Task<QuerySnapshot> dataFetch = publicPolls.get();
+        dataFetch.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    if (!task.getResult().isEmpty()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Log.d(String.valueOf(this), "DocumentSnapshot data: " + document.getData());
+                            currentPoll = document.toObject(Poll.class);
+                            deciderBroadcast(currentPoll, facebookFriends);
+                            pollsDocRef = document.getReference();
                         }
+                    } else {
+                        sendMessageNoMorePolls();
                     }
-                });
+                } else {
+                    Log.d(this.toString(), "Error getting unfiltered documents: ", task.getException());
+                }
+            }
+        });
     }
 
     //Inspired by: https://dzone.com/articles/cloud-firestore-read-write-update-and-delete
@@ -99,10 +102,8 @@ public class FirebaseHelper {
                 });
     }
 
-    private Poll deciderBroadcast(Poll currentPoll, final Set<String> stringSet){
-        if (currentPoll == null) {
-            sendMessageNoMorePolls();
-        } else if(currentPoll.showForPublic ||  stringSet.contains(currentPoll.getUserID())) {
+    private Poll deciderBroadcast(Poll currentPoll, final Set<String> facebookFriends) {
+        if (currentPoll.showForPublic || facebookFriends.contains(currentPoll.getUserID())) {
             sendMessagePollAcquired(currentPoll);
         } else {
             sendMessagePollUpdate();
@@ -110,8 +111,7 @@ public class FirebaseHelper {
         return currentPoll;
     }
 
-    public void savePollToFirebase(CollectionReference pollsCollection, Poll poll, final Context context)
-    {
+    public void savePollToFirebase(CollectionReference pollsCollection, Poll poll, final Context context) {
         pollsCollection.add(poll)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -135,8 +135,7 @@ public class FirebaseHelper {
                 "Your poll is created", Toast.LENGTH_LONG).show();
     }
 
-    public String uploadImageToFirebase(Bitmap bitmap)
-    {
+    public String uploadImageToFirebase(Bitmap bitmap) {
         UUID uuid = UUID.randomUUID();
         final String imageID = uuid.toString();
 
@@ -157,8 +156,7 @@ public class FirebaseHelper {
         return imageID;
     }
 
-    private byte[] convertBitmap(Bitmap bitmap)
-    {
+    private byte[] convertBitmap(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
