@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editor.putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
             } else {
                 Log.d(TAG, "getUser: next update: " + new Date(nextTimestamp));
-//                updateNavHeader();
+                // updateNavHeader();
             }
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setUpFragments() {
-        if (newQuestionFragment == null) {
+        if (newQuestionFragment == null)
             newQuestionFragment = new NewQuestionFragment();
 
         if (myQuestionsFragment == null)
@@ -316,6 +316,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (blankFragment == null)
             blankFragment = new BlankFragment();
-        }
     }
 }

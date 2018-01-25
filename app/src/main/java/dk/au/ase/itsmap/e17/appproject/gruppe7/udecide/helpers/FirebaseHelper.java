@@ -149,7 +149,6 @@ public class FirebaseHelper {
                 });
     }
 
-
     private Poll deciderBroadcast(Poll currentPoll, final Set<String> facebookFriends) {
         if (currentPoll.showForPublic || facebookFriends.contains(currentPoll.getUserID())) {
             sendMessagePollAcquired(currentPoll);

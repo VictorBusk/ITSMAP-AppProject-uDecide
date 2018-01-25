@@ -17,7 +17,6 @@ public class CONST {
 
     public static final String SHARED_PREFERENCES = "SharedPreferences";
     public static final String LAST_POLL_TIMESTAMP = "lastPollTimestamp";
-    public static final String NOTIFIED = "notified";
 
     public static final String FACEBOOK_ID = "facebookId";
     public static final String FACEBOOK_NAME = "facebookName";

@@ -45,8 +45,7 @@ public class BackgroundService extends Service {
     private ListenerRegistration registration;
     private boolean mRunning;
 
-    public BackgroundService() {
-    }
+    public BackgroundService() {}
 
     @Override
     public void onCreate() {
@@ -84,6 +83,7 @@ public class BackgroundService extends Service {
         } else {
             Log.d(TAG, "onStartCommand: is Running");
         }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -146,6 +146,7 @@ public class BackgroundService extends Service {
 
                 mNotificationManager.notify(notification.getId(), builder.build());
             }
+
             return null;
         }
     }
