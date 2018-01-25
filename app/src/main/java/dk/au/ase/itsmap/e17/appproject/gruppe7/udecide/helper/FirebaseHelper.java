@@ -39,6 +39,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_NUMBER;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
 
 //Inspired by own Assignment 2 solution
@@ -136,6 +137,16 @@ public class FirebaseHelper {
                     }
                 });
     }
+
+    public void removePollNotification(DocumentReference pollsRef) {
+        pollsRef.update(NOTIFY_NUMBER, 0).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "NotifyNumber successfully updated!");
+                    }
+                });
+    }
+
 
     private Poll deciderBroadcast(Poll currentPoll, final Set<String> facebookFriends) {
         if (currentPoll.showForPublic || facebookFriends.contains(currentPoll.getUserID())) {

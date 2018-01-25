@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -14,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities.MainActivity;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Notification;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 
@@ -30,6 +33,9 @@ import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_POL
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_USER_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_ID;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFY_CHANNEL;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.LAST_POLL_TIMESTAMP;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.NOTIFIED;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 
 // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
 // https://stackoverflow.com/questions/37751823/how-to-use-firebase-eventlistener-as-a-background-service-in-android
@@ -40,6 +46,7 @@ public class BackgroundService extends Service {
     private NotificationManager mNotificationManager;
     private CollectionReference pollsRef;
     private ListenerRegistration registration;
+    FirebaseHelper firebaseHelper;
 
     public BackgroundService() {
     }
@@ -48,6 +55,8 @@ public class BackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "Background service onCreate");
+
+        firebaseHelper = new FirebaseHelper(getBaseContext());
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -92,11 +101,13 @@ public class BackgroundService extends Service {
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 for (DocumentSnapshot documentSnapshot : documentSnapshots) {
                     Poll poll = documentSnapshot.toObject(Poll.class);
-                    if (poll.getNotifyNumber() != 0 && ((poll.getImage1Votes() + poll.getImage2Votes()) % poll.getNotifyNumber() == 0)) {
+                    if (poll.getNotifyNumber() != 0 && (poll.getImage1Votes() + poll.getImage2Votes() == poll.getNotifyNumber())) {
                         int numericValueOfString = 0;
                         for (char ch : documentSnapshot.getId().toCharArray())
                             numericValueOfString += Character.getNumericValue(ch);
                         new SendNotification().execute(new Notification(numericValueOfString, poll.getQuestion(), poll.getImage1Votes() + "/" + poll.getImage2Votes()));
+                        DocumentReference documentReference = documentSnapshot.getReference();
+                        firebaseHelper.removePollNotification(documentReference);
                     }
                 }
             }
