@@ -66,7 +66,6 @@ public class DeciderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_decider, container, false);
-
         firebaseHelper = new FirebaseHelper(getContext());
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NewPollmsgReceiver, new IntentFilter(CONST.UPDATE_EVENT)); //Listen for a local broadcast with this action
@@ -137,8 +136,8 @@ public class DeciderFragment extends Fragment {
         } else {
             publicPolls = pollsCollection.orderBy(DB_DATE, Query.Direction.ASCENDING).limit(1);
         }
-        final Set<String> stringSet = preferences.getStringSet(FACEBOOK_FRIENDS_IDS, null);
-        firebaseHelper.getPollData(publicPolls, stringSet);
+        final Set<String> facebookFriends = preferences.getStringSet(FACEBOOK_FRIENDS_IDS, null);
+        firebaseHelper.getPollData(publicPolls, facebookFriends);
     }
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
