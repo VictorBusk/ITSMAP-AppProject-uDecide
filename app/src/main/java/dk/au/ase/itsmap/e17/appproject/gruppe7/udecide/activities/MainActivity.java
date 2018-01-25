@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         connectivityHelper = new ConnectivityHelper(MainActivity.this);
-
         firebaseHelper = new FirebaseHelper(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -99,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fragmentContent, blankFragment).commit();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        connectivityHelper.unregisterInternetReceiver();
+        super.onDestroy();
     }
 
     @Override

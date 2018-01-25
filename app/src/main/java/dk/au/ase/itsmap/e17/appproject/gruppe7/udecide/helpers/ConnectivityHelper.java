@@ -46,6 +46,12 @@ public class ConnectivityHelper {
         context.registerReceiver (internetReceiver, filter);
     }
 
+    public void unregisterInternetReceiver()
+    {
+        context.unregisterReceiver (internetReceiver);
+        internetReceiver = null;
+    }
+
     public boolean isConnected(Context context) {
         final ConnectivityManager manager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
