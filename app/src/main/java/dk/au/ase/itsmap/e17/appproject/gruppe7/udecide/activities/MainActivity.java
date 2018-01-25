@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DeciderFragment deciderFragment;
     private BlankFragment blankFragment;
     private NavigationView navigationView;
-    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         firebaseHelper = new FirebaseHelper(this);
-        sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -121,19 +120,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         int id = item.getItemId();
-
         if (id == R.id.action_logout) {
             setFragment(blankFragment);
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
             stopBackgroundService();
+            editor.remove(FACEBOOK_LAST_UPDATE).apply();
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
             return true;
         } else if (id == R.id.action_reset) {
             setFragment(blankFragment);
-            sharedPref.edit().remove(LAST_POLL_TIMESTAMP).apply();
-            sharedPref.edit().remove(FACEBOOK_LAST_UPDATE).apply();
+            editor.remove(LAST_POLL_TIMESTAMP);
+            editor.remove(FACEBOOK_LAST_UPDATE);
+            editor.apply();
         }
 
         return super.onOptionsItemSelected(item);
@@ -143,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Fragment fragment = null;
-
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         switch (item.getItemId()) {
             case R.id.nav_decide:
                 fragment = deciderFragment;
@@ -159,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 FirebaseAuth.getInstance().signOut();
                 LoginManager.getInstance().logOut();
                 stopBackgroundService();
+                editor.remove(FACEBOOK_LAST_UPDATE).apply();
                 startActivity(new Intent(MainActivity.this, SignInActivity.class));
                 break;
             default:
@@ -186,16 +190,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void getUser() {
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
         FirebaseUser user = firebaseHelper.extractUser();
         if (user != null) {
             Long nextTimestamp = sharedPref.getLong(FACEBOOK_LAST_UPDATE, 0);
             if (nextTimestamp < new Date().getTime()) {
                 updateUserData();
                 startBackgroundService();
-                sharedPref.edit().putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
+                editor.putLong(FACEBOOK_LAST_UPDATE, new Date().getTime() + 180000).apply();
             } else {
                 Log.d(TAG, "getUser: next update: " + new Date(nextTimestamp));
-                updateNavHeader();
+//                updateNavHeader();
             }
         } else {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
@@ -205,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // ITSMAP L7 Services and Asynch Processing - DemoCode: ServicesDemo
     private void startBackgroundService() {
         Log.i(TAG, "startBackgroundService");
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
         Intent backgroundServiceIntent = new Intent(MainActivity.this, BackgroundService.class);
         backgroundServiceIntent.putExtra(FACEBOOK_ID, sharedPref.getString(FACEBOOK_ID, null));
         startService(backgroundServiceIntent);
@@ -220,6 +227,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateUserData() {
         Log.i(TAG, "updateUserData");
 
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
+
         GraphRequest meRequest = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
@@ -227,9 +237,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Log.i(TAG, "meRequest:JSONObject" + object);
                         try {
-                            sharedPref.edit().putString(FACEBOOK_ID, object.getString("id")).apply();
-                            sharedPref.edit().putString(FACEBOOK_NAME, object.getString("name")).apply();
-                            sharedPref.edit().putString(FACEBOOK_PHOTO_URL, object.getJSONObject("picture").getJSONObject("data").getString("url")).apply();
+                            editor.putString(FACEBOOK_ID, object.getString("id"));
+                            editor.putString(FACEBOOK_NAME, object.getString("name"));
+                            editor.putString(FACEBOOK_PHOTO_URL, object.getJSONObject("picture").getJSONObject("data").getString("url"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -254,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 e.printStackTrace();
                             }
                         }
-                        sharedPref.edit().putStringSet(FACEBOOK_FRIENDS_IDS, set).apply();
+                        editor.putStringSet(FACEBOOK_FRIENDS_IDS, set);
                     }
                 });
 
@@ -263,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onBatchCompleted(GraphRequestBatch batch) {
                 Log.i(TAG, "newMyFriendsRequest:GraphRequestBatch" + batch);
+                editor.commit();
                 updateNavHeader();
             }
         });
@@ -272,6 +283,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // https://stackoverflow.com/questions/42243341/navigation-drawer-header-how-to-put-name-and-profile-pic-image-from-google-sign
     private void updateNavHeader() {
         Log.i(TAG, "updateNavHeader");
+
+        SharedPreferences sharedPref = getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         ImageView ivProfilePhotoNav = navigationView.getHeaderView(0).findViewById(R.id.iv_navHeader);
         TextView tvTitleNav = navigationView.getHeaderView(0).findViewById(R.id.tv_title_navHeader);
