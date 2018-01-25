@@ -245,11 +245,12 @@ public class DeciderFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
-        BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
-        outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
-        outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
-
+        if (questionTextTV.getText() != getText(R.string.no_more_polls)) {
+            BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
+            BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
+            outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
+            outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
+        }
         super.onSaveInstanceState(outState);
     }
 
