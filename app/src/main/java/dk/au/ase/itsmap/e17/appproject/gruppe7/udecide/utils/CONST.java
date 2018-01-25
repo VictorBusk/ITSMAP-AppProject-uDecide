@@ -23,6 +23,7 @@ public class CONST {
     public static final String FACEBOOK_NAME = "facebookName";
     public static final String FACEBOOK_PHOTO_URL = "facebookPhotoUrl";
     public static final String FACEBOOK_FRIENDS_IDS = "facebookFriendsIds";
+    public static final String FACEBOOK_LAST_UPDATE = "facebookLastUpdate";
 
     public static final String NOTIFY_CHANNEL = "uDecide";
     public static final String UPDATE_EVENT = "update-list-event";
