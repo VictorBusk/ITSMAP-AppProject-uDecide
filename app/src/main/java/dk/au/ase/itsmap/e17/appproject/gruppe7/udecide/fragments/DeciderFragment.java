@@ -117,6 +117,7 @@ public class DeciderFragment extends Fragment {
         firstImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                firstImg.setClickable(false);
                 firebaseHelper.incrementImageVotes(CONST.IMAGE_1_VOTE_KEY);
             }
         });
@@ -124,6 +125,7 @@ public class DeciderFragment extends Fragment {
         secondImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                secondImg.setClickable(false);
                 firebaseHelper.incrementImageVotes(CONST.IMAGE_2_VOTE_KEY);
             }
         });
@@ -147,6 +149,8 @@ public class DeciderFragment extends Fragment {
 
         firstImg = view.findViewById(R.id.firstQuestionImg);
         secondImg = view.findViewById(R.id.secondQuestionImg);
+        firstImg.setClickable(false);
+        secondImg.setClickable(false);
     }
 
     private void updateProgessBar() {
@@ -192,7 +196,8 @@ public class DeciderFragment extends Fragment {
 
     private void setImage(DownloadedImage downloadedImage) {
         downloadedImage.getImageView().setImageBitmap(downloadedImage.getBitmap());
-        loading(false, downloadedImage.imageView);
+        loading(false, downloadedImage.getImageView());
+        downloadedImage.getImageView().setClickable(true);
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
