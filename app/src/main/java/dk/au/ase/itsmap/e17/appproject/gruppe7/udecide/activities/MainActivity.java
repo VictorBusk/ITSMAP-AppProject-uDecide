@@ -1,8 +1,13 @@
 package dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.activities;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -40,6 +45,7 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.BlankFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.DeciderFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.MyQuestionsFragment;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.fragments.NewQuestionFragment;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.ConnectivityHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.services.BackgroundService;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
@@ -55,11 +61,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DeciderFragment deciderFragment;
     private BlankFragment blankFragment;
     private NavigationView navigationView;
+    private ConnectivityHelper connectivityHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connectivityHelper = new ConnectivityHelper(MainActivity.this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -79,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager manager = getSupportFragmentManager();
 
             NewQuestionFragment savedNewQuestionFragment =
-                    (NewQuestionFragment) manager.getFragment(savedInstanceState, "NewQuestionFragment");
+                    (NewQuestionFragment) manager.getFragment(savedInstanceState,
+                            NewQuestionFragment.class.getSimpleName());
 
             if(savedNewQuestionFragment != null)
                 newQuestionFragment = savedNewQuestionFragment;
@@ -93,13 +103,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            updateUserData();
-            startBackgroundService();
-        } else {
-            startActivity(new Intent(MainActivity.this, SignInActivity.class));
-        }
+        if (connectivityHelper.isConnected(getApplicationContext()))
+        {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                updateUserData();
+                startBackgroundService();
+            } else
+                startActivity(new Intent(MainActivity.this, SignInActivity.class));
+        } else
+            startActivity(new Intent(MainActivity.this, OfflineActivity.class));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connectivityHelper.unRegisterReceiver();
     }
 
     @Override
@@ -262,18 +281,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvTitleNav.setText(sharedPref.getString(FACEBOOK_NAME, null));
         tvSubTitleNav.setText(sharedPref.getString(FACEBOOK_ID, null));
     }
+
     public void setUpFragments(){
-        if (newQuestionFragment == null) {
+        if (newQuestionFragment == null)
             newQuestionFragment = new NewQuestionFragment();
-        }
-        if (myQuestionsFragment == null) {
+
+        if (myQuestionsFragment == null)
             myQuestionsFragment = new MyQuestionsFragment();
-        }
-        if (deciderFragment == null) {
+
+        if (deciderFragment == null)
             deciderFragment = new DeciderFragment();
-        }
-        if (blankFragment == null) {
+
+        if (blankFragment == null)
             blankFragment = new BlankFragment();
-        }
     }
 }

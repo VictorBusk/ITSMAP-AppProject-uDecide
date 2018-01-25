@@ -27,11 +27,13 @@
     <string name="welcome_message">Welcome to uDecide</string>
     <string name="welcome_info">Feel free to use the menu to navigate</string>
 
+    <string name="offline_message">Missing connection</string>
+    <string name="offline_info">It appears that you are offline. Try again later.</string>
+
     <string name="no_more_polls">No more questions</string>
     <string name="notification_description">Vote alert triggered: </string>
     <string name="FacebookSignInAuthenticationCanceled">Authentication canceled.</string>
     <string name="FacebookSignInAuthenticationError">Authentication error.</string>
     <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
-
 
 </resources>

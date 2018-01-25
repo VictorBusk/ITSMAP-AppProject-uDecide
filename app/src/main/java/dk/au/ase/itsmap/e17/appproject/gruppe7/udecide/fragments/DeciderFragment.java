@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.Set;
 
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
-import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helper.FirebaseHelper;
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.helpers.FirebaseHelper;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
