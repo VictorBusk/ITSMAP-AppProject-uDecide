@@ -91,6 +91,7 @@ public class NewQuestionFragment extends Fragment {
         outState.putInt(CONST.SECOND_PIC_VISIBILITY, secondPicVisibility);
         super.onSaveInstanceState(outState);
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

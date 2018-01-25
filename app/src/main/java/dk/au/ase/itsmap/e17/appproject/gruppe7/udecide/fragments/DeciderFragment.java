@@ -63,6 +63,7 @@ public class DeciderFragment extends Fragment {
     private TextView questionTextTV, myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
+
     private BroadcastReceiver NewPollmsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -80,6 +81,7 @@ public class DeciderFragment extends Fragment {
             updateProgessBar();
         }
     };
+
     private BroadcastReceiver NoMorePollsMsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -88,6 +90,7 @@ public class DeciderFragment extends Fragment {
             questionTextTV.setText(getString(R.string.no_more_polls));
         }
     };
+
     private BroadcastReceiver UpdatePollReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
