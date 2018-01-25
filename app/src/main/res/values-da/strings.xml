@@ -28,5 +28,7 @@
     <string name="FacebookSignInAuthenticationCanceled">Godkendelse annulleret.</string>
     <string name="FacebookSignInAuthenticationError">Godkendelse fejl.</string>
     <string name="FirebaseSignInAuthenticationFailed">Godkendelse fejlet.</string>
+    <string name="Loading">Loading</string>
+    <string name="reset_decider">Reset decider</string>
 
 </resources>
