@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,12 +28,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
@@ -181,19 +182,17 @@ public class DeciderFragment extends Fragment {
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
     public void getImage(String imageId, final ImageView imageView) {
         loading(true, imageView);
-        try {
-            final File tempFile = File.createTempFile(imageId, null, getContext().getCacheDir());
-            storageRef.child(STORAGE_IMAGES_PATH + imageId).getFile(tempFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Log.i("getFile", "onSuccess: " + tempFile);
-                    Picasso.with(getContext()).load(tempFile).noFade().noPlaceholder().fit().centerInside().into(imageView);
-                    loading(false, imageView);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                new DownloadImage().execute(new DownloadImageTask(imageView, uri));
+            }
+        });
+    }
+
+    private void setImage(DownloadedImage downloadedImage) {
+        downloadedImage.getImageView().setImageBitmap(downloadedImage.getBitmap());
+        loading(false, downloadedImage.imageView);
     }
 
     //Shared preferences inspired by: https://stackoverflow.com/questions/23024831/android-shared-preferences-example
@@ -217,6 +216,69 @@ public class DeciderFragment extends Fragment {
         } else {
             imageView.clearColorFilter();
             imageView.clearAnimation();
+        }
+    }
+
+    private class DownloadImageTask {
+        private ImageView imageView;
+        private Uri uri;
+
+        public DownloadImageTask(ImageView imageView, Uri uri) {
+            this.imageView = imageView;
+            this.uri = uri;
+        }
+
+        public ImageView getImageView() {
+            return imageView;
+        }
+
+        public Uri getUri() {
+            return uri;
+        }
+    }
+
+    private class DownloadedImage {
+        private Bitmap bitmap;
+        private ImageView imageView;
+
+        public DownloadedImage(Bitmap bitmap, ImageView imageView) {
+            this.bitmap = bitmap;
+            this.imageView = imageView;
+        }
+
+        public Bitmap getBitmap() {
+            return bitmap;
+        }
+
+        public ImageView getImageView() {
+            return imageView;
+        }
+    }
+
+    private class DownloadImage extends AsyncTask<DownloadImageTask, Void, DownloadedImage> {
+
+        @Override
+        protected DownloadedImage doInBackground(DownloadImageTask... downloadImageTasks) {
+
+            Bitmap bitmap = null;
+            ImageView imageView = null;
+
+            for (DownloadImageTask downloadImageTask : downloadImageTasks) {
+                try {
+                    imageView = downloadImageTask.getImageView();
+                    bitmap = Picasso.with(getContext()).load(downloadImageTask.uri).get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return new DownloadedImage(bitmap, imageView);
+        }
+
+        @Override
+        protected void onPostExecute(DownloadedImage downloadedImage) {
+            super.onPostExecute(downloadedImage);
+            setImage(downloadedImage);
         }
     }
 }
