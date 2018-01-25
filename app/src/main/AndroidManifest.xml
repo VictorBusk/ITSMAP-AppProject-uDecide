@@ -30,7 +30,6 @@
         </activity>
         <activity
             android:name=".activities.SignInActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
