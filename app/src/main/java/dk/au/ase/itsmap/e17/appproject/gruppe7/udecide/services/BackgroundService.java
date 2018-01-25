@@ -74,7 +74,7 @@ public class BackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Background service onStartCommand");
 
-        if (!mRunning) {
+        if (!mRunning && intent != null) {
             mRunning = true;
             Log.d(TAG, "onStartCommand: is Starting");
             String facebookId = intent.getStringExtra(FACEBOOK_ID);
