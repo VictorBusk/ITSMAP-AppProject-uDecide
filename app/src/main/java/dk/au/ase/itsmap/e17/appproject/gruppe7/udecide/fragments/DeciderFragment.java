@@ -45,6 +45,11 @@ import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.DB_DATE;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.FACEBOOK_FRIENDS_IDS;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.IMAGES_SAVED;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.IMAGE_1;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.IMAGE_1_BITMAP;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.IMAGE_2;
+import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.IMAGE_2_BITMAP;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.LAST_POLL_TIMESTAMP;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.SHARED_PREFERENCES;
 import static dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST.STORAGE_IMAGES_PATH;
@@ -63,12 +68,14 @@ public class DeciderFragment extends Fragment {
     FirebaseHelper firebaseHelper;
     AsyncTask<DownloadImageTask, Void, DownloadedImage> downloadImage1;
     AsyncTask<DownloadImageTask, Void, DownloadedImage> downloadImage2;
-    Uri image1Uri, image2Uri;
     private int tasks = 0;
-    private Bitmap image1, image2;
+    private Bitmap image1;
+    private Bitmap image2;
     private boolean imagesSaved = false;
-    private ImageView firstImg, secondImg;
-    private TextView questionTextTV, myProgressTextTv;
+    private ImageView firstImg;
+    private ImageView secondImg;
+    private TextView questionTextTV;
+    private TextView myProgressTextTv;
     private ProgressBar lastQuestionResult;
     private FirebaseFirestore db;
 
@@ -79,8 +86,8 @@ public class DeciderFragment extends Fragment {
             String message = intent.getStringExtra("message");
             Log.d("receiver", "Got message: " + message);
             //Extract values from intent
-            String img1 = intent.getStringExtra(CONST.IMAGE_1);
-            String img2 = intent.getStringExtra(CONST.IMAGE_2);
+            String img1 = intent.getStringExtra(IMAGE_1);
+            String img2 = intent.getStringExtra(IMAGE_2);
             currentPoll = intent.getParcelableExtra(CONST.CURRENT_POLL);
 
             updateQuestionText(currentPoll);
@@ -136,8 +143,6 @@ public class DeciderFragment extends Fragment {
 
         downloadImage1 = new DownloadImage();
         downloadImage2 = new DownloadImage();
-        image1Uri = Uri.EMPTY;
-        image2Uri = Uri.EMPTY;
         intitializeUIElements();
         preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -163,11 +168,9 @@ public class DeciderFragment extends Fragment {
         pollsCollection = db.collection(CONST.DB_POLLS_COLLECTION);
 
         if (savedInstanceState != null) {
-            imagesSaved = savedInstanceState.getBoolean("IMAGESSAVED");
-            image1 = savedInstanceState.getParcelable("IMAGE1");
-            image2 = savedInstanceState.getParcelable("IMAGE2");
-            image1Uri = Uri.parse(savedInstanceState.getString("URI1", Uri.EMPTY.toString()));
-            image2Uri = Uri.parse(savedInstanceState.getString("URI2", Uri.EMPTY.toString()));
+            imagesSaved = savedInstanceState.getBoolean(IMAGES_SAVED);
+            image1 = savedInstanceState.getParcelable(IMAGE_1);
+            image2 = savedInstanceState.getParcelable(IMAGE_2);
         }
 
         loadPoll();
@@ -177,7 +180,6 @@ public class DeciderFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        Log.d("TAG", "onDestroyView: ");
         downloadImage1.cancel(true);
         downloadImage2.cancel(true);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(NewPollmsgReceiver);
@@ -237,12 +239,7 @@ public class DeciderFragment extends Fragment {
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Log.i("getImage1", "onSuccess: " + uri);
-                Log.i("setImage1", "onSuccess: " + image1Uri);
-                if (!image1Uri.toString().equals(uri.toString())) {
-                    image1Uri = uri;
                     downloadImage1 = new DownloadImage().execute(new DownloadImageTask(firstImg, uri));
-                }
             }
         });
     }
@@ -254,12 +251,7 @@ public class DeciderFragment extends Fragment {
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Log.i("getImage2", "onSuccess: " + uri);
-                Log.i("setImage2", "onSuccess: " + image2Uri);
-                if (!image2Uri.toString().equals(uri.toString())) {
-                    image2Uri = uri;
                     downloadImage2 = new DownloadImage().execute(new DownloadImageTask(secondImg, uri));
-                }
             }
         });
     }
@@ -301,14 +293,12 @@ public class DeciderFragment extends Fragment {
         if (tasks == 0 && questionTextTV.getText() != getText(R.string.no_more_polls)) {
             BitmapDrawable firstImgDrawable = (BitmapDrawable) firstImg.getDrawable();
             BitmapDrawable secondImgDrawable = (BitmapDrawable) secondImg.getDrawable();
-            outState.putParcelable("IMAGE1", firstImgDrawable.getBitmap());
-            outState.putParcelable("IMAGE2", secondImgDrawable.getBitmap());
-            outState.putBoolean("IMAGESSAVED", true);
+            outState.putParcelable(IMAGE_1_BITMAP, firstImgDrawable.getBitmap());
+            outState.putParcelable(IMAGE_2_BITMAP, secondImgDrawable.getBitmap());
+            outState.putBoolean(IMAGES_SAVED, true);
         } else {
-            outState.putBoolean("IMAGESSAVED", false);
+            outState.putBoolean(IMAGES_SAVED, false);
         }
-        outState.putString("URI1", image1Uri.toString());
-        outState.putString("URI1", image2Uri.toString());
         super.onSaveInstanceState(outState);
     }
 
@@ -367,21 +357,8 @@ public class DeciderFragment extends Fragment {
 
         @Override
         protected void onPostExecute(DownloadedImage downloadedImage) {
-            Log.i("DownloadImage", "Done: " + tasks);
             setImage(downloadedImage);
             super.onPostExecute(downloadedImage);
-        }
-
-        @Override
-        protected void onCancelled() {
-            Log.i("DownloadImage", "Cancelled: " + tasks);
-            super.onCancelled();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            Log.i("DownloadImage", "Started: " + tasks);
-            super.onPreExecute();
         }
     }
 }
