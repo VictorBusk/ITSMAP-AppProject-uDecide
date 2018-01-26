@@ -169,8 +169,8 @@ public class DeciderFragment extends Fragment {
 
         if (savedInstanceState != null) {
             imagesSaved = savedInstanceState.getBoolean(IMAGES_SAVED);
-            image1 = savedInstanceState.getParcelable(IMAGE_1);
-            image2 = savedInstanceState.getParcelable(IMAGE_2);
+            image1 = savedInstanceState.getParcelable(IMAGE_1_BITMAP);
+            image2 = savedInstanceState.getParcelable(IMAGE_2_BITMAP);
         }
 
         loadPoll();
