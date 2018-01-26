@@ -235,7 +235,8 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 Log.i("getImage1", "onSuccess: " + uri);
-                if (image1Uri != uri) {
+                Log.i("setImage1", "onSuccess: " + image1Uri);
+                if (!image1Uri.toString().equals(uri.toString())) {
                     image1Uri = uri;
                     downloadImage1 = new DownloadImage().execute(new DownloadImageTask(firstImg, uri));
                 }
@@ -251,7 +252,8 @@ public class DeciderFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 Log.i("getImage2", "onSuccess: " + uri);
-                if (image2Uri != uri) {
+                Log.i("setImage2", "onSuccess: " + image2Uri);
+                if (!image2Uri.toString().equals(uri.toString())) {
                     image2Uri = uri;
                     downloadImage2 = new DownloadImage().execute(new DownloadImageTask(secondImg, uri));
                 }
