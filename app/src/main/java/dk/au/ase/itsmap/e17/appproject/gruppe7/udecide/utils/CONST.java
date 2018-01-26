@@ -6,9 +6,9 @@ public class CONST {
     public static final String IMAGE_2_VOTE_KEY = "image2Votes";
     public static final String IMAGE_1 = "image1";
     public static final String IMAGE_2 = "image2";
-    public static final String IMAGE_1_BITMAP = "image1";
-    public static final String IMAGE_2_BITMAP = "image2";
-    public static final String IMAGES_SAVED = "image2";
+    public static final String IMAGE_1_BITMAP = "image1bitmap";
+    public static final String IMAGE_2_BITMAP = "image2bitmap";
+    public static final String IMAGES_SAVED = "imagesSaved";
     public static final String CURRENT_POLL = "current_poll";
     public static final String MY_POLLS = "my_poll";
     public static final String SIGN_IN_EVENT = "sign_in_event";
