@@ -125,6 +125,8 @@ public class DeciderFragment extends Fragment {
     private void setEmptyDecider() {
         firstImg.setImageResource(0);
         secondImg.setImageResource(0);
+        lastQuestionResult.setVisibility(View.INVISIBLE);
+        myProgressTextTv.setVisibility(View.INVISIBLE);
         Activity activity = getActivity();
         if (isAdded() && activity != null) {
             questionTextTV.setText(getText(R.string.no_more_polls));
