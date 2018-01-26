@@ -69,4 +69,13 @@ public class MyQuestionsFragment extends Fragment {
             }
         }
     };
+
+    @Override
+    public void onDestroyView() {
+        Log.d("TAG", "onDestroyView: ");
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(LoadedMyQuestionsMsgReceiver);
+        super.onDestroyView();
+    }
+
+
 }

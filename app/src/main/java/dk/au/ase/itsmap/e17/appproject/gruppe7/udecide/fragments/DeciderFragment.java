@@ -133,6 +133,7 @@ public class DeciderFragment extends Fragment {
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NewPollmsgReceiver, new IntentFilter(CONST.UPDATE_EVENT)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NoMorePollsMsgReceiver, new IntentFilter(CONST.NO_MORE_POLLS)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(UpdatePollReceiver, new IntentFilter(CONST.UPDATE_POLL)); //Listen for a local broadcast with this action
+
         downloadImage1 = new DownloadImage();
         downloadImage2 = new DownloadImage();
         image1Uri = Uri.EMPTY;
@@ -179,8 +180,10 @@ public class DeciderFragment extends Fragment {
         Log.d("TAG", "onDestroyView: ");
         downloadImage1.cancel(true);
         downloadImage2.cancel(true);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(NewPollmsgReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(NoMorePollsMsgReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(UpdatePollReceiver);
         super.onDestroyView();
-
     }
 
     private void intitializeUIElements() {

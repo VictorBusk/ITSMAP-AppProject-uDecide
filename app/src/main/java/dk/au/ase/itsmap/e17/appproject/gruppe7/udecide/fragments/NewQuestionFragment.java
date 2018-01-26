@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,6 +214,13 @@ public class NewQuestionFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d("TAG", "onDestroyView: ");
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(UpdatePollReceiver);
+        super.onDestroyView();
     }
 
     private void handleStorageClick(int requestCode) {
