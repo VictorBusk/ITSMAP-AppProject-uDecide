@@ -13,6 +13,7 @@ public class CONST {
 
     public static final String DB_POLLS_COLLECTION = "polls";
     public static final String DB_DATE = "date";
+    public static final String DB_DATA = "data";
     public static final String DB_USER_ID = "userID";
 
     public static final String SHARED_PREFERENCES = "SharedPreferences";

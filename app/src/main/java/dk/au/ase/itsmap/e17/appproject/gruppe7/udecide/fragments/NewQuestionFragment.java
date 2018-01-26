@@ -248,7 +248,7 @@ public class NewQuestionFragment extends Fragment {
 
         if (requestCode == CONST.REQUEST_CAM1) {
             if (resultCode == getActivity().RESULT_OK ) {
-                photo1 = (Bitmap) data.getExtras().get("data");
+                photo1 = (Bitmap) data.getExtras().get(CONST.DB_DATA);
                 firstPhotoVisibility = View.VISIBLE;
                 firstPicVisibility = View.INVISIBLE;
                 firstPic(firstPicVisibility, firstPhotoVisibility, photo1);
@@ -256,7 +256,7 @@ public class NewQuestionFragment extends Fragment {
         }
         if (requestCode == CONST.REQUEST_CAM2) {
             if (resultCode == getActivity().RESULT_OK) {
-                photo2 = (Bitmap) data.getExtras().get("data");
+                photo2 = (Bitmap) data.getExtras().get(CONST.DB_DATA);
                 secondPhotoVisibility = View.VISIBLE;
                 secondPicVisibility = View.INVISIBLE;
                 secondPic(secondPicVisibility, secondPhotoVisibility, photo2 );
