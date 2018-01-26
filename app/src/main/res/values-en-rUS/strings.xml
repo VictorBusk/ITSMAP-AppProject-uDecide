@@ -30,6 +30,12 @@
     <string name="FirebaseSignInAuthenticationFailed">Authentication failed.</string>
     <string name="Loading">Loading</string>
     <string name="reset_decider">Reset decider</string>
+    <string name="PROVIDE_IMAGE_MSG">You need to provide two images</string>
+    <string name="PROVIDE_QUESTION_MSG">You need to enter a question</string>
+    <string name="POLL_CREATED_MSG">Your poll is created</string>
+    <string name="FAILURE_MSG">Something went wrong</string>
+    <string name="offline_message">Missing connection</string>
+    <string name="offline_info">It appears that you are offline. Try again later.</string>
 
 
 </resources>

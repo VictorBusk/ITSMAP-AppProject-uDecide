@@ -201,12 +201,12 @@ public class NewQuestionFragment extends Fragment {
                 if(question.trim().equals(""))
                 {
                     Toast.makeText(getContext().getApplicationContext(),
-                            "You need to enter a question", Toast.LENGTH_LONG).show();
+                            R.string.PROVIDE_QUESTION_MSG, Toast.LENGTH_LONG).show();
                     return;
                 }
                 else if(photo1 == null || photo2 == null) {
                     Toast.makeText(getContext().getApplicationContext(),
-                            "You need to provide two images", Toast.LENGTH_LONG).show();
+                            R.string.PROVIDE_IMAGE_MSG, Toast.LENGTH_LONG).show();
                     return;
                 }
                 savePollData();

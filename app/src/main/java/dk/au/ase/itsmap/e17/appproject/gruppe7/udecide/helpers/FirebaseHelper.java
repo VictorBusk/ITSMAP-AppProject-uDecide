@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.R;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.models.Poll;
 import dk.au.ase.itsmap.e17.appproject.gruppe7.udecide.utils.CONST;
 
@@ -164,7 +165,7 @@ public class FirebaseHelper {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Toast.makeText(context.getApplicationContext(),
-                                "Your poll is created", Toast.LENGTH_LONG).show();
+                                R.string.POLL_CREATED_MSG, Toast.LENGTH_LONG).show();
                         sendMessagePollSaved();
                     }
                 })
@@ -172,14 +173,14 @@ public class FirebaseHelper {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(context.getApplicationContext(),
-                                "Something went wrong", Toast.LENGTH_LONG).show();
+                                R.string.FAILURE_MSG, Toast.LENGTH_LONG).show();
 
                         Log.w(String.valueOf(this), "Error adding document", e);
                     }
                 });
 
         Toast.makeText(context.getApplicationContext(),
-                "Your poll is created", Toast.LENGTH_LONG).show();
+                R.string.POLL_CREATED_MSG, Toast.LENGTH_LONG).show();
     }
 
     public String uploadImageToFirebase(Bitmap bitmap) {

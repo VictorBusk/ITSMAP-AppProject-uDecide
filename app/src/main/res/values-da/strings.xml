@@ -31,7 +31,11 @@
     <string name="FacebookSignInAuthenticationCanceled">Godkendelse annulleret.</string>
     <string name="FacebookSignInAuthenticationError">Godkendelse fejl.</string>
     <string name="FirebaseSignInAuthenticationFailed">Godkendelse fejlet.</string>
-    <string name="Loading">Loading</string>
-    <string name="reset_decider">Reset decider</string>
+    <string name="Loading">Indlæser</string>
+    <string name="reset_decider">Nulstil decider</string>
+    <string name="PROVIDE_IMAGE_MSG">Angiv to billeder</string>
+    <string name="PROVIDE_QUESTION_MSG">Tilføj størgsmålstekst</string>
+    <string name="POLL_CREATED_MSG">Din meningsmåling er oprettet</string>
+    <string name="FAILURE_MSG">Noget gik galt</string>
 
 </resources>
