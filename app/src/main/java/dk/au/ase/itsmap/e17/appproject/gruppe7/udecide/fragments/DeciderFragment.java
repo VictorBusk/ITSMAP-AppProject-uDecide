@@ -61,6 +61,9 @@ public class DeciderFragment extends Fragment {
     StorageReference storageRef = storage.getReference();
     View view;
     FirebaseHelper firebaseHelper;
+    AsyncTask<DownloadImageTask, Void, DownloadedImage> downloadImage1;
+    AsyncTask<DownloadImageTask, Void, DownloadedImage> downloadImage2;
+    Uri image1Uri, image2Uri;
     private int tasks = 0;
     private Bitmap image1, image2;
     private boolean imagesSaved = false;
@@ -86,8 +89,8 @@ public class DeciderFragment extends Fragment {
                 secondImg.setImageBitmap(image2);
                 imagesSaved = false;
             } else {
-                getImage(img1, firstImg);
-                getImage(img2, secondImg);
+                getImage1(img1);
+                getImage2(img2);
             }
             updateProgessBar();
         }
@@ -130,7 +133,10 @@ public class DeciderFragment extends Fragment {
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NewPollmsgReceiver, new IntentFilter(CONST.UPDATE_EVENT)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(NoMorePollsMsgReceiver, new IntentFilter(CONST.NO_MORE_POLLS)); //Listen for a local broadcast with this action
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(UpdatePollReceiver, new IntentFilter(CONST.UPDATE_POLL)); //Listen for a local broadcast with this action
-
+        downloadImage1 = new DownloadImage();
+        downloadImage2 = new DownloadImage();
+        image1Uri = Uri.EMPTY;
+        image2Uri = Uri.EMPTY;
         intitializeUIElements();
         preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -159,11 +165,22 @@ public class DeciderFragment extends Fragment {
             imagesSaved = savedInstanceState.getBoolean("IMAGESSAVED");
             image1 = savedInstanceState.getParcelable("IMAGE1");
             image2 = savedInstanceState.getParcelable("IMAGE2");
+            image1Uri = Uri.parse(savedInstanceState.getString("URI1", Uri.EMPTY.toString()));
+            image2Uri = Uri.parse(savedInstanceState.getString("URI2", Uri.EMPTY.toString()));
         }
 
         loadPoll();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d("TAG", "onDestroyView: ");
+        downloadImage1.cancel(true);
+        downloadImage2.cancel(true);
+        super.onDestroyView();
+
     }
 
     private void intitializeUIElements() {
@@ -211,13 +228,33 @@ public class DeciderFragment extends Fragment {
     }
 
     // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
-    public void getImage(String imageId, final ImageView imageView) {
-        loading(true, imageView);
+    public void getImage1(String imageId) {
+        loading(true, firstImg);
         tasks++;
         storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                new DownloadImage().execute(new DownloadImageTask(imageView, uri));
+                Log.i("getImage1", "onSuccess: " + uri);
+                if (image1Uri != uri) {
+                    image1Uri = uri;
+                    downloadImage1 = new DownloadImage().execute(new DownloadImageTask(firstImg, uri));
+                }
+            }
+        });
+    }
+
+    // https://firebase.google.com/docs/storage/android/download-files#downloading_images_with_firebaseui
+    public void getImage2(String imageId) {
+        loading(true, secondImg);
+        tasks++;
+        storageRef.child(STORAGE_IMAGES_PATH + imageId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.i("getImage2", "onSuccess: " + uri);
+                if (image2Uri != uri) {
+                    image2Uri = uri;
+                    downloadImage2 = new DownloadImage().execute(new DownloadImageTask(secondImg, uri));
+                }
             }
         });
     }
@@ -265,6 +302,8 @@ public class DeciderFragment extends Fragment {
         } else {
             outState.putBoolean("IMAGESSAVED", false);
         }
+        outState.putString("URI1", image1Uri.toString());
+        outState.putString("URI1", image2Uri.toString());
         super.onSaveInstanceState(outState);
     }
 
@@ -323,8 +362,21 @@ public class DeciderFragment extends Fragment {
 
         @Override
         protected void onPostExecute(DownloadedImage downloadedImage) {
-            super.onPostExecute(downloadedImage);
+            Log.i("DownloadImage", "Done: " + tasks);
             setImage(downloadedImage);
+            super.onPostExecute(downloadedImage);
+        }
+
+        @Override
+        protected void onCancelled() {
+            Log.i("DownloadImage", "Cancelled: " + tasks);
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.i("DownloadImage", "Started: " + tasks);
+            super.onPreExecute();
         }
     }
 }
